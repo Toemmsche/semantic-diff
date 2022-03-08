@@ -1,0 +1,30 @@
+{
+  "name": "semantic-diff",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "main": "tsc --outDir out && node out/main.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Toemmsche/semantic-diff.git"
+  },
+  "author": "'",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Toemmsche/semantic-diff/issues"
+  },
+  "homepage": "https://github.com/Toemmsche/semantic-diff#readme",
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.0.6"
+  }
+}
