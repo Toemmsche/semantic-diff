@@ -1,10 +1,10 @@
 export interface IParameters {
-    CONTENT_WEIGHT: Number;
-    POSITION_WEIGHT: Number;
-    COMMONALITY_WEIGHT: Number;
-    EPSILON_PENALTY: Number;
-    PATH_COMPARE_RANGE: Number;
-    WEIGHT_BOOST_MULTIPLIER: Number;
+    CONTENT_WEIGHT: number;
+    POSITION_WEIGHT: number;
+    COMMONALITY_WEIGHT: number;
+    EPSILON_PENALTY: number;
+    PATH_COMPARE_RANGE: number;
+    WEIGHT_BOOST_MULTIPLIER: number;
 }
 
 

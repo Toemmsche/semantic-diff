@@ -1,7 +1,7 @@
 enum NodeType {
-    INNER,
-    LEAF,
-    PROPERTY
+    INNER= "Inner Node",
+    LEAF = "Leaf Node",
+    PROPERTY = "Property Node"
 }
 
 export default NodeType;

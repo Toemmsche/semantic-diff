@@ -8,5 +8,4 @@ const tree = new Node("description", [
 const xml = "<description><parallel mode=\"first\"><call endpoint=\"http://example.org\" id=\"a2\"><parameters><method>POST</method></parameters></call></parallel></ddescription>";
 const root = tree.fromXmlString(xml);
 console.log(root.toJson());
-console.dir(tree);
 console.log("passing main...");

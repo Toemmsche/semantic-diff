@@ -8,7 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "main": "tsc --outDir out && node out/main.js",
+    "compile": "tsc --outDir build",
+    "main": "tsc --outDir build && node build/main.js",
     "test": "test"
   },
   "repository": {
@@ -25,6 +26,7 @@
     "typescript": "^4.6.2"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.0.6"
+    "fast-xml-parser": "^4.0.6",
+    "murmur-32": "^1.0.0"
   }
 }

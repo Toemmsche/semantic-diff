@@ -1,4 +1,4 @@
 export default class WeightedCV {
-    constructor(public path: String, public weight : Number) {
+    constructor(public path: string, public weight : number) {
     }
 }
