@@ -9,7 +9,7 @@
  *     operator ("===").
  * @return The length of the LCS.
  */
-import {GRAMMAR} from "../Global";
+import {DiffConfig, GRAMMAR} from "../Global.js";
 
 
 export function getLcsLength<T>(seqA : T[], seqB : T[], compare = (a : T, b : T) => a === b) : number {
@@ -46,7 +46,7 @@ export function getLcsLength<T>(seqA : T[], seqB : T[], compare = (a : T, b : T)
 }
 
 // Initial 2D array of size (r + 1) * (r + 1)
-const dp = new Array(GRAMMAR.parameters.PATH_COMPARE_RANGE + 1);
+const dp = new Array(DiffConfig.PATH_COMPARE_RANGE + 1);
 for (let i = 0; i < dp.length; i++) {
   dp[i] = new Array(dp.length);
 }

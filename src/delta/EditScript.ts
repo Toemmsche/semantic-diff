@@ -1,13 +1,13 @@
 import {EditOperation} from "./EditOperation.js";
 import ChangeType from "./ChangeType.js";
-import Node from "../tree/Node.js"
+import TNode from "../tree/TNode.js"
 
 export class EditScript {
 
     constructor(private editOperations: EditOperation[] = [], private cost: number = 0) {
     }
 
-    appendDeletion(deletedNode: Node): void {
+    appendDeletion(deletedNode: TNode): void {
         this.editOperations.push(
             new EditOperation(
                 ChangeType.DELETION,
@@ -16,7 +16,7 @@ export class EditScript {
         this.cost += deletedNode.size();
     }
 
-    appendInsertion(insertedNode: Node): void {
+    appendInsertion(insertedNode: TNode): void {
         this.editOperations.push(
             new EditOperation(
                 ChangeType.INSERTION,
@@ -38,7 +38,7 @@ export class EditScript {
         this.cost++;
     }
 
-    appendUpdate(updatedNode: Node) {
+    appendUpdate(updatedNode: TNode) {
         this.editOperations.push(
             new EditOperation(
                ChangeType.UPDATE,

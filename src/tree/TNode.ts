@@ -1,22 +1,22 @@
 import GrammarNode from "../grammar/GrammarNode.js";
 import XmlSerializable from "../io/XmlSerializable.js";
-import {ATTRIBUTE_GROUP_NAME, GRAMMAR, TEXT_NODE_NAME, XML_PARSER} from "../Global.js";
+import {ATTRIBUTE_GROUP_NAME, GRAMMAR, TEXT_NODE_NAME, XML_BUILDER, XML_PARSER} from "../Global.js";
 import {arraySum} from "../Util.js";
 
-export default class Node implements XmlSerializable<Node> {
+export default class TNode implements XmlSerializable<TNode> {
 
     constructor(public label: string,
-                public children: Node[] = [],
+                public children: TNode[] = [],
                 public text ?: string,
                 public attributes: Map<String, string> = new Map(),
                 private grammarNode ?: GrammarNode, // property node if undefined
-                private parent ?: Node,
+                private parent ?: TNode,
                 private index ?: number,
     ) {
         this.adjustChildIndices();
     }
 
-    fromXmlDom(tagName: string, xmlDom: any): Node {
+    fromXmlDom(tagName: string, xmlDom: any): TNode {
         // parse text
         let text = null
         if (TEXT_NODE_NAME in xmlDom) {
@@ -45,10 +45,10 @@ export default class Node implements XmlSerializable<Node> {
         const grammarNode = GRAMMAR.getGrammarNodeByLabel(tagName);
         console.log(`Detected ${tagName} as ${grammarNode?.type}`)
 
-        return new Node(tagName, children, text, attributes, grammarNode);
+        return new TNode(tagName, children, text, attributes, grammarNode);
     }
 
-    fromXmlString(xml: string): Node {
+    fromXmlString(xml: string): TNode {
         const xmlDom = XML_PARSER.parse(xml)
         // get first object
         // TODO ignore processing instructions and comments
@@ -56,12 +56,22 @@ export default class Node implements XmlSerializable<Node> {
         return this.fromXmlDom(tagName, xmlDom[tagName]);
     }
 
-    toXmlDom(): object {
-        throw new Error("Unimplemented")
+    toXmlDom(root: boolean = true): any {
+        let xmlDom: any = Object.fromEntries(this.children.map(child => [child.label, child.toXmlDom(false)]));
+        xmlDom = {
+            ...xmlDom,
+            // convert text
+            "#text": this.text ?? undefined, // null indicates object presence
+            "@_"   : Object.fromEntries(this.attributes.entries())
+        }
+        if (root) {
+            return Object.fromEntries([[this.label, xmlDom]])
+        }
+        return xmlDom;
     }
 
     toXmlString(): string {
-        throw new Error("Unimplemented")
+        return XML_BUILDER.build(this.toXmlDom());
     }
 
     toJson(): string {
@@ -77,13 +87,13 @@ export default class Node implements XmlSerializable<Node> {
     }
 
 
-    copy(includeChildren: Boolean = true): Node {
-        let childCopies: Node[] = [];
+    copy(includeChildren: Boolean = true): TNode {
+        let childCopies: TNode[] = [];
         if (includeChildren) {
             childCopies = this.children.map(child => child.copy(includeChildren));
         }
         const attributesCopy = new Map(this.attributes.entries())
-        return new Node(this.label, childCopies, this.text, attributesCopy, this.grammarNode); // leave parent and index undefined
+        return new TNode(this.label, childCopies, this.text, attributesCopy, this.grammarNode); // leave parent and index undefined
     }
 
     xPath(): string {
@@ -96,7 +106,7 @@ export default class Node implements XmlSerializable<Node> {
 
     path(limit ?: number) {
         const pathArr = [];
-        let node: Node | nu = this;
+        let node: TNode | nu = this;
         while (node != null && (limit == null || pathArr.length < limit)) {
             pathArr.push(node);
             node = node.parent;
@@ -106,10 +116,10 @@ export default class Node implements XmlSerializable<Node> {
     }
 
     size(): number {
-        return 1 + this.children.map(child => child.size()).reduce(arraySum);
+        return 1 + this.children.map(child => child.size()).reduce(arraySum, 0);
     }
 
-    toPreOrderArray(arr: Node[] = []): Node[] {
+    toPreOrderArray(arr: TNode[] = []): TNode[] {
         arr.push(this);
         for (const child of this.children) {
             child.toPreOrderArray(arr);
@@ -117,7 +127,7 @@ export default class Node implements XmlSerializable<Node> {
         return arr;
     }
 
-    toPostOrderArray(arr: Node[] = []): Node[] {
+    toPostOrderArray(arr: TNode[] = []): TNode[] {
         for (const child of this.children) {
             child.toPostOrderArray(arr);
         }
@@ -131,7 +141,7 @@ export default class Node implements XmlSerializable<Node> {
         }
     }
 
-    childAt(index: number): Node {
+    childAt(index: number): TNode {
         return this.children[index];
     }
 
@@ -143,11 +153,11 @@ export default class Node implements XmlSerializable<Node> {
         throw new Error("unimplemented");
     }
 
-    getParent(): Node {
+    getParent(): TNode {
         return this.parent!!;
     }
 
-    insertChild(newIndex: number, newChild: Node): void {
+    insertChild(newIndex: number, newChild: TNode): void {
         this.children.splice(newIndex, 0, newChild);
         this.adjustChildIndices();
     }
@@ -160,7 +170,7 @@ export default class Node implements XmlSerializable<Node> {
         }
     }
 
-    getSiblings(): Node[] {
+    getSiblings(): TNode[] {
         if (!this.parent) {
             return [];
         }
@@ -171,7 +181,7 @@ export default class Node implements XmlSerializable<Node> {
         return !this.parent;
     }
 
-    contentEquals(other: Node): boolean {
+    contentEquals(other: TNode): boolean {
         let attributesEqual = true;
         const allKeys = new Set([...this.attributes.keys(), ...other.attributes.keys()])
         for (const key of allKeys) {
@@ -204,11 +214,19 @@ export default class Node implements XmlSerializable<Node> {
         return undefined;
     }
 
+    isPropertyNode() {
+        return !this.grammarNode;
+    }
+
+    nonPropertyNodes() {
+        return this.toPreOrderArray().filter(node => !node.isPropertyNode())
+    }
+
     /* =============== MATCHING STUFF ================== */
 
-    private matchPartner ?: Node;
+    private matchPartner ?: TNode;
 
-    matchTo(other: Node): boolean {
+    matchTo(other: TNode): boolean {
         if (this.matchPartner || other.matchPartner) {
             return false;
         }
@@ -218,16 +236,27 @@ export default class Node implements XmlSerializable<Node> {
         return true;
     }
 
-    getMatch(): Node {
+    getMatch(): TNode {
         return this.matchPartner!!;
     }
 
-    isMatchedTo(other: Node): boolean {
+    isMatchedTo(other: TNode): boolean {
         return this.matchPartner === other;
     }
 
     isMatched(): boolean {
         return !!this.matchPartner;
+    }
+
+    getMatchingMap(): Map<TNode, TNode> {
+        return new Map(this.toPreOrderArray()
+                           .filter(node => node.isMatched())
+                           .map(node => [node, node.getMatch()])
+        );
+    }
+
+    verifyMatching() : boolean {
+        return !this.matchPartner || (this.getMatch().isMatchedTo(this));
     }
 
 }

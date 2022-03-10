@@ -1,5 +1,5 @@
 import ChangeType from "./ChangeType.js";
-import Node from "../tree/Node.js"
+import TNode from "../tree/TNode.js"
 
 export class EditOperation {
 
@@ -7,7 +7,7 @@ export class EditOperation {
         public type: ChangeType,
         public oldPath ?: string,
         public newPath ?: string,
-        public newContent ?: Node,
+        public newContent ?: TNode,
     ) {
     }
 
