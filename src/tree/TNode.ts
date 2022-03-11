@@ -2,6 +2,7 @@ import GrammarNode from "../grammar/GrammarNode.js";
 import XmlSerializable from "../io/XmlSerializable.js";
 import {ATTRIBUTE_GROUP_NAME, GRAMMAR, TEXT_NODE_NAME, XML_BUILDER, XML_PARSER} from "../Global.js";
 import {arraySum} from "../Util.js";
+import NodeType from "../grammar/NodeType.js";
 
 export default class TNode implements XmlSerializable<TNode> {
 
@@ -14,6 +15,33 @@ export default class TNode implements XmlSerializable<TNode> {
                 private index ?: number,
     ) {
         this.adjustChildIndices();
+    }
+
+
+    getGrammarNode(): GrammarNode {
+        return this.grammarNode!!;
+    }
+
+    accessProperty(path: string): string | nu {
+        // We assume that descending according to the path is always unambiguous
+        // TODO performance improvements
+        const pathNodes = path.split("/");
+        let node: TNode | nu = this;
+        for (const pathNode of pathNodes) {
+            // Termination conditions
+            if (pathNode === TEXT_NODE_NAME || pathNode === "") {
+                return node.text;
+            }
+            if (pathNode.startsWith(ATTRIBUTE_GROUP_NAME)) {
+                const attributeName = pathNode.replace(ATTRIBUTE_GROUP_NAME, "");
+                return node.attributes.get(attributeName);
+            }
+            node = node.children.find((child) => child.label === pathNode);
+            if (!node) {
+                return null;
+            }
+        }
+        return node.text;
     }
 
     fromXmlDom(tagName: string, xmlDom: any): TNode {
@@ -136,9 +164,8 @@ export default class TNode implements XmlSerializable<TNode> {
     }
 
     removeFromParent(): void {
-        if (this.index) {
-            this.parent?.children?.splice(this.index, 1)
-        }
+        this.parent!!.children.splice(this.index!!, 1)
+        this.parent!!.adjustChildIndices();
     }
 
     childAt(index: number): TNode {
@@ -218,8 +245,16 @@ export default class TNode implements XmlSerializable<TNode> {
         return !this.grammarNode;
     }
 
+    isLeaf() {
+        return this.grammarNode && this.grammarNode.type === NodeType.LEAF;
+    }
+
     nonPropertyNodes() {
-        return this.toPreOrderArray().filter(node => !node.isPropertyNode())
+        return this.toPreOrderArray().filter(node => !node.isPropertyNode());
+    }
+
+    leaves() {
+        return this.toPreOrderArray().filter(node => node.isLeaf());
     }
 
     /* =============== MATCHING STUFF ================== */
@@ -255,8 +290,9 @@ export default class TNode implements XmlSerializable<TNode> {
         );
     }
 
-    verifyMatching() : boolean {
+    verifyMatching(): boolean {
         return !this.matchPartner || (this.getMatch().isMatchedTo(this));
     }
+
 
 }

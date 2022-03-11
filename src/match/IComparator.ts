@@ -11,5 +11,7 @@ export default interface IComparator extends IExtractorFacade {
 
     compareContent(nodeA: TNode, nodeB: TNode): number;
 
+    weightedAverage(items: (number | nu)[], weights: number[], defaultValue ?: number ): number;
+
 
 }

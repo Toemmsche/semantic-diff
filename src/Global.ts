@@ -3,48 +3,33 @@ import NodeType from "../src/grammar/NodeType.js";
 import Grammar from "../src/grammar/Grammar.js";
 import Fxp, {X2jOptionsOptional, XmlBuilderOptionsOptional} from "fast-xml-parser";
 import {defaultDiffOptions, IDiffOptions} from "./IDiffOptions.js";
+import WeightedCV from "./grammar/WeightedCV.js";
+import ComparisonType from "./grammar/ComparisonType.js";
 
 // cpee grammar for now
 const cpeeGrammar = new Grammar(
-    [ // inners
-        new GrammarNode(NodeType.INNER, "description", []),
-        new GrammarNode(NodeType.INNER, "parallel", [
-            {
-                path  : "@mode",
-                weight: 1
-            }
-        ]),
-        new GrammarNode(NodeType.INNER, "loop", [
-            {
-                path  : "@mode",
-                weight: 1
-            }
-        ]),
-    ],
-    [ // leaves
-        new GrammarNode(NodeType.LEAF, "call", [
-            {
-                path  : "@endpoint",
-                weight: 3
-            },
-            {
-                path  : "parameters/method",
-                weight: 2
-            },
-            {
-                path  : "code/finalize",
-                weight: 1
-            }
-        ]),
-        new GrammarNode(NodeType.LEAF, "manipulate", [
-            {
-                path  : "",
-                weight: 1
-            }
-        ]),
-        new GrammarNode(NodeType.LEAF, "stop", [])
-    ]
-);
+        [ // inners
+            new GrammarNode(NodeType.INNER, "description", []),
+            new GrammarNode(NodeType.INNER, "parallel", [
+                new WeightedCV("@mode", 1)
+            ]),
+            new
+            GrammarNode(NodeType.INNER, "loop", [
+                new WeightedCV("@mode", 1)
+            ]),
+        ],
+        [ // leaves
+            new GrammarNode(NodeType.LEAF, "call", [
+                new WeightedCV("@endpoint", 3),
+                new WeightedCV("parameters/method", 2),
+            ]),
+            new GrammarNode(NodeType.LEAF, "manipulate", [
+                new WeightedCV("", 1, ComparisonType.LCS)
+            ]),
+            new GrammarNode(NodeType.LEAF, "stop", [])
+        ]
+    )
+;
 
 export const DiffConfig: IDiffOptions = defaultDiffOptions;
 

@@ -19,18 +19,22 @@ import TNode from "../tree/TNode.js";
  * @param {Function} thresholdFunction A boolean function to determine if a
  *     comparison value is sufficient for a match.
  */
-export function persistBestMatches(oldNodes : TNode[], newNodes : TNode[], keyFunction: (node: TNode) => any, compareFunction : (node: TNode, other: TNode) => number, matchHandler: (node: TNode, match: TNode) => void,
-                                   thresholdFunction : (cv : number) => boolean = (cv) => true) {
-    const candidateMap = new Map();
+export function persistBestMatches(oldNodes: TNode[],
+                                   newNodes: TNode[],
+                                   keyFunction: (node: TNode) => any,
+                                   compareFunction: (node: TNode, other: TNode) => number,
+                                   matchHandler: (node: TNode, match: TNode) => void,
+                                   thresholdFunction: (cv: number) => boolean = (cv) => true) {
+    const candidateMap = new Map<TNode, TNode[]>();
     for (const oldNode of oldNodes) {
         const key = keyFunction(oldNode);
         if (!candidateMap.has(key)) {
             candidateMap.set(key, []);
         }
-        candidateMap.get(key).push(oldNode);
+        candidateMap.get(key)!!.push(oldNode);
     }
 
-    const oldToNewMap = new Map();
+    const oldToNewMap = new Map<TNode, { newNode: TNode, compareValue: number }>();
     newNodeLoop: for (const newNode of newNodes) {
         // existing matches cannot be altered
         if (newNode.isMatched()) {
@@ -38,14 +42,10 @@ export function persistBestMatches(oldNodes : TNode[], newNodes : TNode[], keyFu
         }
 
         const key = keyFunction(newNode);
-        if (!candidateMap.has(key)) {
-            continue;
-        }
-        const candidates = candidateMap.get(key);
 
         let minCV = 1;
         let minCVNode = null;
-        for (const oldNode of candidates) {
+        for (const oldNode of candidateMap.get(key) ?? []) {
             // existing matches cannot be altered
             if (oldNode.isMatched()) {
                 continue;
@@ -57,10 +57,11 @@ export function persistBestMatches(oldNodes : TNode[], newNodes : TNode[], keyFu
                 matchHandler(oldNode, newNode);
                 oldToNewMap.delete(oldNode);
                 continue newNodeLoop;
-            } else if (CV < minCV &&
+            }
+            if (CV < minCV &&
                 thresholdFunction(CV) &&
                 (!oldToNewMap.has(oldNode) ||
-                    CV < oldToNewMap.get(oldNode).compareValue)) {
+                    CV < oldToNewMap.get(oldNode)!!.compareValue)) {
                 minCV = CV;
                 minCVNode = oldNode;
             }

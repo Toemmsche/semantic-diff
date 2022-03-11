@@ -1,19 +1,15 @@
-/**
- * Wrapper for an ordered sequence of matching modules (matchers for short).
- */
 import IMatcher from "./IMatcher.js";
 import {FixedMatcher} from "./FixedMatcher.js";
 import {HashMatcher} from "./HashMatcher.js";
 import TNode from "../tree/TNode.js";
 import {Comparator} from "./Comparator.js";
 import MalformedMatchingError from "../error/MalformedMatchingError.js";
+import {SimilarityMatcher} from "./SimilarityMatcher.js";
+import {PathMatcher} from "./PathMatcher.js";
 
 export class MatchPipeline {
 
-    /**
-     * @param {Array<MatcherInterface>} matchers The list of matchers
-     *     constituting this pipeline.
-     */
+
     constructor(private matchers: IMatcher[]) {
         const len = matchers.length;
         // FixedMatcher is always the first matching algorithm in the pipeline
@@ -49,7 +45,7 @@ export class MatchPipeline {
          ]);
 
          */
-        return new MatchPipeline([new FixedMatcher(), new HashMatcher()])
+        return new MatchPipeline([new FixedMatcher(), new HashMatcher(), new SimilarityMatcher(), new PathMatcher()])
     }
 
     /**

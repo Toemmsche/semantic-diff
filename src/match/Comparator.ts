@@ -3,6 +3,7 @@ import IComparator from "./IComparator.js";
 import TNode from "../tree/TNode.js";
 import {DiffConfig} from "../Global.js";
 import {getLcsLength, getLcsLengthFast} from "../lib/Lcs.js";
+import ComparisonType from "../grammar/ComparisonType.js";
 
 /**
  * Wrapper class for the computation of various comparison values.
@@ -21,36 +22,62 @@ export class Comparator extends Extractor implements IComparator {
                 DiffConfig.POSITION_WEIGHT,
             ],
         );
-        // TODO
+        // TODO handle null value
         return compareValue ?? 0;
     }
 
     compareContent(nodeA: TNode, nodeB: TNode): number {
         // different labels cannot be matched
+        // TODO maybe use grammar node or other criterion
         if (nodeA.label !== nodeB.label) return 1.0;
-        // TODO
-        return 0;
+        // compare different properties of each node and weigh the resulting comparison values according to the
+        // specified grammar.
+        const grammarNode = nodeA.getGrammarNode();
+        const items: (number | nu)[] = [];
+        const weights = [];
+        for (const wcv of grammarNode.weightedCVs) {
+            // Extract property
+            const valueA = nodeA.accessProperty(wcv.path);
+            const valueB = nodeB.accessProperty(wcv.path);
+            if (valueA == null && valueB == null) {
+                // do not add item or weight
+                continue;
+            }
+            let cv: number | nu = 1;
+            if (!(valueA == null && valueB || valueA && valueB == null)) {
+                switch (wcv.comparisonType) {
+                    case ComparisonType.ALL_OR_NOTHING:
+                        cv = valueA === valueB ? 1 : 0;
+                        break;
+                    case ComparisonType.LCS:
+                        cv = this.compareLcs([...valueA!!], [...valueB!!]);
+                }
+            }
+            items.push(cv);
+            weights.push(wcv.weight);
+        }
+        return this.weightedAverage(items, weights);
     }
 
     /**
      * Perform an LCS-based comparison between two sequences.
      */
-    private compareLcs(seqA : any[], seqB : any[], defaultValue = null) : number | null {
+    private compareLcs(seqA: any[], seqB: any[], defaultValue = null): number | null {
         if (seqA == null) {
             seqA = [];
         } else if (seqB == null) {
             seqB = [];
         }
-        const maxLength = Math.max(seqA.length, seqB.length);
+        const maxLength = Math.max(seqA.length, seqB!!.length);
         if (maxLength === 0) return defaultValue;
-        return 1 - getLcsLength(seqA, seqB) / maxLength;
+        return 1 - getLcsLength(seqA!!, seqB!!) / maxLength;
     }
 
     /**
      * Because the path compare range is constant, the corresponding LCS
      * computation can be accelerated.
      */
-    private comparePathLcs(pathA : number[], pathB: number[]) : number {
+    private comparePathLcs(pathA: number[], pathB: number[]): number {
         const maxLength = Math.max(pathA.length, pathB.length);
         if (maxLength === 0) return 0;
         return 1 - getLcsLengthFast(pathA, pathB) / maxLength;
@@ -59,7 +86,7 @@ export class Comparator extends Extractor implements IComparator {
     /**
      * Compare the position of two nodes, determined by their paths.
      */
-    comparePosition(nodeA: TNode, nodeB: TNode) : number {
+    comparePosition(nodeA: TNode, nodeB: TNode): number {
         const radius = DiffConfig.PATH_COMPARE_RANGE;
 
         /*
@@ -97,33 +124,14 @@ export class Comparator extends Extractor implements IComparator {
         return pathCV;
     }
 
-
-    compareSet(setA : Set<any>, setB: Set<any>, defaultValue = null) : number | null {
-        const size = Math.max(setA.size, setB.size);
-        if (size === 0) return defaultValue;
-        let commonCounter = 0;
-        for (const element of setA) {
-            if (setB.has(element)) {
-                commonCounter++;
-            }
-        }
-        return 1 - (commonCounter / size);
-    }
-
-    compareSize(nodeA : TNode, nodeB : TNode) : number{
+    compareSize(nodeA: TNode, nodeB: TNode): number {
         return this.getSize(nodeA) - this.getSize(nodeB);
-    }
-
-    compareString(strA : string, strB: string, defaultValue = null) : number | null{
-        if (strA == null && strB == null) return defaultValue;
-        // For now, this is an all-or-nothing comparison
-        return strA === strB ? 0 : 1;
     }
 
     /**
      * Compute the weighted average for a set of comparison values and weights.
      */
-    weightedAverage(items : number[], weights : number[], defaultValue = null) : number | null{
+    weightedAverage(items: (number | nu)[], weights: number[], defaultValue = 0): number {
         let itemSum = 0;
         let weightSum = 0;
         for (let i = 0; i < items.length; i++) {
@@ -133,7 +141,7 @@ export class Comparator extends Extractor implements IComparator {
                     (items[i] === 0 ? DiffConfig.WEIGHT_BOOST_MULTIPLIER :
                         1) *
                     weights[i];
-                itemSum += items[i] * adjustedWeight;
+                itemSum += items[i]!! * adjustedWeight;
                 weightSum += adjustedWeight;
             }
         }
