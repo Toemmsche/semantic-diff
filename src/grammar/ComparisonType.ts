@@ -1,6 +1,6 @@
 enum ComparisonType {
-    ALL_OR_NOTHING,
-    LCS,
+  ALL_OR_NOTHING,
+  LCS,
 
 }
 

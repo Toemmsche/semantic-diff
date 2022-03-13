@@ -1,6 +1,6 @@
-export function getPrimes(amount : number) {
+export function getPrimes(amount: number) {
   if (amount > primeList.length) {
-    let result : number[] = [];
+    let result: number[] = [];
     do {
       result = result.concat(primeList);
       amount -= primeList.length;

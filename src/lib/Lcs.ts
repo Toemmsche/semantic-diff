@@ -9,10 +9,9 @@
  *     operator ("===").
  * @return The length of the LCS.
  */
-import {DiffConfig, GRAMMAR} from "../Global.js";
+import {DiffConfig} from '../Global.js';
 
-
-export function getLcsLength<T>(seqA : T[], seqB : T[], compare = (a : T, b : T) => a === b) : number {
+export function getLcsLength<T>(seqA: T[], seqB: T[], compare = (a: T, b: T) => a === b): number {
   // Initial 2D array of size (m + 1) * (n + 1)
   const dp = new Array(seqA.length + 1);
   for (let i = 0; i < seqA.length + 1; i++) {
@@ -58,7 +57,7 @@ for (let i = 0; i < dp.length; i++) {
  * @param {Array<Number>} seqB The second sequence.
  * @return {Number} The length of the LCS.
  */
-export function getLcsLengthFast(seqA : number[], seqB : number[]) {
+export function getLcsLengthFast(seqA: number[], seqB: number[]) {
   // The LCS of any sequence with a sequence of length zero
   // also has length zero
   for (let i = 0; i <= seqA.length; i++) {

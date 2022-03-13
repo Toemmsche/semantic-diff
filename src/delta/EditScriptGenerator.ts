@@ -1,20 +1,80 @@
-import TNode from "../tree/TNode.js"
-import {EditScript} from "./EditScript.js";
-import {getLis} from "../lib/Lis.js";
-import {DiffConfig} from "../Global.js";
+import TNode from '../tree/TNode.js';
+import {EditScript} from './EditScript.js';
+import {getLis} from '../lib/Lis.js';
+import {DiffConfig} from '../Global.js';
 
 export class EditScriptGenerator {
 
-  private editScript : EditScript = new EditScript();
+  private editScript: EditScript = new EditScript();
 
+  generateEditScript(oldTree: TNode, newTree: TNode) {
+    // For edit script verification later on
+    const copyOfOld = oldTree.copy();
 
-  #alignChildren(oldParent : TNode) {
+    this.editScript = new EditScript();
+
+    // 1st traversal: Pre-order of new (changed) tree
+    const newPreOrder = newTree.toPreOrderArray();
+    for (const newNode of newPreOrder) {
+      if (newNode.isMatched()) {
+        // New node is matched -> Move, Update, or Nil
+        const match = newNode.getMatch();
+
+        // Move if parents of matched nodes aren't matched
+        if (!newNode.isRoot() && newNode.getParent()
+            .getMatch() !== match.getParent()) {
+          this.move(match);
+        }
+
+        // Update if the content (text & attributes) of matched nodes differs
+        if (!newNode.contentEquals(match)) {
+          this.update(match);
+        }
+      } else {
+        // New node is not matched -> Insertion
+        this.#insert(newNode);
+      }
+    }
+
+    const oldPreOrder = oldTree.toPreOrderArray();
+    for (let i = 0; i < oldPreOrder.length; i++) {
+      const oldNode = oldPreOrder[i];
+      if (!oldNode.isMatched()) {
+        // Old node is not matched.
+        // We can be certain that none of its descendants are matched either.
+        // -> Deletion of the subtree rooted at this node
+        i += oldNode.size() - 1;
+        this.delete(oldNode);
+      }
+    }
+
+    // The matching and old tree are well-formed in terms of parent-child
+    // relationships. However, the children of a node might still be misaligned.
+    // This can occur if a node as moved within its parent.
+    for (const oldNode of oldTree.toPreOrderArray()) {
+      if (DiffConfig.EXACT_EDIT_SCRIPT || oldNode.hasInternalOrdering()) {
+        this.#alignChildren(oldNode);
+      }
+    }
+
+    /*
+     // Verify the validity of the edit script
+     // TODO
+     if (!this.#editScript.isValid(copyOfOld, newTree)) {
+     Logger.error('Generated edit script is not valid', this);
+     }
+     */
+
+    return this.editScript;
+  }
+
+  #alignChildren(oldParent: TNode) {
     const nodes = oldParent.children;
     // To find the minimal number of moves, map each child to the index of
     // its matching partner and compute the longest increasing subsequence (LIS)
     // on the result. Every node that isn't part of the LIS must be moved.
     const lis = getLis(nodes.map((node) =>
-     node.getMatch().getIndex()));
+        node.getMatch().getIndex()));
 
     const inLis = new Set();
     for (const index of lis) {
@@ -52,14 +112,12 @@ export class EditScriptGenerator {
     }
   }
 
-
-  private delete(oldNode : TNode) {
+  private delete(oldNode: TNode) {
     oldNode.removeFromParent();
     this.editScript.appendDeletion(oldNode);
   }
 
-
-  private findInsertionIndex(newNode : TNode) : number {
+  private findInsertionIndex(newNode: TNode): number {
     let insertionIndex;
     if (newNode.getIndex() > 0) {
       const leftSibling = newNode.getSiblings()[newNode.getIndex() - 1];
@@ -71,73 +129,11 @@ export class EditScriptGenerator {
     return insertionIndex;
   }
 
-
-  generateEditScript(oldTree : TNode, newTree: TNode) {
-    // For edit script verification later on
-    const copyOfOld = oldTree.copy();
-
-    this.editScript = new EditScript();
-
-    // 1st traversal: Pre-order of new (changed) tree
-    const newPreOrder = newTree.toPreOrderArray();
-    for (const newNode of newPreOrder) {
-      if (newNode.isMatched()) {
-        // New node is matched -> Move, Update, or Nil
-        const match = newNode.getMatch();
-
-        // Move if parents of matched nodes aren't matched
-        if (!newNode.isRoot() && newNode.getParent().getMatch() !== match.getParent()) {
-          this.move(match);
-        }
-
-        // Update if the content (text & attributes) of matched nodes differs
-        if (!newNode.contentEquals(match)) {
-          this.update(match);
-        }
-      } else {
-        // New node is not matched -> Insertion
-        this.#insert(newNode);
-      }
-    }
-
-    const oldPreOrder = oldTree.toPreOrderArray();
-    for (let i = 0; i < oldPreOrder.length; i++) {
-      const oldNode = oldPreOrder[i];
-      if (!oldNode.isMatched()) {
-        // Old node is not matched.
-        // We can be certain that none of its descendants are matched either.
-        // -> Deletion of the subtree rooted at this node
-        i += oldNode.size() - 1;
-        this.delete(oldNode);
-      }
-    }
-
-    // The matching and old tree are well-formed in terms of parent-child
-    // relationships. However, the children of a node might still be misaligned.
-    // This can occur if a node as moved within its parent.
-    for (const oldNode of oldTree.toPreOrderArray()) {
-      if (DiffConfig.EXACT_EDIT_SCRIPT || oldNode.hasInternalOrdering()) {
-        this.#alignChildren(oldNode);
-      }
-    }
-
-    /*
-    // Verify the validity of the edit script
-    // TODO
-    if (!this.#editScript.isValid(copyOfOld, newTree)) {
-      Logger.error('Generated edit script is not valid', this);
-    }
-     */
-
-    return this.editScript;
-  }
-
-
-  #insert(newNode : TNode) {
+  #insert(newNode: TNode) {
     const copy = newNode.copy(true);
 
-    const deleteLater : TNode[] = [];
-    const matchOrRemove = (copiedNode : TNode, newNode : TNode) => {
+    const deleteLater: TNode[] = [];
+    const matchOrRemove = (copiedNode: TNode, newNode: TNode) => {
       if (newNode.isMatched()) {
         deleteLater.push(copiedNode);
       } else {
@@ -156,7 +152,7 @@ export class EditScriptGenerator {
     const insertionIndex = this.findInsertionIndex(newNode);
 
     // Perform insert operation at match of the parent node
-    const newParent = newNode.getParent().getMatch()
+    const newParent = newNode.getParent().getMatch();
     newParent.insertChild(insertionIndex, copy);
 
     this.editScript.appendInsertion(copy);
@@ -171,13 +167,13 @@ export class EditScriptGenerator {
     // Find appropriate insertion index
     const insertionIndex = this.findInsertionIndex(newNode);
 
-    const newParent = newNode.getParent().getMatch()
+    const newParent = newNode.getParent().getMatch();
     newParent.insertChild(insertionIndex, oldNode);
     const newPath = oldNode.xPath();
     this.editScript.appendMove(oldPath, newPath);
   }
 
-  private update(oldNode : TNode) {
+  private update(oldNode: TNode) {
     const newNode = oldNode.getMatch();
 
     // Overwrite old values

@@ -1,8 +1,8 @@
 enum ChangeType {
-    DELETION= "Deletion",
-    INSERTION = "Insertion",
-    MOVE = "Move",
-    UPDATE = "Update"
+  DELETION = 'delete',
+  INSERTION = 'insert',
+  MOVE = 'move',
+  UPDATE = 'update'
 }
 
 export default ChangeType;

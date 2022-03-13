@@ -1,9 +1,9 @@
-import TNode from "../tree/TNode.js";
+import TNode from '../tree/TNode.js';
 
 export default interface IExtractorFacade {
-    getHash(node: TNode): number;
+  getHash(node: TNode): number;
 
-    getContentHash(node: TNode): number;
+  getContentHash(node: TNode): number;
 
-    getSize(node: TNode): number;
+  getSize(node: TNode): number;
 }

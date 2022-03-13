@@ -3,7 +3,7 @@
  * @param arr The array.
  * @return The indices of all elements belonging to the LIS.
  */
-export function getLis(arr : number[]) : number[] {
+export function getLis(arr: number[]): number[] {
   // The problem of finding the longest increasing subsequence within an array
   // of totally ordered can be solved in O(n*log(n)) using binary search.
   const len = arr.length;
@@ -13,7 +13,7 @@ export function getLis(arr : number[]) : number[] {
    * arr[k] is the predecessor in the longest increasing subsequence
    that arr[i] is a part of.
    */
-  const parent : number[] = new Array(len);
+  const parent: number[] = new Array(len);
   // The first element cannot have a predecessor
   parent[0] = -1;
 
@@ -25,7 +25,7 @@ export function getLis(arr : number[]) : number[] {
    * - 1, where l is the length of the longest increasing subsequence in the
    * array.
    */
-  const m : number[] = new Array(len);
+  const m: number[] = new Array(len);
   m[0] = 0;
 
   /**

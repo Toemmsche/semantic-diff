@@ -6,7 +6,7 @@ import murmur32 from 'murmur-32';
  * @param str The value to be hashed
  * @returnThe 32-bit hash value as an integer
  */
-export function stringHash(str: string) : number {
+export function stringHash(str: string): number {
   const m32 = murmur32(str);
   const dv = new DataView(m32);
   return dv.getInt32(0);

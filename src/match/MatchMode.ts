@@ -1,5 +1,5 @@
 enum MatchMode {
-    FAST = "fast",
-    BALANCED = "balanced",
-    QUALITY = "quality",
+  FAST = 'fast',
+  BALANCED = 'balanced',
+  QUALITY = 'quality',
 }

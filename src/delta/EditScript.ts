@@ -1,84 +1,90 @@
-import {EditOperation} from "./EditOperation.js";
-import ChangeType from "./ChangeType.js";
-import TNode from "../tree/TNode.js"
+import {EditOperation} from './EditOperation.js';
+import ChangeType from './ChangeType.js';
+import TNode from '../tree/TNode.js';
 
 export class EditScript {
 
-    constructor(private editOperations: EditOperation[] = [], private cost: number = 0) {
-    }
+  constructor(private editOperations: EditOperation[] = [], private cost: number = 0) {
+  }
 
-    appendDeletion(deletedNode: TNode): void {
-        this.editOperations.push(
-            new EditOperation(
-                ChangeType.DELETION,
-                deletedNode.xPath()
-            ));
-        this.cost += deletedNode.size();
-    }
+  getCost(): number {
+    return this.cost;
+  }
 
-    appendInsertion(insertedNode: TNode): void {
-        this.editOperations.push(
-            new EditOperation(
-                ChangeType.INSERTION,
-                undefined,
-                insertedNode.xPath(),
-                insertedNode.copy(),
-            ));
-        this.cost += insertedNode.size();
-    }
+  appendDeletion(deletedNode: TNode): void {
+    this.editOperations.push(
+        new EditOperation(
+            ChangeType.DELETION,
+            deletedNode.xPath()
+        ));
+    this.cost += deletedNode.size();
+  }
 
+  [Symbol.iterator]() {
+    return this.editOperations[Symbol.iterator]();
+  }
 
-    appendMove(oldPath: string, newPath: string): void {
-        this.editOperations.push(
-            new EditOperation(
-                ChangeType.MOVE,
-                oldPath,
-                newPath,
-            ));
-        this.cost++;
-    }
+  appendInsertion(insertedNode: TNode): void {
+    this.editOperations.push(
+        new EditOperation(
+            ChangeType.INSERTION,
+            undefined,
+            insertedNode.xPath(),
+            insertedNode.copy(),
+        ));
+    this.cost += insertedNode.size();
+  }
 
-    appendUpdate(updatedNode: TNode) {
-        this.editOperations.push(
-            new EditOperation(
-               ChangeType.UPDATE,
-                updatedNode.xPath(),
-                undefined,
-                updatedNode.copy(false),
-            ));
-        this.cost++;
-    }
+  appendMove(oldPath: string, newPath: string): void {
+    this.editOperations.push(
+        new EditOperation(
+            ChangeType.MOVE,
+            oldPath,
+            newPath,
+        ));
+    this.cost++;
+  }
 
-    deletions() {
-        return this
-            .editOperations
-            .filter((editOp) => editOp.isDeletion())
-            .length;
-    }
+  appendUpdate(updatedNode: TNode) {
+    this.editOperations.push(
+        new EditOperation(
+            ChangeType.UPDATE,
+            updatedNode.xPath(),
+            undefined,
+            updatedNode.copy(false),
+        ));
+    this.cost++;
+  }
 
-    insertions() {
-        return this
-            .editOperations
-            .filter((editOp) => editOp.isInsertion())
-            .length;
-    }
+  deletions() {
+    return this
+        .editOperations
+        .filter((editOp) => editOp.isDeletion())
+        .length;
+  }
 
+  insertions() {
+    return this
+        .editOperations
+        .filter((editOp) => editOp.isInsertion())
+        .length;
+  }
 
-    moves() {
-        return this
-            .editOperations
-            .filter((editOp) => editOp.isMove())
-            .length;
-    }
+  moves() {
+    return this
+        .editOperations
+        .filter((editOp) => editOp.isMove())
+        .length;
+  }
 
-    size() {
-        return this.editOperations.length;
-    }
+  size() {
+    return this.editOperations.length;
+  }
 
-    updates() {
-        return this
-            .editOperations
-            .filter((editOp) => editOp.isUpdate())
-            .length;
-    }
+  updates() {
+    return this
+        .editOperations
+        .filter((editOp) => editOp.isUpdate())
+        .length;
+  }
 }

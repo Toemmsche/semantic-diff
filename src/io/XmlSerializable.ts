@@ -1,9 +1,6 @@
 export default interface XmlSerializable<T> {
-    fromXmlString(xml: string): T;
+  parseXmlString(xml: string, includeChildren: boolean): T;
 
-    fromXmlDom(tagName: string, xmlDom: any): T;
+  buildXmlString(obj: T): string;
 
-    toXmlString(): string;
-
-    toXmlDom(): object;
 }
