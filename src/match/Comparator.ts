@@ -1,14 +1,55 @@
 import Extractor from '../extract/Extractor.js';
 import IComparator from './IComparator.js';
 import TNode from '../tree/TNode.js';
-import {DiffConfig} from '../Global.js';
-import {getLcsLength, getLcsLengthFast} from '../lib/Lcs.js';
+
 import ComparisonType from '../grammar/ComparisonType.js';
+import ICompareOptions from './ICompareOptions.js';
+import LcsLib from '../lib/LcsLib.js';
 
 /**
  * Wrapper class for the computation of various comparison values.
  */
 export class Comparator extends Extractor implements IComparator {
+
+  private lcsLib : LcsLib;
+
+  constructor(public options: ICompareOptions) {
+    super();
+    this.lcsLib = new LcsLib(this.options);
+  }
+
+  /**
+   * Compute the commonality between two subtrees as a comparison value. The
+   * commonality is defined as the number of overlapping leaves. Leaves are
+   * considered 'equal' if they are matched.
+   */
+  compareCommonality(nodeA: TNode, nodeB: TNode): number {
+    let common = 0;
+    const setA = new Set(nodeB.leaves());
+    const setB = new Set(nodeA.leaves());
+
+    for (const cand of setA) {
+      if (cand.isMatched() &&
+          setB.has(cand.getMatch())) {
+        common++;
+      }
+    }
+
+    const commonalityCv = 1 - (common / (Math.max(setA.size, setB.size)));
+
+    return this.weightedAverage(
+        [
+          this.compareContent(nodeA, nodeB),
+          this.comparePosition(nodeA, nodeB),
+          commonalityCv
+        ],
+        [
+          this.options.CONTENT_WEIGHT,
+          this.options.POSITION_WEIGHT,
+          this.options.COMMONALITY_WEIGHT,
+        ],
+    );
+  }
 
   compare(nodeA: TNode, nodeB: TNode): number {
     const compareValue = this.weightedAverage(
@@ -17,8 +58,8 @@ export class Comparator extends Extractor implements IComparator {
           this.comparePosition(nodeA, nodeB),
         ],
         [
-          DiffConfig.CONTENT_WEIGHT,
-          DiffConfig.POSITION_WEIGHT,
+          this.options.CONTENT_WEIGHT,
+          this.options.POSITION_WEIGHT,
         ],
     );
     // TODO handle null value
@@ -62,7 +103,7 @@ export class Comparator extends Extractor implements IComparator {
    * Compare the position of two nodes, determined by their paths.
    */
   comparePosition(nodeA: TNode, nodeB: TNode): number {
-    const radius = DiffConfig.PATH_COMPARE_RANGE;
+    const radius = this.options.PATH_COMPARE_RANGE;
 
     /*
      const nodeLeftSlice = nodeA.getSiblings()
@@ -113,7 +154,7 @@ export class Comparator extends Extractor implements IComparator {
       if (items[i] != null) {
         // Perfect matches receive a boost for their weight.
         const adjustedWeight =
-            (items[i] === 0 ? DiffConfig.WEIGHT_BOOST_MULTIPLIER :
+            (items[i] === 0 ? this.options.WEIGHT_BOOST_MULTIPLIER :
              1) *
             weights[i];
         itemSum += items[i]!! * adjustedWeight;
@@ -135,7 +176,7 @@ export class Comparator extends Extractor implements IComparator {
     }
     const maxLength = Math.max(seqA.length, seqB!!.length);
     if (maxLength === 0) return defaultValue;
-    return 1 - getLcsLength(seqA!!, seqB!!) / maxLength;
+    return 1 - this.lcsLib.getLcsLength(seqA!!, seqB!!) / maxLength;
   }
 
   /**
@@ -145,6 +186,6 @@ export class Comparator extends Extractor implements IComparator {
   private comparePathLcs(pathA: number[], pathB: number[]): number {
     const maxLength = Math.max(pathA.length, pathB.length);
     if (maxLength === 0) return 0;
-    return 1 - getLcsLengthFast(pathA, pathB) / maxLength;
+    return 1 - this.lcsLib.getLcsLengthFast(pathA, pathB) / maxLength;
   }
 }

@@ -1,24 +1,28 @@
 import {EditScript} from '../delta/EditScript.js';
 import XmlSerializable from './XmlSerializable.js';
 import xmldom from '@xmldom/xmldom';
-import {DELTA_TAG} from '../Global.js';
 import ChangeType from '../delta/ChangeType.js';
 import TNodeXMLDomSerializer from './TNodeXMLDomSerializer.js';
 import {EditOperation} from '../delta/EditOperation.js';
+import ISerializationOptions from './ISerializationOptions.js';
+
 
 export default class EditScriptXMLDomSerializer implements XmlSerializable<EditScript> {
+
+  constructor(private options: ISerializationOptions) {
+  }
 
   buildXmlString(editScript: EditScript): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
         null
     ); //TODO namespaces
-    const root = ownerDocument.createElement(DELTA_TAG);
+    const root = ownerDocument.createElement(this.options.DELTA_TAG);
 
     root.setAttribute('cost', editScript.getCost().toString());
 
     // parser for TNodes
-    const nodeParser = new TNodeXMLDomSerializer();
+    const nodeParser = new TNodeXMLDomSerializer(this.options);
 
     for (const editOperation of editScript) {
       const xmlElement = ownerDocument.createElement(editOperation.type);
@@ -42,7 +46,7 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
   parseXmlString(xml: string, includeChildren: boolean): EditScript {
     const root: Element = new xmldom.DOMParser().parseFromString(xml).childNodes
         .item(0) as Element; // assume root node is first child
-    if (root.nodeName !== DELTA_TAG) {
+    if (root.nodeName !== this.options.DELTA_TAG) {
       throw new Error('invalid root tag');
     }
     // parse cost
@@ -52,7 +56,7 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
     }
 
     // parser for TNodes
-    const nodeParser = new TNodeXMLDomSerializer();
+    const nodeParser = new TNodeXMLDomSerializer(this.options);
 
     const editOperations = [];
     // parse edit operations

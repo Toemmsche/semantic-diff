@@ -1,14 +1,14 @@
 import TNode from '../tree/TNode.js';
 import IComparator from './IComparator.js';
 import IMatcher from './IMatcher.js';
-import {DiffConfig} from '../Global.js';
+import IPathMatchOptions from './IPathMatchOptions.js';
 
 export class PathMatcher implements IMatcher {
 
   /**
    * Create a new PathMatcher instance.
    */
-  constructor(private withCommonality = false) {
+  constructor(private options: IPathMatchOptions) {
   }
 
   /**
@@ -81,19 +81,8 @@ export class PathMatcher implements IMatcher {
         if (oldNode.isMatched()) continue;
         let cv;
         // TODO move commonality distinction to comparator
-        if (this.withCommonality) {
-          cv = comparator.weightedAverage(
-              [
-                comparator.compareContent(oldNode, newNode),
-                comparator.comparePosition(oldNode, newNode),
-                this.commonality(oldNode, newNode),
-              ],
-              [
-                DiffConfig.CONTENT_WEIGHT,
-                DiffConfig.POSITION_WEIGHT,
-                DiffConfig.COMMONALITY_WEIGHT,
-              ],
-          );
+        if (this.options.WITH_COMMONALITY) {
+          cv = comparator.compareCommonality(oldNode, newNode);
         } else {
           cv = comparator.compare(oldNode, newNode);
         }
@@ -104,7 +93,7 @@ export class PathMatcher implements IMatcher {
           oldToNewMap.delete(oldNode);
           continue mapLoop;
         }
-        if (cv <= DiffConfig.COMPARISON_THRESHOLD && cv < minCV &&
+        if (cv <= this.options.COMPARISON_THRESHOLD && cv < minCV &&
             (!oldToNewMap.has(oldNode) ||
                 cv < oldToNewMap.get(oldNode)!!.compareValue)) {
           minCV = cv;
@@ -123,25 +112,5 @@ export class PathMatcher implements IMatcher {
     for (const [oldNode, bestMatch] of oldToNewMap) {
       bestMatch.newNode.matchTo(oldNode);
     }
-  }
-
-  /**
-   * Compute the commonality between two subtrees as a comparison value. The
-   * commonality is defined as the number of overlapping leaves. Leaves are
-   * considered 'equal' if they are matched.
-   */
-  private commonality(oldNode: TNode, newNode: TNode) {
-    let common = 0;
-    const newSet = new Set(newNode.leaves());
-    const oldSet = new Set(oldNode.leaves());
-
-    for (const newCand of newSet) {
-      if (newCand.isMatched() &&
-          oldSet.has(newCand.getMatch())) {
-        common++;
-      }
-    }
-
-    return 1 - (common / (Math.max(newSet.size, oldSet.size)));
   }
 }

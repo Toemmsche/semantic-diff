@@ -1,5 +1,6 @@
 import TNode from '../tree/TNode.js';
 import IExtractorFacade from '../extract/IExtractorFacade.js';
+import ICompareOptions from './ICompareOptions';
 
 export default interface IComparator extends IExtractorFacade {
 
@@ -12,5 +13,7 @@ export default interface IComparator extends IExtractorFacade {
   compareContent(nodeA: TNode, nodeB: TNode): number;
 
   weightedAverage(items: (number | nu)[], weights: number[], defaultValue ?: number): number;
+
+  compareCommonality(nodeA: TNode, nodeB: TNode): number;
 
 }

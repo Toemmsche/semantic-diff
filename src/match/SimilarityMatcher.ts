@@ -1,10 +1,14 @@
 import IComparator from './IComparator.js';
 import TNode from '../tree/TNode.js';
-import {DiffConfig} from '../Global.js';
 import {persistBestMatches} from './BestMatchPersister.js';
 import IMatcher from './IMatcher.js';
+import IMatchOptions from './IMatchOptions.js';
 
 export class SimilarityMatcher implements IMatcher {
+
+  constructor(private options: IMatchOptions) {
+
+  }
 
   /**
    * Extend the matching with matches between sufficiently similar leaf nodes.
@@ -32,7 +36,7 @@ export class SimilarityMatcher implements IMatcher {
     const matchFunction =
         (oldNode: TNode, newNode: TNode) => newNode.matchTo(oldNode);
     // Only sufficiently similar matches are accepted.
-    const thresholdFunction = (cv: number) => cv <= DiffConfig.COMPARISON_THRESHOLD;
+    const thresholdFunction = (cv: number) => cv <= this.options.COMPARISON_THRESHOLD;
 
     persistBestMatches(
         oldLeaves,

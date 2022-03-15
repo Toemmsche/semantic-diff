@@ -1,11 +1,14 @@
 import TNode from '../tree/TNode.js';
 import {EditScript} from './EditScript.js';
 import {getLis} from '../lib/Lis.js';
-import {DiffConfig} from '../Global.js';
+import IEditScriptOptions from './IEditScriptOptions.js';
 
 export class EditScriptGenerator {
 
   private editScript: EditScript = new EditScript();
+
+  constructor(public options: IEditScriptOptions) {
+  }
 
   generateEditScript(oldTree: TNode, newTree: TNode) {
     // For edit script verification later on
@@ -52,7 +55,7 @@ export class EditScriptGenerator {
     // relationships. However, the children of a node might still be misaligned.
     // This can occur if a node as moved within its parent.
     for (const oldNode of oldTree.toPreOrderArray()) {
-      if (DiffConfig.EXACT_EDIT_SCRIPT || oldNode.hasInternalOrdering()) {
+      if (this.options.EXACT_EDIT_SCRIPT || oldNode.hasInternalOrdering()) {
         this.#alignChildren(oldNode);
       }
     }

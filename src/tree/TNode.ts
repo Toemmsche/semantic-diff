@@ -1,5 +1,4 @@
 import GrammarNode from '../grammar/GrammarNode.js';
-import {ATTRIBUTE_GROUP_NAME, TEXT_NODE_NAME,} from '../Global.js';
 import {arraySum} from '../Util.js';
 import NodeType from '../grammar/NodeType.js';
 
@@ -33,11 +32,11 @@ export default class TNode {
     let node: TNode | nu = this;
     for (const pathNode of pathNodes) {
       // Termination conditions
-      if (pathNode === TEXT_NODE_NAME || pathNode === '') {
+      if (pathNode === '#text' || pathNode === '') {
         return node.text;
       }
-      if (pathNode.startsWith(ATTRIBUTE_GROUP_NAME)) {
-        const attributeName = pathNode.replace(ATTRIBUTE_GROUP_NAME, '');
+      if (pathNode.startsWith('@_')) {
+        const attributeName = pathNode.replace('@_', '');
         return node.attributes.get(attributeName);
       }
       node = node.children.find((child) => child.label === pathNode);

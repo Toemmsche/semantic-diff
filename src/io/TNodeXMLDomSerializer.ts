@@ -1,9 +1,14 @@
 import XmlSerializable from './XmlSerializable.js';
 import TNode from '../tree/TNode.js';
 import xmldom from '@xmldom/xmldom';
-import {GRAMMAR} from '../Global.js';
+import ISerializationOptions from './ISerializationOptions.js';
 
 export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
+
+  constructor(private options: ISerializationOptions) {
+
+  }
+
   buildXmlString(node: TNode): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
@@ -66,7 +71,7 @@ export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
     }
 
     // get associated grammar Node
-    const grammarNode = GRAMMAR.getGrammarNodeByLabel(tagName);
+    const grammarNode = this.options.GRAMMAR.getGrammarNodeByLabel(tagName);
     console.log(`Detected ${tagName} as ${grammarNode?.type}`);
 
     return new TNode(tagName, children, text, attributes, grammarNode);

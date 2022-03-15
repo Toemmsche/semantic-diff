@@ -1,12 +1,11 @@
 import GrammarNode from '../src/grammar/GrammarNode.js';
 import NodeType from '../src/grammar/NodeType.js';
 import Grammar from '../src/grammar/Grammar.js';
-import {defaultDiffOptions, IDiffOptions} from './IDiffOptions.js';
 import WeightedCV from './grammar/WeightedCV.js';
 import ComparisonType from './grammar/ComparisonType.js';
 
 // cpee grammar for now
-const cpeeGrammar = new Grammar(
+export const cpeeGrammar = new Grammar(
         [ // inners
           new GrammarNode(NodeType.INNER, 'description', []),
           new GrammarNode(NodeType.INNER, 'parallel', [
@@ -30,13 +29,6 @@ const cpeeGrammar = new Grammar(
     )
 ;
 
-export const DiffConfig: IDiffOptions = defaultDiffOptions;
-export const ATTRIBUTE_GROUP_NAME = '@_';
-export const TEXT_NODE_NAME = '#text';
-export const ATTRIBUTE_NAME_PREFIX = '';
-export const GRAMMAR: Grammar = cpeeGrammar;
-
-export const DELTA_TAG = 'delta';
 export const ChangeModel = {
   INSERTION: {
     label: 'insert',

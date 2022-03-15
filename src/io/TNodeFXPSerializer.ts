@@ -4,7 +4,7 @@ import Fxp, {
   XmlBuilderOptionsOptional
 } from 'fast-xml-parser';
 import TNode from '../tree/TNode.js';
-import {GRAMMAR} from '../Global.js';
+import ISerializationOptions from './ISerializationOptions.js';
 
 const ATTRIBUTE_GROUP_NAME = '@_';
 const TEXT_NODE_NAME = '#text';
@@ -30,6 +30,8 @@ const xmlBuildOptions: XmlBuilderOptionsOptional = {
 const XML_BUILDER: Fxp.XMLBuilder = new Fxp.XMLBuilder(xmlBuildOptions);
 
 export default class TNodeFXPSerializer implements XmlSerializable<TNode> {
+  constructor(private options: ISerializationOptions) {
+  }
   _parseXmlDom(tagName: string, xmlDom: any): TNode {
     // parse text
     let text = null;
@@ -56,7 +58,7 @@ export default class TNodeFXPSerializer implements XmlSerializable<TNode> {
     }
 
     // get associated grammar Node
-    const grammarNode = GRAMMAR.getGrammarNodeByLabel(tagName);
+    const grammarNode = this.options.GRAMMAR.getGrammarNodeByLabel(tagName);
     console.log(`Detected ${tagName} as ${grammarNode?.type}`);
 
     return new TNode(tagName, children, text, attributes, grammarNode);

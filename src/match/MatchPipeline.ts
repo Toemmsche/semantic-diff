@@ -8,6 +8,8 @@ import {SimilarityMatcher} from './SimilarityMatcher.js';
 import {PathMatcher} from './PathMatcher.js';
 import {SandwichMatcher} from './SandwichMatcher.js';
 import {PropertyMatcher} from './PropertyMatcher.js';
+import IComparator from './IComparator';
+import IMatchOptions from './IMatchOptions';
 
 export class MatchPipeline {
 
@@ -30,7 +32,7 @@ export class MatchPipeline {
    * Construct a matching pipeline based on the selected matching mode.
    * @return {MatchPipeline}
    */
-  static fromMode() {
+  static fromMode(options: IMatchOptions) {
     /*
      return new MatchPipeline(
      [
@@ -49,8 +51,8 @@ export class MatchPipeline {
     return new MatchPipeline([
       new FixedMatcher(),
       new HashMatcher(),
-      new SimilarityMatcher(),
-      new PathMatcher(),
+      new SimilarityMatcher(options),
+      new PathMatcher({...options, WITH_COMMONALITY: true}),
       new SandwichMatcher(),
       new PropertyMatcher()
     ]);
@@ -60,8 +62,7 @@ export class MatchPipeline {
    * Construct a matching between the passed process trees by executing the
    * matching pipeline in order.
    */
-  execute(oldTree: TNode, newTree: TNode): void {
-    const comparator = new Comparator();
+  execute(oldTree: TNode, newTree: TNode, comparator: IComparator): void {
     for (const matcher of this.matchers) {
       matcher.match(oldTree, newTree, comparator);
       if (!this.verifyMatching(oldTree, newTree)) {
