@@ -20,4 +20,5 @@ export const defaultDiffOptions= {
   TEXT_NODE_NAME: '#text',
   ATTRIBUTE_NAME_PREFIX: '',
   DELTA_TAG: 'delta',
+  PRETTY_XML: true,
 };

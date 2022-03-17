@@ -2,6 +2,7 @@ import XmlSerializable from './XmlSerializable.js';
 import TNode from '../tree/TNode.js';
 import xmldom from '@xmldom/xmldom';
 import ISerializationOptions from './ISerializationOptions.js';
+import vkbeautify, {xml} from 'vkbeautify';
 
 export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
 
@@ -14,10 +15,14 @@ export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
         null,
         null
     );
-    return new xmldom.XMLSerializer().serializeToString(this.buildXmlDom(
+    const xmlString =  new xmldom.XMLSerializer().serializeToString(this.buildXmlDom(
         ownerDocument,
         node
     ));
+    if (this.options.PRETTY_XML) {
+      return vkbeautify.xml(xmlString);
+    }
+    return xmlString;
   }
 
   buildXmlDom(ownerDocument: any, node: TNode): any {

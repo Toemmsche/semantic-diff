@@ -6,28 +6,39 @@ import ComparisonType from './grammar/ComparisonType.js';
 
 // cpee grammar for now
 export const cpeeGrammar = new Grammar(
-        [ // inners
-          new GrammarNode(NodeType.INNER, 'description', []),
-          new GrammarNode(NodeType.INNER, 'parallel', [
-            new WeightedCV('@_mode', 1)
-          ]),
-          new
-          GrammarNode(NodeType.INNER, 'loop', [
-            new WeightedCV('@_mode', 1)
-          ]),
-        ],
-        [ // leaves
-          new GrammarNode(NodeType.LEAF, 'call', [
-            new WeightedCV('@_endpoint', 3),
-            new WeightedCV('parameters/method', 2),
-          ]),
-          new GrammarNode(NodeType.LEAF, 'manipulate', [
-            new WeightedCV('', 1, ComparisonType.LCS)
-          ]),
-          new GrammarNode(NodeType.LEAF, 'stop', [])
-        ]
-    )
-;
+    [ // inners
+      new GrammarNode(NodeType.INNER, 'description', []),
+      new GrammarNode(NodeType.INNER, 'parallel', [
+        new WeightedCV('@_mode', 1),
+        new WeightedCV('@_condition', 2)
+      ]),
+      new GrammarNode(NodeType.INNER, 'loop', [
+        new WeightedCV('@_mode', 1),
+        new WeightedCV('@_condition', 2)
+      ]),
+      new GrammarNode(NodeType.INNER, 'choose', [
+        new WeightedCV('@_mode', 1),
+      ]),
+      new GrammarNode(NodeType.INNER, 'alternative', [
+        new WeightedCV('@_condition', 1),
+      ]),
+      new GrammarNode(NodeType.INNER, 'otherwise', []),
+      new GrammarNode(NodeType.INNER, 'parallel_branch', []),
+    ],
+    [ // leaves
+      new GrammarNode(NodeType.LEAF, 'call', [
+        new WeightedCV('@_endpoint', 3),
+        new WeightedCV('parameters/method', 2),
+        new WeightedCV('code/finalize', 3),
+      ]),
+      new GrammarNode(NodeType.LEAF, 'manipulate', [
+        new WeightedCV('', 1, ComparisonType.LCS)
+      ]),
+      new GrammarNode(NodeType.LEAF, 'stop', []),
+      new GrammarNode(NodeType.LEAF, 'terminate', []),
+      new GrammarNode(NodeType.LEAF, 'escape', [])
+    ]
+);
 
 export const ChangeModel = {
   INSERTION: {

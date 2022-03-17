@@ -6,4 +6,5 @@ export default interface ISerializationOptions {
   ATTRIBUTE_NAME_PREFIX: string;
   GRAMMAR: Grammar;
   DELTA_TAG: string;
+  PRETTY_XML: boolean;
 }

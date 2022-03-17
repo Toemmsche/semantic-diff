@@ -8,6 +8,7 @@ import EditScriptXMLDomSerializer from './src/io/EditScriptXmlDomSerializer.js';
 import {defaultDiffOptions} from './src/diff/ISemanticDiffOptions.js';
 import {cpeeGrammar} from './src/Global.js';
 import SemanticDiff from './src/diff/SemanticDiff.js';
+import * as fs from 'fs';
 
 
 const options = {...defaultDiffOptions, GRAMMAR: cpeeGrammar}
@@ -23,14 +24,13 @@ const tree = new TNode("description", [
 const str = ser.buildXmlString(tree);
 console.log(str);
 
-const xml = "<description><parallel mode=\"first\"><call endpoint=\"http://example.org\" id=\"a2\"><parameters><method>POST</method></parameters></call><manipulate>variable += 1</manipulate></parallel></description>";
-const oldroot = ser.parseXmlString(xml);
-
-const newxml = "<description><parallel mode=\"first\"><call endpoint=\"http://example.org\"><parameters><method>POST</method></parameters></call><manipulate>variable += 2</manipulate></parallel></description>";
-const newRoot = ser.parseXmlString(newxml);
+const fo = fs.readFileSync('test/old.xml').toString();
+const fn = fs.readFileSync('test/new.xml').toString();
+const oldTree = ser.parseXmlString(fo);
+const newTree = ser.parseXmlString(fn);
 
 const differ = new SemanticDiff(options);
-const es = differ.diff(oldroot, newRoot);
+const es = differ.diff(oldTree, newTree);
 
 
 const esser = new EditScriptXMLDomSerializer(options);

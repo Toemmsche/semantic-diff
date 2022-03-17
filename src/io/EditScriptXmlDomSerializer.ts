@@ -5,6 +5,7 @@ import ChangeType from '../delta/ChangeType.js';
 import TNodeXMLDomSerializer from './TNodeXMLDomSerializer.js';
 import {EditOperation} from '../delta/EditOperation.js';
 import ISerializationOptions from './ISerializationOptions.js';
+import vkbeautify from 'vkbeautify';
 
 
 export default class EditScriptXMLDomSerializer implements XmlSerializable<EditScript> {
@@ -40,7 +41,11 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
       }
       root.appendChild(xmlElement);
     }
-    return new xmldom.XMLSerializer().serializeToString(root);
+    const xmlString =  new xmldom.XMLSerializer().serializeToString(root);
+    if (this.options.PRETTY_XML) {
+      return vkbeautify.xml(xmlString);
+    }
+    return xmlString;
   }
 
   parseXmlString(xml: string, includeChildren: boolean): EditScript {
