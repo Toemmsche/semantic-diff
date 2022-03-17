@@ -19,7 +19,7 @@ export class MatchPipeline {
     if (len === 0 || matchers[0].constructor !== FixedMatcher) {
       matchers.unshift(new FixedMatcher());
     }
-    //TODO
+    //TODO optoins
     /*
      // PropertyMatcher is always the last matching algorithm in the pipeline
      if (len === 0 || matchers[len - 1].constructor !== PropertyMatcher) {

@@ -75,10 +75,12 @@ export class Comparator extends Extractor implements IComparator {
     const grammarNode = nodeA.getGrammarNode();
     const items: (number | nu)[] = [];
     const weights = [];
+    const propertiesA = this.getProperties(nodeA);
+    const propertiesB = this.getProperties(nodeB);
     for (const wcv of grammarNode.weightedCVs) {
       // Extract property
-      const valueA = nodeA.accessProperty(wcv.path);
-      const valueB = nodeB.accessProperty(wcv.path);
+      const valueA = propertiesA.get(wcv.path);
+      const valueB = propertiesB.get(wcv.path);
       if (valueA == null && valueB == null) {
         // do not add item or weight
         continue;
