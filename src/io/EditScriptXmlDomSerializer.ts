@@ -6,6 +6,7 @@ import TNodeXMLDomSerializer from './TNodeXMLDomSerializer.js';
 import {EditOperation} from '../delta/EditOperation.js';
 import ISerializationOptions from './ISerializationOptions.js';
 import vkbeautify from 'vkbeautify';
+import {getElementChildren} from '../Util.js';
 
 
 export default class EditScriptXMLDomSerializer implements XmlSerializable<EditScript> {
@@ -65,9 +66,7 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
 
     const editOperations = [];
     // parse edit operations
-    for (let i = 0; i < root.childNodes.length; i++) {
-
-      const element = root.childNodes.item(i) as Element;
+    for (const element of getElementChildren(root)) {
       const changeType = element.nodeName;
 
       let oldPath = undefined;

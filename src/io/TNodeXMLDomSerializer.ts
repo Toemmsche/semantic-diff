@@ -3,6 +3,7 @@ import TNode from '../tree/TNode.js';
 import xmldom from '@xmldom/xmldom';
 import ISerializationOptions from './ISerializationOptions.js';
 import vkbeautify, {xml} from 'vkbeautify';
+import {getElementChildren, getTextContentWithoutChildren} from '../Util.js';
 
 export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
 
@@ -46,34 +47,24 @@ export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
     return xmlElement;
   }
 
-  parseXmlDom(xmlElement: any, includeChildren = true): TNode {
+  parseXmlDom(xmlElement: Element, includeChildren = true): TNode {
     const tagName = xmlElement.localName;
 
     // parse attributes
     const attributes = new Map();
     for (let i = 0; i < xmlElement.attributes.length; i++) {
-      const attrNode = xmlElement.attributes.item(i);
+      const attrNode = xmlElement.attributes.item(i)!!;
       attributes.set(attrNode.name, attrNode.value);
     }
 
-    // children and text
+    // children
     const children = [];
-    let text = undefined;
-    for (let i = 0; i < xmlElement.childNodes.length; i++) {
-      const childElement = xmlElement.childNodes.item(i);
-      if (childElement.nodeType === 3) { // Text  node
-        // check if text node contains a non-empty payload
-        if (childElement.data.match(/^\s*$/) == null) {
-          if (text == null) {
-            text = '';
-          }
-          text += childElement.data;
-        }
-      } else if (childElement.nodeType === 1 &&
-          includeChildren) {
+    for (const childElement of getElementChildren(xmlElement)) {
         children.push(this.parseXmlDom(childElement, includeChildren));
-      }
     }
+
+    //text
+    const text = getTextContentWithoutChildren(xmlElement);
 
     // get associated grammar Node
     const grammarNode = this.options.GRAMMAR.getGrammarNodeByLabel(tagName);
@@ -85,8 +76,9 @@ export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
   parseXmlString(xml: string, includeChildren: boolean = true): TNode {
     const root = new xmldom
         .DOMParser()
-        .parseFromString(xml, 'text/xml').childNodes.item(0); // assume single
-                                                              // root node
+        .parseFromString(xml, 'text/xml')
+        .childNodes
+        .item(0) as Element; // assume single root node as an element
     return this.parseXmlDom(root);
   }
 

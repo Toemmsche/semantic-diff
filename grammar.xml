@@ -1,0 +1,36 @@
+<grammar>
+    <leaves>
+        <call>
+            <comparisonValue weight="3">
+                @_endpoint
+            </comparisonValue>
+            <comparisonValue weight="2">parameters/method</comparisonValue>
+            <comparisonValue weight="3">code/finalize</comparisonValue>
+        </call>
+        <manipulate>
+            <comparisonValue weight="1" comparisonType="LCS"></comparisonValue>
+        </manipulate>
+        <stop></stop>
+        <terminate></terminate>
+        <escape></escape>
+    </leaves>
+    <inners>
+        <description></description>
+        <parallel>
+            <comparisonValue weight="1">@_mode</comparisonValue>
+            <comparisonValue weight="2">@_condition</comparisonValue>
+        </parallel>
+        <loop>
+            <comparisonValue weight="1">@_mode</comparisonValue>
+            <comparisonValue weight="2">@_condition</comparisonValue>
+        </loop>
+        <choose>
+            <comparisonValue weight="1">@_mode</comparisonValue>
+        </choose>
+        <alternative>
+            <comparisonValue weight="1">@_condition</comparisonValue>
+        </alternative>
+        <otherwise></otherwise>
+        <parallel_branch></parallel_branch>
+    </inners>
+</grammar>

@@ -7,7 +7,7 @@ export default interface ISemanticDiffOptions extends ICompareOptions, IEditScri
 
 }
 
-export const defaultDiffOptions= {
+export const defaultDiffOptions = {
   COMPARISON_THRESHOLD: 0.4,
   CONTENT_WEIGHT: 5,
   POSITION_WEIGHT: 1,
@@ -21,4 +21,10 @@ export const defaultDiffOptions= {
   ATTRIBUTE_NAME_PREFIX: '',
   DELTA_TAG: 'delta',
   PRETTY_XML: true,
+  GRAMMAR_INNERS_TAG: 'inners',
+  GRAMMAR_LEAVES_TAG: 'leaves',
+  GRAMMAR_NODE_WEIGHT_KEY: 'weight',
+  GRAMMAR_NODE_WEIGHTED_CV_TAG: 'comparisonValue',
+  GRAMMAR_NODE_COMPARISON_TYPE_KEY: 'comparisonType',
+  GRAMMAR_ROOT_TAG: 'grammar',
 };

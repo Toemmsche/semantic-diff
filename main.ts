@@ -9,10 +9,15 @@ import {defaultDiffOptions} from './src/diff/ISemanticDiffOptions.js';
 import {cpeeGrammar} from './src/Global.js';
 import SemanticDiff from './src/diff/SemanticDiff.js';
 import * as fs from 'fs';
+import GrammarXmlDomSerializer from './src/io/GrammarXmlDomSerializer.js';
 
 
 const options = {...defaultDiffOptions, GRAMMAR: cpeeGrammar}
 const ser = new TNodeXMLDomSerializer(options)
+
+const gser = new GrammarXmlDomSerializer(options);
+const gf = fs.readFileSync('grammar.xml');
+const grammar = gser.parseXmlString(gf.toString(), true);
 
 const tree = new TNode("description", [
     new TNode("parallel", [
