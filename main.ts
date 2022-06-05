@@ -1,21 +1,17 @@
 import TNode from "./src/tree/TNode.js";
-import {MatchPipeline} from "./src/match/MatchPipeline.js";
-import {EditScriptGenerator} from "./src/delta/EditScriptGenerator.js";
-import {JSDOM} from 'jsdom';
-import TNodeFXPSerializer from './src/io/TNodeFXPSerializer.js';
-import TNodeXMLDomSerializer from './src/io/TNodeXMLDomSerializer.js';
-import EditScriptXMLDomSerializer from './src/io/EditScriptXmlDomSerializer.js';
+import TNodeXMLDomSerDes from './src/io/TNodeXMLDomSerDes.js';
+import EditScriptXmlDomSerDes from './src/io/EditScriptXmlDomSerDes.js';
 import {defaultDiffOptions} from './src/diff/ISemanticDiffOptions.js';
 import {cpeeGrammar} from './src/Global.js';
 import SemanticDiff from './src/diff/SemanticDiff.js';
 import * as fs from 'fs';
-import GrammarXmlDomSerializer from './src/io/GrammarXmlDomSerializer.js';
+import GrammarXmlDomSerDes from './src/io/GrammarXmlDomSerDes.js';
 
 
 const options = {...defaultDiffOptions, GRAMMAR: cpeeGrammar}
-const ser = new TNodeXMLDomSerializer(options)
+const ser = new TNodeXMLDomSerDes(cpeeGrammar, options)
 
-const gser = new GrammarXmlDomSerializer(options);
+const gser = new GrammarXmlDomSerDes(options);
 const gf = fs.readFileSync('grammar.xml');
 const grammar = gser.parseXmlString(gf.toString(), true);
 
@@ -38,7 +34,7 @@ const differ = new SemanticDiff(options);
 const es = differ.diff(oldTree, newTree);
 
 
-const esser = new EditScriptXMLDomSerializer(options);
+const esser = new EditScriptXmlDomSerDes(cpeeGrammar, options);
 
 console.log(esser.buildXmlString(es));
 

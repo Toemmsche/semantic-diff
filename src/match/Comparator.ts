@@ -1,4 +1,4 @@
-import Extractor from '../extract/Extractor.js';
+import Extractor from '../cache/Cache.js';
 import IComparator from './IComparator.js';
 import TNode from '../tree/TNode.js';
 

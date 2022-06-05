@@ -1,8 +1,8 @@
-import TNode from '../tree/TNode.js';
-import {stringHash} from '../lib/StringHash.js';
-import AbstractExtractor from './AbstractExtractor.js';
+import TNode from '../../tree/TNode.js';
+import {stringHash} from '../../lib/StringHash.js';
+import AbstractCachingExtractor from './AbstractCachingExtractor.js';
 
-export default class ContentHashExtractor extends AbstractExtractor<number> {
+export default class ContentHashExtractor extends AbstractCachingExtractor<number> {
   protected computeValue(node: TNode) {
     this.valueMap.set(node, this.contentHash(node));
   }

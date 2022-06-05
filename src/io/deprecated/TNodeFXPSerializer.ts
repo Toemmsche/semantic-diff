@@ -1,10 +1,12 @@
-import XmlSerializable from './XmlSerializable.js';
+/*
+import XmlSerializable from '../XmlSerDes.js';
 import Fxp, {
   X2jOptionsOptional,
   XmlBuilderOptionsOptional
 } from 'fast-xml-parser';
-import TNode from '../tree/TNode.js';
-import ISerializationOptions from './ISerializationOptions.js';
+import TNode from '../../tree/TNode.js';
+import IGrammarDeserializationOptions
+  from '../IGrammarDeserializationOptions.js';
 
 const ATTRIBUTE_GROUP_NAME = '@_';
 const TEXT_NODE_NAME = '#text';
@@ -30,8 +32,9 @@ const xmlBuildOptions: XmlBuilderOptionsOptional = {
 const XML_BUILDER: Fxp.XMLBuilder = new Fxp.XMLBuilder(xmlBuildOptions);
 
 export default class TNodeFXPSerializer implements XmlSerializable<TNode> {
-  constructor(private options: ISerializationOptions) {
+  constructor(private options: IGrammarDeserializationOptions) {
   }
+
   _parseXmlDom(tagName: string, xmlDom: any): TNode {
     // parse text
     let text = null;
@@ -98,4 +101,4 @@ export default class TNodeFXPSerializer implements XmlSerializable<TNode> {
   buildXmlString(node: TNode): string {
     return XML_BUILDER.build(this._buildXmlDom(node, true, true));
   }
-}
+}*/

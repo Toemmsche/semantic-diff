@@ -1,12 +1,14 @@
 import IEditScriptOptions from '../delta/IEditScriptOptions.js';
 import ICompareOptions from '../match/ICompareOptions.js';
-import ISerializationOptions from '../io/ISerializationOptions.js';
+import IGrammarDeserializationOptions from '../io/IGrammarDeserializationOptions.js';
 import IMatchOptions from '../match/IMatchOptions.js';
+import Grammar from '../grammar/Grammar';
+import ISerDesOptions from '../io/ISerDesOptions';
 
-export default interface ISemanticDiffOptions extends ICompareOptions, IEditScriptOptions, ISerializationOptions, IMatchOptions {
-
+export default interface ISemanticDiffOptions extends ICompareOptions, IEditScriptOptions, ISerDesOptions, IMatchOptions {
 }
 
+// TODO move default diff options into interface diff classes
 export const defaultDiffOptions = {
   COMPARISON_THRESHOLD: 0.4,
   CONTENT_WEIGHT: 5,

@@ -1,11 +1,11 @@
-import IExtractorFacade from './IExtractorFacade.js';
+import ICacheFacade from './ICacheFacade.js';
 import TNode from '../tree/TNode.js';
-import SizeExtractor from './SizeExtractor.js';
-import HashExtractor from './HashExtractor.js';
-import ContentHashExtractor from './ContentHashExtractor.js';
-import PropertyExtractor from './PropertyExtractor.js';
+import SizeExtractor from './extractor/SizeExtractor.js';
+import HashExtractor from './extractor/HashExtractor.js';
+import ContentHashExtractor from './extractor/ContentHashExtractor.js';
+import PropertyExtractor from './extractor/PropertyExtractor.js';
 
-export default class Extractor implements IExtractorFacade {
+export default class Extract implements ICacheFacade {
 
   private hashExtractor = new HashExtractor();
   private contentHashExtractor = new ContentHashExtractor();

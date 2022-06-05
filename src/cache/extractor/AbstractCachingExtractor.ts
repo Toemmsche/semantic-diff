@@ -1,6 +1,6 @@
-import TNode from '../tree/TNode.js';
+import TNode from '../../tree/TNode.js';
 
-export default abstract class AbstractExtractor<T> {
+export default abstract class AbstractCachingExtractor<T> {
 
   protected valueMap = new Map<TNode, T>();
 

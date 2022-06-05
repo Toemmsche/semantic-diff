@@ -1,17 +1,18 @@
 import {EditScript} from '../delta/EditScript.js';
-import XmlSerializable from './XmlSerializable.js';
+import XmlSerDes from './XmlSerDes.js';
 import xmldom from '@xmldom/xmldom';
 import ChangeType from '../delta/ChangeType.js';
-import TNodeXMLDomSerializer from './TNodeXMLDomSerializer.js';
+import TNodeXMLDomSerDes from './TNodeXMLDomSerDes.js';
 import {EditOperation} from '../delta/EditOperation.js';
-import ISerializationOptions from './ISerializationOptions.js';
 import vkbeautify from 'vkbeautify';
 import {getElementChildren} from '../Util.js';
+import ISerDesOptions from './ISerDesOptions';
+import Grammar from '../grammar/Grammar';
 
+export default class EditScriptXmlDomSerDes extends XmlSerDes<EditScript> {
 
-export default class EditScriptXMLDomSerializer implements XmlSerializable<EditScript> {
-
-  constructor(private options: ISerializationOptions) {
+  constructor(private grammar: Grammar, private options: ISerDesOptions) {
+    super();
   }
 
   buildXmlString(editScript: EditScript): string {
@@ -24,7 +25,7 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
     root.setAttribute('cost', editScript.getCost().toString());
 
     // parser for TNodes
-    const nodeParser = new TNodeXMLDomSerializer(this.options);
+    const nodeSerDes = new TNodeXMLDomSerDes(this.grammar, this.options);
 
     for (const editOperation of editScript) {
       const xmlElement = ownerDocument.createElement(editOperation.type);
@@ -35,14 +36,14 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
         xmlElement.setAttribute('newPath', editOperation.newPath);
       }
       if (editOperation.newContent != null) {
-        xmlElement.appendChild(nodeParser.buildXmlDom(
+        xmlElement.appendChild(nodeSerDes.buildXmlDom(
             ownerDocument,
             editOperation.newContent
         ));
       }
       root.appendChild(xmlElement);
     }
-    const xmlString =  new xmldom.XMLSerializer().serializeToString(root);
+    const xmlString = new xmldom.XMLSerializer().serializeToString(root);
     if (this.options.PRETTY_XML) {
       return vkbeautify.xml(xmlString);
     }
@@ -62,7 +63,7 @@ export default class EditScriptXMLDomSerializer implements XmlSerializable<EditS
     }
 
     // parser for TNodes
-    const nodeParser = new TNodeXMLDomSerializer(this.options);
+    const nodeParser = new TNodeXMLDomSerDes(this.grammar, this.options);
 
     const editOperations = [];
     // parse edit operations

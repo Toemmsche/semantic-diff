@@ -1,14 +1,15 @@
-import XmlSerializable from './XmlSerializable.js';
+import XmlSerDes from './XmlSerDes.js';
 import TNode from '../tree/TNode.js';
 import xmldom from '@xmldom/xmldom';
-import ISerializationOptions from './ISerializationOptions.js';
-import vkbeautify, {xml} from 'vkbeautify';
+import vkbeautify from 'vkbeautify';
 import {getElementChildren, getTextContentWithoutChildren} from '../Util.js';
+import ISerDesOptions from './ISerDesOptions';
+import Grammar from '../grammar/Grammar';
 
-export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
+export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
 
-  constructor(private options: ISerializationOptions) {
-
+  constructor(private grammar: Grammar, private options: ISerDesOptions) {
+    super();
   }
 
   buildXmlString(node: TNode): string {
@@ -16,7 +17,7 @@ export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
         null,
         null
     );
-    const xmlString =  new xmldom.XMLSerializer().serializeToString(this.buildXmlDom(
+    const xmlString = new xmldom.XMLSerializer().serializeToString(this.buildXmlDom(
         ownerDocument,
         node
     ));
@@ -60,15 +61,17 @@ export default class TNodeXMLDomSerializer implements XmlSerializable<TNode> {
     // children
     const children = [];
     for (const childElement of getElementChildren(xmlElement)) {
-        children.push(this.parseXmlDom(childElement, includeChildren));
+      children.push(this.parseXmlDom(childElement, includeChildren));
     }
 
     //text
     const text = getTextContentWithoutChildren(xmlElement);
 
     // get associated grammar Node
-    const grammarNode = this.options.GRAMMAR.getGrammarNodeByLabel(tagName);
-    console.log(`Detected ${tagName} as ${grammarNode?.type}`);
+    const grammarNode = this.grammar.getGrammarNodeByLabel(tagName);
+
+    // TODO remove logging
+    // console.log(`Detected ${tagName} as ${grammarNode?.type}`);
 
     return new TNode(tagName, children, text, attributes, grammarNode);
   }

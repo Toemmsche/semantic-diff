@@ -1,7 +1,7 @@
-import AbstractExtractor from './AbstractExtractor.js';
-import TNode from '../tree/TNode.js';
+import AbstractCachingExtractor from './AbstractCachingExtractor.js';
+import TNode from '../../tree/TNode.js';
 
-export default class PropertyExtractor extends AbstractExtractor<Map<string, string | nu>> {
+export default class PropertyExtractor extends AbstractCachingExtractor<Map<string, string | nu>> {
 
   protected computeValue(node: TNode): void {
     if (node.isPropertyNode()) return; // do not set value

@@ -1,8 +1,8 @@
 import TNode from '../tree/TNode.js';
-import IExtractorFacade from '../extract/IExtractorFacade.js';
+import ICacheFacade from '../cache/ICacheFacade.js';
 import ICompareOptions from './ICompareOptions';
 
-export default interface IComparator extends IExtractorFacade {
+export default interface IComparator extends ICacheFacade {
 
   compare(nodeA: TNode, nodeB: TNode): number;
 

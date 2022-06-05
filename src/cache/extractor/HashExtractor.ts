@@ -1,9 +1,9 @@
-import AbstractExtractor from './AbstractExtractor.js';
-import {getPrimes} from '../lib/PrimeGenerator.js';
-import TNode from '../tree/TNode.js';
-import {stringHash} from '../lib/StringHash.js';
+import AbstractCachingExtractor from './AbstractCachingExtractor.js';
+import {getPrimes} from '../../lib/PrimeGenerator.js';
+import TNode from '../../tree/TNode.js';
+import {stringHash} from '../../lib/StringHash.js';
 
-export default class HashExtractor extends AbstractExtractor<number> {
+export default class HashExtractor extends AbstractCachingExtractor<number> {
 
   protected computeValue(node: TNode): void {
     this.valueMap.set(node, this.contentHash(node) + this.childHash(node));

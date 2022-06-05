@@ -1,5 +1,6 @@
-import XmlSerializable from './XmlSerializable.js';
-import TNode from '../tree/TNode.js';
+/*
+import XmlSerializable from '../XmlSerDes.js';
+import TNode from '../../tree/TNode.js';
 import {JSDOM} from 'jsdom';
 
 export default class TNodeJSDSerializer implements XmlSerializable<TNode> {
@@ -23,3 +24,4 @@ export default class TNodeJSDSerializer implements XmlSerializable<TNode> {
   }
 
 };
+*/
