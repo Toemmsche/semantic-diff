@@ -18,6 +18,9 @@ import NodeType from './NodeType.js';
 export default class GrammarNode {
 
   // TODO internal ordering
-  constructor(public type: NodeType, public label: string, public weightedCVs: WeightedCV[]) {
+  constructor(public type: NodeType,
+              public label: string,
+              public weightedCVs: WeightedCV[],
+              public ordered = true) {
   }
 }

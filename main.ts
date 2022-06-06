@@ -2,12 +2,12 @@ import TNode from "./src/tree/TNode.js";
 import TNodeXMLDomSerDes from './src/io/TNodeXMLDomSerDes.js';
 import EditScriptXmlDomSerDes from './src/io/EditScriptXmlDomSerDes.js';
 import {defaultDiffOptions} from './src/diff/ISemanticDiffOptions.js';
-import {cpeeGrammar} from './src/Global.js';
 import SemanticDiff from './src/diff/SemanticDiff.js';
 import * as fs from 'fs';
 import GrammarXmlDomSerDes from './src/io/GrammarXmlDomSerDes.js';
 
 
+const cpeeGrammar = new GrammarXmlDomSerDes(defaultDiffOptions).parseFromFile("grammar.xml");
 const options = {...defaultDiffOptions, GRAMMAR: cpeeGrammar}
 const ser = new TNodeXMLDomSerDes(cpeeGrammar, options)
 
@@ -25,8 +25,8 @@ const tree = new TNode("description", [
 const str = ser.buildXmlString(tree);
 console.log(str);
 
-const fo = fs.readFileSync('test/old.xml').toString();
-const fn = fs.readFileSync('test/new.xml').toString();
+const fo = fs.readFileSync('test/large/old.xml').toString();
+const fn = fs.readFileSync('test/large/new.xml').toString();
 const oldTree = ser.parseXmlString(fo);
 const newTree = ser.parseXmlString(fn);
 

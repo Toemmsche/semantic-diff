@@ -9,6 +9,7 @@ import ComparisonType from '../grammar/ComparisonType.js';
 import WeightedCV from '../grammar/WeightedCV.js';
 import NodeType from '../grammar/NodeType.js';
 import {getElementChildren, getTextContentWithoutChildren} from '../Util.js';
+import MalformedGrammarError from '../error/MalformedGrammarError.js';
 
 export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
 
@@ -34,10 +35,10 @@ export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
           leaves = this.parseGrammarNodes(element, NodeType.LEAF);
           break;
         default:
-          throw new Error(); // TODO
+          throw new MalformedGrammarError();
       }
     }
-    return new Grammar(inners!!, leaves!!);
+    return new Grammar(inners, leaves);
   }
 
   private parseGrammarNodes(xmlDom: Element, nodeType: NodeType): GrammarNode[] {
@@ -45,18 +46,30 @@ export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
 
     for (const grammarNodeElement of getElementChildren(xmlDom)) {
       const weightedCvs = [];
+
+      const ordered = grammarNodeElement.hasAttribute(this.options.GRAMMAR_NODE_ORDERED_KEY) ?
+          grammarNodeElement.getAttribute(this.options.GRAMMAR_NODE_ORDERED_KEY) == "true" : undefined;
+
       for (const weightedCvElement of getElementChildren(grammarNodeElement)) {
-        let weight = parseFloat(weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY) ?? '1');
-        weight = isNaN(weight) ? 1 : weight;
+        // TODO make default weight explicit
+
+        let weight;
+        if (weightedCvElement.hasAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY)
+            && weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY) != null) {
+          let parsed = parseFloat(weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY)!!);
+          weight = isNaN(parsed) ? undefined : parsed;
+        }
+
         const comparisonType = ComparisonType[(weightedCvElement.getAttribute(
-            this.options.GRAMMAR_NODE_WEIGHT_KEY)!! ?? 'ALL_OR_NOTHING') as keyof typeof ComparisonType];
+            this.options.GRAMMAR_NODE_WEIGHT_KEY) ?? 'ALL_OR_NOTHING') as keyof typeof ComparisonType];
         const path = getTextContentWithoutChildren(weightedCvElement) ?? '';
         weightedCvs.push(new WeightedCV(path, weight, comparisonType));
       }
       grammarNodes.push(new GrammarNode(
           nodeType,
           grammarNodeElement.localName,
-          weightedCvs
+          weightedCvs,
+          ordered
       ));
     }
     return grammarNodes;

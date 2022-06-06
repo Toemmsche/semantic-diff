@@ -1,6 +1,6 @@
 <grammar>
     <leaves>
-        <call>
+        <call ordered="false">
             <comparisonValue weight="3">
                 @_endpoint
             </comparisonValue>
@@ -8,15 +8,15 @@
             <comparisonValue weight="3">code/finalize</comparisonValue>
         </call>
         <manipulate>
-            <comparisonValue weight="1" comparisonType="LCS"></comparisonValue>
+            <comparisonValue weight="1" comparisonType="LCS"/>
         </manipulate>
-        <stop></stop>
-        <terminate></terminate>
-        <escape></escape>
+        <stop/>
+        <terminate/>
+        <escape/>
     </leaves>
     <inners>
-        <description></description>
-        <parallel>
+        <description/>
+        <parallel ordered="false">
             <comparisonValue weight="1">@_mode</comparisonValue>
             <comparisonValue weight="2">@_condition</comparisonValue>
         </parallel>
@@ -24,13 +24,14 @@
             <comparisonValue weight="1">@_mode</comparisonValue>
             <comparisonValue weight="2">@_condition</comparisonValue>
         </loop>
-        <choose>
+        <choose ordered="false">
             <comparisonValue weight="1">@_mode</comparisonValue>
         </choose>
         <alternative>
             <comparisonValue weight="1">@_condition</comparisonValue>
         </alternative>
-        <otherwise></otherwise>
-        <parallel_branch></parallel_branch>
+        <otherwise/>
+        <parallel_branch/>
+        <critical/>
     </inners>
 </grammar>

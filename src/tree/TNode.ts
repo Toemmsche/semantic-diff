@@ -180,8 +180,8 @@ export default class TNode {
   }
 
   hasInternalOrdering() {
-    // TODO
-    return undefined;
+    // Assume no ordering for property nodes
+    return this.grammarNode != null && this.grammarNode?.ordered;
   }
 
   isPropertyNode(): boolean {
