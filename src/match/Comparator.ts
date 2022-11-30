@@ -5,6 +5,7 @@ import TNode from '../tree/TNode.js';
 import ComparisonType from '../grammar/ComparisonType.js';
 import ICompareOptions from './ICompareOptions.js';
 import LcsLib from '../lib/LcsLib.js';
+import UnimplementedError from "../error/UnimplementedError.js";
 
 /**
  * Wrapper class for the computation of various comparison values.
@@ -93,6 +94,9 @@ export class Comparator extends Extractor implements IComparator {
             break;
           case ComparisonType.LCS:
             cv = this.compareLcs([...valueA!!], [...valueB!!]);
+            break;
+          default:
+            throw new UnimplementedError();
         }
       }
       items.push(cv);

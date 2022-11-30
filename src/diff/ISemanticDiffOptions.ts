@@ -27,5 +27,9 @@ export const defaultDiffOptions = {
   GRAMMAR_NODE_WEIGHTED_CV_TAG: 'comparisonValue',
   GRAMMAR_NODE_COMPARISON_TYPE_KEY: 'comparisonType',
   GRAMMAR_ROOT_TAG: 'grammar',
-  GRAMMAR_NODE_ORDERED_KEY: 'ordered'
+  GRAMMAR_NODE_ORDERED_KEY: 'ordered',
+  JSON_ATTRIBUTE_PREFIX: "@_",
+  JSON_CHILDREN_KEY: "children",
+  JSON_TEXT_KEY: "_text",
+  JSON_LABEL_KEY: "_tag"
 };

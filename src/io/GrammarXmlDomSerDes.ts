@@ -61,8 +61,9 @@ export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
           weight = isNaN(parsed) ? undefined : parsed;
         }
 
-        const comparisonType = ComparisonType[(weightedCvElement.getAttribute(
-            this.options.GRAMMAR_NODE_WEIGHT_KEY) ?? 'ALL_OR_NOTHING') as keyof typeof ComparisonType];
+        const hasComparisonType = weightedCvElement.hasAttribute(this.options.GRAMMAR_NODE_COMPARISON_TYPE_KEY);
+        const comparisonType = ComparisonType[(hasComparisonType ? weightedCvElement.getAttribute(
+            this.options.GRAMMAR_NODE_COMPARISON_TYPE_KEY) : 'ALL_OR_NOTHING') as keyof typeof ComparisonType];
         const path = getTextContentWithoutChildren(weightedCvElement) ?? '';
         weightedCvs.push(new WeightedCV(path, weight, comparisonType));
       }

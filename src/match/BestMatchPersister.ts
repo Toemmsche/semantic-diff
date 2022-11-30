@@ -58,7 +58,7 @@ export function persistBestMatches(oldNodes: TNode[],
         oldToNewMap.delete(oldNode);
         continue newNodeLoop;
       }
-      if (CV < minCV &&
+      if (CV <= minCV &&
           thresholdFunction(CV) &&
           (!oldToNewMap.has(oldNode) ||
               CV < oldToNewMap.get(oldNode)!!.compareValue)) {
