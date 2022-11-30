@@ -1,0 +1,10 @@
+{
+  "_tag": "loop",
+  "@_condition": "data.count < 100",
+  "children": [
+    {
+      "_tag": "manipulate",
+      "_text": "data.count += 10;"
+    }
+  ]
+}
