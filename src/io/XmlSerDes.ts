@@ -1,11 +1,11 @@
 import fs from 'fs';
 
 export default abstract class XmlSerDes<T> {
-  abstract parseXmlString(xml: string, includeChildren: boolean): T;
+    public abstract parseXmlString(xml: string, includeChildren: boolean): T;
 
-  abstract buildXmlString(obj: T): string;
+    public abstract buildXmlString(obj: T): string;
 
-  parseFromFile(path: string): T {
-    return this.parseXmlString(fs.readFileSync(path).toString(), true);
-  }
+    public parseFromFile(path: string): T {
+        return this.parseXmlString(fs.readFileSync(path).toString(), true);
+    }
 }

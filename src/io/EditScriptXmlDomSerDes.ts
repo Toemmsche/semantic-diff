@@ -11,11 +11,11 @@ import Grammar from '../grammar/Grammar';
 
 export default class EditScriptXmlDomSerDes extends XmlSerDes<EditScript> {
 
-  constructor(private grammar: Grammar, private options: ISerDesOptions) {
+  public constructor(private grammar: Grammar, private options: ISerDesOptions) {
     super();
   }
 
-  buildXmlString(editScript: EditScript): string {
+  public override buildXmlString(editScript: EditScript): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
         null
@@ -50,7 +50,7 @@ export default class EditScriptXmlDomSerDes extends XmlSerDes<EditScript> {
     return xmlString;
   }
 
-  parseXmlString(xml: string, includeChildren: boolean): EditScript {
+  public override parseXmlString(xml: string, includeChildren: boolean): EditScript {
     const root: Element = new xmldom.DOMParser().parseFromString(xml).childNodes
         .item(0) as Element; // assume root node is first child
     if (root.nodeName !== this.options.DELTA_TAG) {

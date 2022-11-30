@@ -13,15 +13,16 @@ import MalformedGrammarError from '../error/MalformedGrammarError.js';
 
 export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
 
-  constructor(private options: IGrammarDeserializationOptions) {
+  public constructor(private options: IGrammarDeserializationOptions) {
     super();
   }
 
-  buildXmlString(obj: Grammar): string {
+  public override buildXmlString(obj: Grammar): string {
     throw new UnimplementedError();
   }
 
-  parseXmlString(xml: string, includeChildren: boolean = true): Grammar {
+
+  public override parseXmlString(xml: string, includeChildren: boolean = true): Grammar {
     const root: Element = new xmldom.DOMParser().parseFromString(xml).childNodes
         .item(0) as Element;
     let inners: GrammarNode[] = [];

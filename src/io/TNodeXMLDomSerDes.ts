@@ -8,11 +8,11 @@ import Grammar from '../grammar/Grammar';
 
 export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
 
-  constructor(private grammar: Grammar, private options: ISerDesOptions) {
+  public constructor(private grammar: Grammar, private options: ISerDesOptions) {
     super();
   }
 
-  buildXmlString(node: TNode): string {
+  public override buildXmlString(node: TNode): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
         null
@@ -27,7 +27,7 @@ export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
     return xmlString;
   }
 
-  buildXmlDom(ownerDocument: any, node: TNode): any {
+  public buildXmlDom(ownerDocument: any, node: TNode): any {
     const xmlElement = ownerDocument.createElement(node.label);
     if (node.isRoot()) {
       // TODO namespace
@@ -48,7 +48,7 @@ export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
     return xmlElement;
   }
 
-  parseXmlDom(xmlElement: Element, includeChildren = true): TNode {
+  public parseXmlDom(xmlElement: Element, includeChildren = true): TNode {
     const tagName = xmlElement.localName;
 
     // parse attributes
@@ -76,7 +76,7 @@ export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
     return new TNode(tagName, children, text, attributes, grammarNode);
   }
 
-  parseXmlString(xml: string, includeChildren: boolean = true): TNode {
+  public override parseXmlString(xml: string, includeChildren: boolean = true): TNode {
     const root = new xmldom
         .DOMParser()
         .parseFromString(xml, 'text/xml')
