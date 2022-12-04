@@ -1,0 +1,28 @@
+{
+  "_tag": "Sort",
+  "@_id": "None",
+  "@_scan_discount_factor": 0.2,
+  "@_active": false,
+  "@_limit": null,
+  "children": [
+    {
+      "_tag": "GroupBy",
+      "@_id": "None",
+      "@_scan_discount_factor": 0.2,
+      "@_active": true,
+      "@_mode": null,
+      "@_method": "Hashed",
+      "children": [
+        {
+          "_tag": "TableScan",
+          "@_id": "None",
+          "@_scan_discount_factor": 0.2,
+          "@_active": false,
+          "@_table_name": "lineitem",
+          "@_table_size": null,
+          "@_type": "sequential"
+        }
+      ]
+    }
+  ]
+}

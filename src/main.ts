@@ -102,7 +102,6 @@ const argv = yargs(hideBin(process.argv))
             const grammarSerDes = new GrammarXmlDomSerDes(diffOptions);
             const grammar = grammarSerDes.parseFromFile(argv.grammar as string);
 
-            console.log(argv.json)
             let tNodeSerDes;
             if (argv.json) {
                 tNodeSerDes = new TNodeJsonDomSerDes(grammar, diffOptions);

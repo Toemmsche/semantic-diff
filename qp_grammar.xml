@@ -1,0 +1,13 @@
+<grammar>
+    <leaves>
+        <TableScan ordered="false">
+            <comparisonValue weight="5">@_table_name</comparisonValue>
+        </TableScan>
+    </leaves>
+    <inners>
+        <Join ordered="true"></Join>
+        <Projection></Projection>
+        <GroupBy></GroupBy>
+        <Select></Select>
+    </inners>
+</grammar>
