@@ -1,10 +1,10 @@
-import TNode from "./src/tree/TNode.js";
-import TNodeXMLDomSerDes from './src/io/TNodeXMLDomSerDes.js';
-import EditScriptXmlDomSerDes from './src/io/EditScriptXmlDomSerDes.js';
-import {defaultDiffOptions} from './src/diff/ISemanticDiffOptions.js';
-import SemanticDiff from './src/diff/SemanticDiff.js';
+import TNode from "./src/semantic-diff/tree/TNode.js";
+import TNodeXMLDomSerDes from './src/semantic-diff/io/TNodeXMLDomSerDes.js';
+import EditScriptXmlDomSerDes from './src/semantic-diff/io/EditScriptXmlDomSerDes.js';
+import {defaultDiffOptions} from './src/semantic-diff/diff/ISemanticDiffOptions.js';
+import SemanticDiff from './src/semantic-diff/diff/SemanticDiff.js';
 import * as fs from 'fs';
-import GrammarXmlDomSerDes from './src/io/GrammarXmlDomSerDes.js';
+import GrammarXmlDomSerDes from './src/semantic-diff/io/GrammarXmlDomSerDes.js';
 
 
 const cpeeGrammar = new GrammarXmlDomSerDes(defaultDiffOptions).parseFromFile("grammar.xml");

@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "jsx": "react",
 
     /* Language and Environment */
-    "target": "es2022",
+    "target": "esnext",
 
     /* Modules */
-    "module": "es2022",
+    "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
     "esModuleInterop": true,
