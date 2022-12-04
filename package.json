@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "src/main.js",
+  "main": "dist/src/index.js",
+  "browser": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "compile": "tsc --outDir build",
-    "main": "npm run compile && node build/src/main.js",
+    "compile": "tsc --outDir dist",
+    "main": "npm run compile && node dist/src/main.js",
     "test": "test"
   },
   "bin": {

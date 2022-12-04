@@ -1,11 +1,12 @@
 # typescript
-out/
-build/
+/out/
+/build/
+/dist/
 
 # yarn
 node_modules/
 /.yarn
 
 # jetbrains
-.idea/
+/.idea/
 *.iml
