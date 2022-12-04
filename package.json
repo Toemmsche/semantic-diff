@@ -10,7 +10,7 @@
     "test": "test"
   },
   "scripts": {
-    "compile": "tsc --outDir dist",
+    "compile": "rm -rf dist && tsc --outDir dist",
     "main": "npm run compile && node dist/src/main.js",
     "test": "test"
   },
