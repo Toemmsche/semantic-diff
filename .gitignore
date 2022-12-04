@@ -1,6 +1,11 @@
-node_modules/
+# typescript
 out/
 build/
+
+# yarn
+node_modules/
+/.yarn
+
+# jetbrains
 .idea/
-TODO.md
-res/
+*.iml
