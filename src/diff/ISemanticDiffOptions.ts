@@ -31,5 +31,5 @@ export const defaultDiffOptions = {
   JSON_ATTRIBUTE_PREFIX: "@_",
   JSON_CHILDREN_KEY: "children",
   JSON_TEXT_KEY: "_text",
-  JSON_LABEL_KEY: "_tag"
+  JSON_TAG_KEY: "_tag"
 };

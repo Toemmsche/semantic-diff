@@ -11,8 +11,21 @@ import SemanticDiff from './diff/SemanticDiff.js';
 import {EditScript} from './delta/EditScript.js';
 import EditScriptXmlDomSerDes from './io/EditScriptXmlDomSerDes.js';
 import TNodeJsonDomSerDes from "./io/TNodeJsonSerDes.js";
+import Grammar from "./grammar/Grammar.js";
 
 const argv = yargs(hideBin(process.argv))
+    .command(
+        'transform <json>',
+        'Transform a JSON document to XML',
+        (yargs) => yargs, // no builder
+        (argv) => {
+            const dummyGrammar = new Grammar([], [])
+            const jsonSerDes = new TNodeJsonDomSerDes(dummyGrammar, defaultDiffOptions);
+            const root = jsonSerDes.parseFromFile(argv.json as string);
+            const xmlSerDes = new TNodeXMLDomSerDes(dummyGrammar, defaultDiffOptions);
+            console.log(xmlSerDes.buildXmlString(root));
+        }
+    )
     .command(
         'diff <grammar> <old> <new>',
         'Calculate and show the difference between two XML documents',
@@ -89,6 +102,7 @@ const argv = yargs(hideBin(process.argv))
             const grammarSerDes = new GrammarXmlDomSerDes(diffOptions);
             const grammar = grammarSerDes.parseFromFile(argv.grammar as string);
 
+            console.log(argv.json)
             let tNodeSerDes;
             if (argv.json) {
                 tNodeSerDes = new TNodeJsonDomSerDes(grammar, diffOptions);

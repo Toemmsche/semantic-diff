@@ -22,12 +22,13 @@ export default class TNodeJsonDomSerDes extends JsonSerDes<TNode> {
     private transformParsedJsonObj(parsedJsonObj: any, includeChildren: boolean = true): TNode {
         const attributes = new Map();
         const children = [];
-        const label = parsedJsonObj[this.options.JSON_LABEL_KEY];
+        const label = parsedJsonObj[this.options.JSON_TAG_KEY];
         const text = parsedJsonObj[this.options.JSON_TEXT_KEY];
         for (const attr of Object.keys(parsedJsonObj)) {
             if (attr.startsWith(this.options.JSON_ATTRIBUTE_PREFIX)) {
                 // attribute
-                attributes.set(attr, parsedJsonObj[attr]);
+                const strippedAttr = attr.substring(this.options.JSON_ATTRIBUTE_PREFIX.length)
+                attributes.set(strippedAttr, parsedJsonObj[attr]);
             } else if (attr === this.options.JSON_CHILDREN_KEY && includeChildren) {
                 for (const childObj of parsedJsonObj[attr]) {
                     const child = this.transformParsedJsonObj(childObj, includeChildren);
