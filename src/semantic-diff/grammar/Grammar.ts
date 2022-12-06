@@ -1,5 +1,5 @@
 import GrammarNode from './GrammarNode';
-import XmlSerializable from '../io/XmlSerDes';
+import XmlSerializable from '../io/SerDes';
 
 export default class Grammar{
   private labelMap: Map<String, GrammarNode> = new Map();

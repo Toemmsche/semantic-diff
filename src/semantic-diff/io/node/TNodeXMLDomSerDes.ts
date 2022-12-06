@@ -1,18 +1,18 @@
-import XmlSerDes from './XmlSerDes';
-import TNode from '../tree/TNode';
+import SerDes from '../SerDes';
+import TNode from '../../tree/TNode';
 import xmldom from '@xmldom/xmldom';
 import vkbeautify from 'vkbeautify';
-import {getElementChildren, getTextContentWithoutChildren} from '../Util';
-import ISerDesOptions from './ISerDesOptions';
-import Grammar from '../grammar/Grammar';
+import {getElementChildren, getTextContentWithoutChildren} from '../../Util';
+import ISerDesOptions from '../ISerDesOptions';
+import Grammar from '../../grammar/Grammar';
 
-export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
+export default class TNodeXMLDomSerDes extends SerDes<TNode> {
 
   public constructor(private grammar: Grammar, private options: ISerDesOptions) {
     super();
   }
 
-  public override buildXmlString(node: TNode): string {
+  public override buildString(node: TNode): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
         null
@@ -76,7 +76,7 @@ export default class TNodeXMLDomSerDes extends XmlSerDes<TNode> {
     return new TNode(tagName, children, text, attributes, grammarNode);
   }
 
-  public override parseXmlString(xml: string, includeChildren: boolean = true): TNode {
+  public override parseFromString(xml: string, includeChildren: boolean = true): TNode {
     const root = new xmldom
         .DOMParser()
         .parseFromString(xml, 'text/xml')

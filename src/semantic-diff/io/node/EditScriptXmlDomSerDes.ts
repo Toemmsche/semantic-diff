@@ -1,21 +1,21 @@
-import {EditScript} from '../delta/EditScript';
-import XmlSerDes from './XmlSerDes';
+import {EditScript} from '../../delta/EditScript';
+import SerDes from '../SerDes';
 import xmldom from '@xmldom/xmldom';
-import ChangeType from '../delta/ChangeType';
+import ChangeType from '../../delta/ChangeType';
 import TNodeXMLDomSerDes from './TNodeXMLDomSerDes';
-import {EditOperation} from '../delta/EditOperation';
+import {EditOperation} from '../../delta/EditOperation';
 import vkbeautify from 'vkbeautify';
-import {getElementChildren} from '../Util';
-import ISerDesOptions from './ISerDesOptions';
-import Grammar from '../grammar/Grammar';
+import {getElementChildren} from '../../Util';
+import ISerDesOptions from '../ISerDesOptions';
+import Grammar from '../../grammar/Grammar';
 
-export default class EditScriptXmlDomSerDes extends XmlSerDes<EditScript> {
+export default class EditScriptXmlDomSerDes extends SerDes<EditScript> {
 
   public constructor(private grammar: Grammar, private options: ISerDesOptions) {
     super();
   }
 
-  public override buildXmlString(editScript: EditScript): string {
+  public override buildString(editScript: EditScript): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
         null
@@ -50,7 +50,7 @@ export default class EditScriptXmlDomSerDes extends XmlSerDes<EditScript> {
     return xmlString;
   }
 
-  public override parseXmlString(xml: string, includeChildren: boolean): EditScript {
+  public override parseFromString(xml: string, includeChildren: boolean): EditScript {
     const root: Element = new xmldom.DOMParser().parseFromString(xml).childNodes
         .item(0) as Element; // assume root node is first child
     if (root.nodeName !== this.options.DELTA_TAG) {

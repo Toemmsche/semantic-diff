@@ -1,28 +1,28 @@
-import Grammar from '../grammar/Grammar';
-import XmlSerDes from './XmlSerDes';
-import UnimplementedError from '../error/UnimplementedError';
+import Grammar from '../../grammar/Grammar';
+import SerDes from '../SerDes';
+import UnimplementedError from '../../error/UnimplementedError';
 import xmldom from '@xmldom/xmldom';
-import GrammarNode from '../grammar/GrammarNode';
+import GrammarNode from '../../grammar/GrammarNode';
 import IGrammarDeserializationOptions
-  from './IGrammarDeserializationOptions';
-import ComparisonType from '../grammar/ComparisonType';
-import WeightedCV from '../grammar/WeightedCV';
-import NodeType from '../grammar/NodeType';
-import {getElementChildren, getTextContentWithoutChildren} from '../Util';
-import MalformedGrammarError from '../error/MalformedGrammarError';
+  from '../IGrammarDeserializationOptions';
+import ComparisonType from '../../grammar/ComparisonType';
+import WeightedCV from '../../grammar/WeightedCV';
+import NodeType from '../../grammar/NodeType';
+import {getElementChildren, getTextContentWithoutChildren} from '../../Util';
+import MalformedGrammarError from '../../error/MalformedGrammarError';
 
-export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
+export default class GrammarXmlDomSerDes extends SerDes<Grammar> {
 
   public constructor(private options: IGrammarDeserializationOptions) {
     super();
   }
 
-  public override buildXmlString(obj: Grammar): string {
+  public override buildString(obj: Grammar): string {
     throw new UnimplementedError();
   }
 
 
-  public override parseXmlString(xml: string, includeChildren: boolean = true): Grammar {
+  public override parseFromString(xml: string, includeChildren: boolean = true): Grammar {
     const root: Element = new xmldom.DOMParser().parseFromString(xml).childNodes
         .item(0) as Element;
     let inners: GrammarNode[] = [];
@@ -76,5 +76,7 @@ export default class GrammarXmlDomSerDes extends XmlSerDes<Grammar> {
     }
     return grammarNodes;
   }
+
+
 
 }

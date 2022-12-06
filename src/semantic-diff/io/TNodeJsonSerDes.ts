@@ -1,15 +1,15 @@
-import JsonSerDes from './JsonSerDes';
 import TNode from '../tree/TNode';
 import vkbeautify from 'vkbeautify';
 import ISerDesOptions from './ISerDesOptions';
 import Grammar from '../grammar/Grammar';
+import SerDes from "./SerDes";
 
-export default class TNodeJsonDomSerDes extends JsonSerDes<TNode> {
+export default class TNodeJsonSerDes extends SerDes<TNode> {
 
     public constructor(private grammar: Grammar, private options: ISerDesOptions) {
         super();
     }
-    public override buildJsonString(node: TNode): string {
+    public override buildString(node: TNode): string {
         // TODO replacer function
         const jsonString = JSON.stringify(node);
         // TODO change the option name to be more general, e.g. 'PRETTY_OUTPUT'
@@ -40,7 +40,7 @@ export default class TNodeJsonDomSerDes extends JsonSerDes<TNode> {
         return new TNode(label, children, text, attributes, grammarNode);
     }
 
-    public override parseJsonString(jsonString: string, includeChildren: boolean = true): TNode {
+    public override parseFromString(jsonString: string, includeChildren: boolean = true): TNode {
         const parsedJsonObj = JSON.parse(jsonString);
         return this.transformParsedJsonObj(parsedJsonObj, true);
     }

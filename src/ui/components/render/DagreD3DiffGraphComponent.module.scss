@@ -1,0 +1,21 @@
+.graphSvg {
+  .simpleNode {
+    rect {
+      fill: rgb(255, 255, 255);
+      text: rgb(0, 0, 0);
+      stroke: rgb(0,0,0)
+    }
+  }
+
+  .simplePath {
+    path {
+      stroke: rgb(0, 0, 0);
+      stroke-width: 5px;
+      stroke-linecap: square;
+    }
+
+    &.edgeRef {
+      stroke-dasharray: 5, 5;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+.queryPlanDiff {
+    height: 100vh;
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 100%;
+
+    .firstGraph {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .secondGraph {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}

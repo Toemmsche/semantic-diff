@@ -2,15 +2,15 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 import * as fs from 'fs';
 import {defaultDiffOptions} from './diff/ISemanticDiffOptions';
-import GrammarXmlDomSerDes from './io/GrammarXmlDomSerDes';
+import GrammarXmlDomSerDes from './io/node/GrammarXmlDomSerDes';
 import IGrammarDeserializationOptions
     from './io/IGrammarDeserializationOptions';
-import TNodeXMLDomSerDes from './io/TNodeXMLDomSerDes';
+import TNodeXMLDomSerDes from './io/node/TNodeXMLDomSerDes';
 import ISerDesOptions from './io/ISerDesOptions';
 import SemanticDiff from './diff/SemanticDiff';
 import {EditScript} from './delta/EditScript';
-import EditScriptXmlDomSerDes from './io/EditScriptXmlDomSerDes';
-import TNodeJsonDomSerDes from "./io/TNodeJsonSerDes";
+import EditScriptXmlDomSerDes from './io/node/EditScriptXmlDomSerDes';
+import TNodeJsonSerDes from "./io/TNodeJsonSerDes";
 import Grammar from "./grammar/Grammar";
 
 const argv = yargs(hideBin(process.argv))
@@ -20,10 +20,10 @@ const argv = yargs(hideBin(process.argv))
         (yargs) => yargs, // no builder
         (argv) => {
             const dummyGrammar = new Grammar([], [])
-            const jsonSerDes = new TNodeJsonDomSerDes(dummyGrammar, defaultDiffOptions);
-            const root = jsonSerDes.parseFromFile(argv.json as string);
-            const xmlSerDes = new TNodeXMLDomSerDes(dummyGrammar, defaultDiffOptions);
-            console.log(xmlSerDes.buildXmlString(root));
+            const jsonSerDes = new TNodeJsonSerDes(dummyGrammar, defaultDiffOptions);
+            const root = jsonSerDes.parseFromString(fs.readFileSync(argv.json as string).toString());
+            const SerDes = new TNodeXMLDomSerDes(dummyGrammar, defaultDiffOptions);
+            console.log(SerDes.buildString(root));
         }
     )
     .command(
@@ -100,24 +100,23 @@ const argv = yargs(hideBin(process.argv))
             }
 
             const grammarSerDes = new GrammarXmlDomSerDes(diffOptions);
-            const grammar = grammarSerDes.parseFromFile(argv.grammar as string);
+            const grammar = grammarSerDes.parseFromString(fs.readFileSync(argv.grammar as string).toString());
 
             let tNodeSerDes;
             if (argv.json) {
-                tNodeSerDes = new TNodeJsonDomSerDes(grammar, diffOptions);
+                tNodeSerDes = new TNodeJsonSerDes(grammar, diffOptions);
             } else {
                 tNodeSerDes = new TNodeXMLDomSerDes(grammar, diffOptions);
             }
-            const oldTree = tNodeSerDes.parseFromFile(argv.old as string);
-            const newTree = tNodeSerDes.parseFromFile(argv.new as string);
-
+            const oldTree = tNodeSerDes.parseFromString(fs.readFileSync(argv.old as string).toString());
+            const newTree = tNodeSerDes.parseFromString(fs.readFileSync(argv.new as string).toString());
 
             const editScript: EditScript = new SemanticDiff(diffOptions).diff(oldTree, newTree);
 
             const editScriptSerDes = new EditScriptXmlDomSerDes(grammar, diffOptions);
             switch (argv.format) {
                 case 'editScript': {
-                    console.log(editScriptSerDes.buildXmlString(editScript))
+                    console.log(editScriptSerDes.buildString(editScript))
                     break;
                 }
             }
