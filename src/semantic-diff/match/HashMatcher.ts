@@ -1,11 +1,11 @@
 import IMatcher from './IMatcher';
 import TNode from '../tree/TNode';
-import IComparator from './IComparator';
+import IComparator from '../compare/IComparator';
 import {persistBestMatches} from './BestMatchPersister';
 
-export class HashMatcher implements IMatcher {
+export class HashMatcher<T> implements IMatcher<T> {
 
-  match(oldTree: TNode, newTree: TNode, comparator: IComparator) {
+  match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>) {
     const oldNodes =
         oldTree
             .nonPropertyNodes()
@@ -18,22 +18,22 @@ export class HashMatcher implements IMatcher {
             // to improve performance
             .sort((a, b) => comparator.compareSize(b, a));
 
-    const keyFunction = (node: TNode) => comparator.getHash(node);
+    const keyFunction = (node: TNode<T>) => comparator.getHash(node);
     const compareFunction =
-        (oldNode: TNode, newNode: TNode) => comparator.comparePosition(
+        (oldNode: TNode<T>, newNode: TNode<T>) => comparator.comparePosition(
             oldNode,
             newNode
         );
 
     // Match all nodes of two subtrees.
-    const matchFunction = (oldRoot: TNode, newRoot: TNode) => {
+    const matchFunction = (oldRoot: TNode<T>, newRoot: TNode<T>) => {
       // found a perfect match, match entire subtrees
       const newPreOrder = newRoot.toPreOrderArray();
       const oldPreOrder = oldRoot.toPreOrderArray();
 
       // stable sort both arrays because hash may ignore child order of
       // certain nodes
-      const stableSortByHash = (a: TNode, b: TNode) => comparator.getHash(a) - comparator.getHash(
+      const stableSortByHash = (a: TNode<T>, b: TNode<T>) => comparator.getHash(a) - comparator.getHash(
           b);
       newPreOrder.sort(stableSortByHash);
       oldPreOrder.sort(stableSortByHash);

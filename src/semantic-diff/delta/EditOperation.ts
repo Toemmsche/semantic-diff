@@ -1,13 +1,13 @@
 import ChangeType from './ChangeType';
 import TNode from '../tree/TNode';
 
-export class EditOperation {
+export class EditOperation<T> {
 
   constructor(
       public type: ChangeType,
       public oldPath ?: string,
       public newPath ?: string,
-      public newContent ?: TNode,
+      public newContent ?: TNode<T>,
   ) {
   }
 

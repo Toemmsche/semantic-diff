@@ -1,19 +1,19 @@
 import IMatcher from './IMatcher';
-import IComparator from './IComparator';
+import IComparator from '../compare/IComparator';
 import TNode from '../tree/TNode';
 
 /**
  * A matching module that reconsiders unmatched nodes for a match
  * if certain conditions are met.
  */
-export class SandwichMatcher implements IMatcher {
+export class SandwichMatcher<T> implements IMatcher<T> {
   /**
    * Extend the matching with matches that can be inferred from the matching
    * of surrounding nodes, e.g., if a node is vertically or horizontally
    * sandwiched between matches. To detect fuzzy matches, the comparison
    * threshold is raised for this matching module only.
    */
-  match(oldTree: TNode, newTree: TNode, comparator: IComparator) {
+  match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>) {
     const newNodes = newTree
         .nonPropertyNodes()
         .filter((node) => !node.isMatched());

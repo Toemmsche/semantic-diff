@@ -1,4 +1,4 @@
-import ICompareOptions from '../match/ICompareOptions';
+import ICompareOptions from '../compare/ICompareOptions';
 
 export default class LcsLib {
   

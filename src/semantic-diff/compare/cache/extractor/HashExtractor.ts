@@ -1,15 +1,15 @@
-import AbstractCachingExtractor from './AbstractCachingExtractor';
-import {getPrimes} from '../../lib/PrimeGenerator';
-import TNode from '../../tree/TNode';
-import {stringHash} from '../../lib/StringHash';
+import CachingExtractor from './CachingExtractor';
+import {getPrimes} from '../../../lib/PrimeGenerator';
+import TNode from '../../../tree/TNode';
+import {stringHash} from '../../../lib/StringHash';
 
-export default class HashExtractor extends AbstractCachingExtractor<number> {
+export default class HashExtractor<T> extends CachingExtractor<number, T> {
 
-  protected computeValue(node: TNode): void {
+  protected computeValue(node: TNode<T>): void {
     this.valueMap.set(node, this.contentHash(node) + this.childHash(node));
   }
 
-  private childHash(node: TNode) {
+  private childHash(node: TNode<T>) {
     let childHash;
     if (node.hasInternalOrdering()) {
       // Respect order by multiplying child hashes with distinct prime number
@@ -31,7 +31,7 @@ export default class HashExtractor extends AbstractCachingExtractor<number> {
     return childHash;
   }
 
-  private contentHash(node: TNode) {
+  private contentHash(node: TNode<T>) {
     let content = node.label;
     // Attribute order is irrelevant
     const sortedAttrList =

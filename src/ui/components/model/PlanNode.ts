@@ -1,31 +1,27 @@
 import {TNode} from "../../../semantic-diff";
+import XmlData from "../../../semantic-diff/data/XmlData";
 
-export interface PlanNode {
+export interface PlanData extends XmlData {
 
-    get operatorName() : string
+    get operatorName(): string
 
-    get operatorId() : string
-
-    get childPlanNodes() : PlanNode[]
+    get operatorId(): string
 }
 
 // dirty id hack
 let i = 0
 
-export function tNodeToPlanNode(node: TNode) : PlanNode {
+export function tNodeToPlanNode(node: TNode<XmlData>): TNode<PlanData> {
     const k = i++;
-    return {
-        ...node,
-        get operatorName() : string {
+    node.data = Object.assign({
+        get operatorName(): string {
             return node.label;
         },
-
-        get operatorId() : string {
+        get operatorId(): string {
             return node.attributes.get("id") ?? String(k);
-        },
-
-        get childPlanNodes() : PlanNode[] {
-            return node.children.map(c => tNodeToPlanNode(c));
         }
-    }
+    }, node.data);
+
+    // cast is safe
+    return node as TNode<PlanData>;
 }

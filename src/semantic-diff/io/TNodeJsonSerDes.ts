@@ -1,15 +1,16 @@
-import TNode from '../tree/TNode';
+import TNode, {TNodeBuilder} from '../tree/TNode';
 import vkbeautify from 'vkbeautify';
 import ISerDesOptions from './ISerDesOptions';
 import Grammar from '../grammar/Grammar';
 import SerDes from "./SerDes";
+import XmlData from "../data/XmlData";
 
-export default class TNodeJsonSerDes extends SerDes<TNode> {
+export default class TNodeJsonSerDes extends SerDes<TNode<XmlData>> {
 
     public constructor(private grammar: Grammar, private options: ISerDesOptions) {
         super();
     }
-    public override buildString(node: TNode): string {
+    public override buildString(node: TNode<XmlData>): string {
         // TODO replacer function
         const jsonString = JSON.stringify(node);
         // TODO change the option name to be more general, e.g. 'PRETTY_OUTPUT'
@@ -19,7 +20,7 @@ export default class TNodeJsonSerDes extends SerDes<TNode> {
         return jsonString;
     }
 
-    private transformParsedJsonObj(parsedJsonObj: any, includeChildren: boolean = true): TNode {
+    private transformParsedJsonObj(parsedJsonObj: any, includeChildren: boolean = true): TNode<XmlData> {
         const attributes = new Map();
         const children = [];
         const label = parsedJsonObj[this.options.JSON_TAG_KEY];
@@ -37,10 +38,18 @@ export default class TNodeJsonSerDes extends SerDes<TNode> {
             }
         }
         const grammarNode = this.grammar.getGrammarNodeByLabel(label);
-        return new TNode(label, children, text, attributes, grammarNode);
+        const builder = new TNodeBuilder<XmlData>()
+            .data(new XmlData(label, text, attributes))
+            .children(children)
+
+        if (grammarNode) {
+            builder.grammarNode(grammarNode)
+        }
+
+        return builder.build();
     }
 
-    public override parseFromString(jsonString: string, includeChildren: boolean = true): TNode {
+    public override parseFromString(jsonString: string, includeChildren: boolean = true): TNode<XmlData> {
         const parsedJsonObj = JSON.parse(jsonString);
         return this.transformParsedJsonObj(parsedJsonObj, true);
     }

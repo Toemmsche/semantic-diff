@@ -3,18 +3,18 @@ import {EditScript} from './EditScript';
 import {getLis} from '../lib/Lis';
 import IEditScriptOptions from './IEditScriptOptions';
 
-export class EditScriptGenerator {
+export class EditScriptGenerator<T> {
 
-  private editScript: EditScript = new EditScript();
+  private editScript: EditScript<T> = new EditScript(undefined, undefined);
 
   constructor(public options: IEditScriptOptions) {
   }
 
-  generateEditScript(oldTree: TNode, newTree: TNode) {
+  generateEditScript(oldTree: TNode<T>, newTree: TNode<T>) {
     // For edit script verification later on
     const copyOfOld = oldTree.copy();
 
-    this.editScript = new EditScript();
+    this.editScript = new EditScript(undefined, undefined);
 
     // 1st traversal: Pre-order of new (changed) tree
     const newPreOrder = newTree.toPreOrderArray();
@@ -71,7 +71,7 @@ export class EditScriptGenerator {
     return this.editScript;
   }
 
-  #alignChildren(oldParent: TNode) {
+  #alignChildren(oldParent: TNode<T>) {
     const nodes = oldParent.children;
     // To find the minimal number of moves, map each child to the index of
     // its matching partner and compute the longest increasing subsequence (LIS)
@@ -115,12 +115,12 @@ export class EditScriptGenerator {
     }
   }
 
-  private delete(oldNode: TNode) {
+  private delete(oldNode: TNode<T>) {
     oldNode.removeFromParent();
     this.editScript.appendDeletion(oldNode);
   }
 
-  private findInsertionIndex(newNode: TNode): number {
+  private findInsertionIndex(newNode: TNode<T>): number {
     let insertionIndex;
     if (newNode.getIndex() > 0) {
       const leftSibling = newNode.getSiblings()[newNode.getIndex() - 1];
@@ -132,11 +132,11 @@ export class EditScriptGenerator {
     return insertionIndex;
   }
 
-  #insert(newNode: TNode) {
+  #insert(newNode: TNode<T>) {
     const copy = newNode.copy(true);
 
-    const deleteLater: TNode[] = [];
-    const matchOrRemove = (copiedNode: TNode, newNode: TNode) => {
+    const deleteLater: TNode<T>[] = [];
+    const matchOrRemove = (copiedNode: TNode<T>, newNode: TNode<T>) => {
       if (newNode.isMatched()) {
         deleteLater.push(copiedNode);
       } else {
@@ -161,7 +161,7 @@ export class EditScriptGenerator {
     this.editScript.appendInsertion(copy);
   }
 
-  private move(oldNode: TNode) {
+  private move(oldNode: TNode<T>) {
     const newNode = oldNode.getMatch();
     const oldPath = oldNode.xPath();
     // Delete from tree
@@ -176,7 +176,7 @@ export class EditScriptGenerator {
     this.editScript.appendMove(oldPath, newPath);
   }
 
-  private update(oldNode: TNode) {
+  private update(oldNode: TNode<T>) {
     const newNode = oldNode.getMatch();
 
     // Overwrite old values

@@ -1,9 +1,9 @@
 import TNode from '../tree/TNode';
-import IComparator from './IComparator';
+import IComparator from '../compare/IComparator';
 import IMatcher from './IMatcher';
 import IPathMatchOptions from './IPathMatchOptions';
 
-export class PathMatcher implements IMatcher {
+export class PathMatcher<T> implements IMatcher<T> {
 
   /**
    * Create a new PathMatcher instance.
@@ -16,10 +16,10 @@ export class PathMatcher implements IMatcher {
    * of already matched leaves. Also considers the commonality between subtrees
    * in quality mode.
    */
-  match(oldTree: TNode, newTree: TNode, comparator: IComparator) {
+  match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>) {
 
     // Store all candidates for an inner node
-    let candidateMap = new Map<TNode, Set<TNode>>();
+    let candidateMap = new Map<TNode<T>, Set<TNode<T>>>();
 
     // Starting point is existing matches between leaves
     for (const [newNode, oldNode] of newTree.getMatchingMap()) {
@@ -72,7 +72,7 @@ export class PathMatcher implements IMatcher {
 
     // Sadly, we cannot use the persistBestMatches() function for this matching
     // module because of the unique order the candidates are dealt with.
-    const oldToNewMap = new Map<TNode, { newNode: TNode, compareValue: number }>();
+    const oldToNewMap = new Map<TNode<T>, { newNode: TNode<T>, compareValue: number }>();
     mapLoop: for (const [newNode, oldNodeSet] of candidateMap) {
       // Remember the minimum comparison value
       let minCV = 1;

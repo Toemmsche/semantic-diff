@@ -8,14 +8,15 @@ import vkbeautify from 'vkbeautify';
 import {getElementChildren} from '../../Util';
 import ISerDesOptions from '../ISerDesOptions';
 import Grammar from '../../grammar/Grammar';
+import XmlData from "../../data/XmlData";
 
-export default class EditScriptXmlDomSerDes extends SerDes<EditScript> {
+export default class EditScriptXmlDomSerDes extends SerDes<EditScript<XmlData>> {
 
   public constructor(private grammar: Grammar, private options: ISerDesOptions) {
     super();
   }
 
-  public override buildString(editScript: EditScript): string {
+  public override buildString(editScript: EditScript<XmlData>): string {
     const ownerDocument = new xmldom.DOMImplementation().createDocument(
         null,
         null
@@ -50,7 +51,7 @@ export default class EditScriptXmlDomSerDes extends SerDes<EditScript> {
     return xmlString;
   }
 
-  public override parseFromString(xml: string, includeChildren: boolean): EditScript {
+  public override parseFromString(xml: string, includeChildren: boolean): EditScript<XmlData> {
     const root: Element = new xmldom.DOMParser().parseFromString(xml).childNodes
         .item(0) as Element; // assume root node is first child
     if (root.nodeName !== this.options.DELTA_TAG) {

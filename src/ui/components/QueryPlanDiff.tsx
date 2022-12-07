@@ -5,7 +5,7 @@ import DagreD3DiffGraphComponent from "./render/DagreD3DiffGraphComponent";
 import {duckPlanJson, pgPlanJson, qpGrammar} from "./model/plans";
 
 import {defaultDiffOptions, TNodeJsonSerDes, TNode, Grammar} from "../../semantic-diff";
-import {PlanNode, tNodeToPlanNode} from "./model/PlanNode";
+import {PlanData, tNodeToPlanNode} from "./model/PlanNode";
 import GrammarXmlDomSerDes from "../../semantic-diff/io/node/GrammarXmlDomSerDes";
 import GrammarBrowserSerDes from "../../semantic-diff/io/browser/GrammarBrowserSerDes";
 
@@ -28,8 +28,8 @@ interface IQueryPlanDiffState {
 export default function QueryPlanDiff(props: IQueryPlanDiffProps) {
     const gramamr = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(qpGrammar);
     const serdes = new TNodeJsonSerDes(gramamr, defaultDiffOptions);
-    const firstRoot : PlanNode = tNodeToPlanNode(serdes.parseFromString(duckPlanJson));
-    const secondRoot : PlanNode = tNodeToPlanNode(serdes.parseFromString(pgPlanJson));
+    const firstRoot : TNode<PlanData> = tNodeToPlanNode(serdes.parseFromString(duckPlanJson));
+    const secondRoot : TNode<PlanData> = tNodeToPlanNode(serdes.parseFromString(pgPlanJson));
 
     console.log(firstRoot);
     console.log(secondRoot);

@@ -1,13 +1,13 @@
-import TNode from '../../tree/TNode';
-import {stringHash} from '../../lib/StringHash';
-import AbstractCachingExtractor from './AbstractCachingExtractor';
+import TNode from '../../../tree/TNode';
+import {stringHash} from '../../../lib/StringHash';
+import CachingExtractor from './CachingExtractor';
 
-export default class ContentHashExtractor extends AbstractCachingExtractor<number> {
-  protected computeValue(node: TNode) {
+export default class ContentHashExtractor<T> extends CachingExtractor<number, T> {
+  protected computeValue(node: TNode<T>) {
     this.valueMap.set(node, this.contentHash(node));
   }
 
-  private contentHash(node: TNode) {
+  private contentHash(node: TNode<T>) {
     let content = node.label;
     // Attribute order is irrelevant
     const sortedAttrList =

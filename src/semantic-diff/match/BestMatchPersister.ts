@@ -19,13 +19,13 @@ import TNode from '../tree/TNode';
  * @param {Function} thresholdFunction A boolean function to determine if a
  *     comparison value is sufficient for a match.
  */
-export function persistBestMatches(oldNodes: TNode[],
-                                   newNodes: TNode[],
-                                   keyFunction: (node: TNode) => any,
-                                   compareFunction: (node: TNode, other: TNode) => number,
-                                   matchHandler: (node: TNode, match: TNode) => void,
+export function persistBestMatches<T>(oldNodes: TNode<T>[],
+                                   newNodes: TNode<T>[],
+                                   keyFunction: (node: TNode<T>) => any,
+                                   compareFunction: (node: TNode<T>, other: TNode<T>) => number,
+                                   matchHandler: (node: TNode<T>, match: TNode<T>) => void,
                                    thresholdFunction: (cv: number) => boolean = (cv) => true) {
-  const candidateMap = new Map<TNode, TNode[]>();
+  const candidateMap = new Map<TNode<T>, TNode<T>[]>();
   for (const oldNode of oldNodes) {
     const key = keyFunction(oldNode);
     if (!candidateMap.has(key)) {
@@ -34,7 +34,7 @@ export function persistBestMatches(oldNodes: TNode[],
     candidateMap.get(key)!!.push(oldNode);
   }
 
-  const oldToNewMap = new Map<TNode, { newNode: TNode, compareValue: number }>();
+  const oldToNewMap = new Map<TNode<T>, { newNode: TNode<T>, compareValue: number }>();
   newNodeLoop: for (const newNode of newNodes) {
     // existing matches cannot be altered
     if (newNode.isMatched()) {

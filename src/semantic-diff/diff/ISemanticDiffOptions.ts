@@ -1,5 +1,5 @@
 import IEditScriptOptions from '../delta/IEditScriptOptions';
-import ICompareOptions from '../match/ICompareOptions';
+import ICompareOptions from '../compare/ICompareOptions';
 import IMatchOptions from '../match/IMatchOptions';
 import ISerDesOptions from '../io/ISerDesOptions';
 

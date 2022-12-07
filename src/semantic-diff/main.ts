@@ -12,6 +12,7 @@ import {EditScript} from './delta/EditScript';
 import EditScriptXmlDomSerDes from './io/node/EditScriptXmlDomSerDes';
 import TNodeJsonSerDes from "./io/TNodeJsonSerDes";
 import Grammar from "./grammar/Grammar";
+import XmlData from "./data/XmlData";
 
 const argv = yargs(hideBin(process.argv))
     .command(
@@ -111,7 +112,7 @@ const argv = yargs(hideBin(process.argv))
             const oldTree = tNodeSerDes.parseFromString(fs.readFileSync(argv.old as string).toString());
             const newTree = tNodeSerDes.parseFromString(fs.readFileSync(argv.new as string).toString());
 
-            const editScript: EditScript = new SemanticDiff(diffOptions).diff(oldTree, newTree);
+            const editScript: EditScript<XmlData> = new SemanticDiff<XmlData>(diffOptions).diff(oldTree, newTree);
 
             const editScriptSerDes = new EditScriptXmlDomSerDes(grammar, diffOptions);
             switch (argv.format) {

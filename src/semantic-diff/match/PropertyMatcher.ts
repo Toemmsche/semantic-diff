@@ -1,16 +1,16 @@
 import IMatcher from './IMatcher';
-import IComparator from './IComparator';
+import IComparator from '../compare/IComparator';
 import TNode from '../tree/TNode';
 
 /**
  * A matching module dedicated to the matching or property nodes.
  */
-export class PropertyMatcher implements IMatcher {
+export class PropertyMatcher<T> implements IMatcher<T> {
   /**
    * Extend the matching with matches between property nodes of matched
    * leaf and inner nodes.
    */
-  match(oldTree: TNode, newTree: TNode, comparator: IComparator) {
+  match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>) {
     const newMatchedNodes =
         newTree
             .nonPropertyNodes()
@@ -21,7 +21,7 @@ export class PropertyMatcher implements IMatcher {
     }
   }
 
-  private matchProperties(oldNode: TNode, newNode: TNode): void {
+  private matchProperties(oldNode: TNode<T>, newNode: TNode<T>): void {
     // We assume that no two properties that are siblings in the xml tree
     // share the same label
     const oldLabelMap = new Map();

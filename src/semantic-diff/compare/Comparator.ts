@@ -1,4 +1,4 @@
-import Extractor from '../cache/Cache';
+import Cache from './cache/Cache';
 import IComparator from './IComparator';
 import TNode from '../tree/TNode';
 
@@ -6,11 +6,13 @@ import ComparisonType from '../grammar/ComparisonType';
 import ICompareOptions from './ICompareOptions';
 import LcsLib from '../lib/LcsLib';
 import UnimplementedError from "../error/UnimplementedError";
+import {Nullable} from "../Types";
+import GrammarNode from "../grammar/GrammarNode";
 
 /**
  * Wrapper class for the computation of various comparison values.
  */
-export class Comparator extends Extractor implements IComparator {
+export class Comparator<T> extends Cache<T> implements IComparator<T> {
 
   private lcsLib : LcsLib;
 
@@ -24,7 +26,7 @@ export class Comparator extends Extractor implements IComparator {
    * commonality is defined as the number of overlapping leaves. Leaves are
    * considered 'equal' if they are matched.
    */
-  compareCommonality(nodeA: TNode, nodeB: TNode): number {
+  compareCommonality(nodeA: TNode<T>, nodeB: TNode<T>): number {
     let common = 0;
     const setA = new Set(nodeB.leaves());
     const setB = new Set(nodeA.leaves());
@@ -52,7 +54,7 @@ export class Comparator extends Extractor implements IComparator {
     );
   }
 
-  compare(nodeA: TNode, nodeB: TNode): number {
+  compare(nodeA: TNode<T>, nodeB: TNode<T>): number {
     const compareValue = this.weightedAverage(
         [
           this.compareContent(nodeA, nodeB),
@@ -67,14 +69,18 @@ export class Comparator extends Extractor implements IComparator {
     return compareValue ?? 0;
   }
 
-  compareContent(nodeA: TNode, nodeB: TNode): number {
+  compareContent(nodeA: TNode<T>, nodeB: TNode<T>): number {
     // different labels cannot be matched
     // TODO maybe use grammar node or other criterion
     if (nodeA.label !== nodeB.label) return 1.0;
     // compare different properties of each node and weigh the resulting
     // comparison values according to the specified grammar.
-    const grammarNode = nodeA.getGrammarNode();
-    const items: (number | nu)[] = [];
+
+    console.assert(nodeB.grammarNode === nodeA.grammarNode);
+
+    const grammarNode : GrammarNode = nodeA.grammarNode!!;
+
+    const items: Nullable<number>[] = [];
     const weights = [];
     const propertiesA = this.getProperties(nodeA);
     const propertiesB = this.getProperties(nodeB);
@@ -86,7 +92,7 @@ export class Comparator extends Extractor implements IComparator {
         // do not add item or weight
         continue;
       }
-      let cv: number | nu = 1;
+      let cv: Nullable<number> = 1;
       if (!(valueA == null && valueB || valueA && valueB == null)) {
         switch (wcv.comparisonType) {
           case ComparisonType.ALL_OR_NOTHING:
@@ -108,7 +114,7 @@ export class Comparator extends Extractor implements IComparator {
   /**
    * Compare the position of two nodes, determined by their paths.
    */
-  comparePosition(nodeA: TNode, nodeB: TNode): number {
+  comparePosition(nodeA: TNode<T>, nodeB: TNode<T>): number {
     const radius = this.options.PATH_COMPARE_RANGE;
 
     /*
@@ -135,25 +141,25 @@ export class Comparator extends Extractor implements IComparator {
             .path(radius + 1)
             .reverse()
             .slice(1)
-            .map((n: TNode) => this.getContentHash(n));
+            .map((n: TNode<T>) => this.getContentHash(n));
     const otherPathSlice =
         nodeB
             .path(radius + 1)
             .reverse()
             .slice(1)
-            .map((n: TNode) => this.getContentHash(n));
+            .map((n: TNode<T>) => this.getContentHash(n));
     const pathCV = this.comparePathLcs(nodePathSlice, otherPathSlice);
     return pathCV;
   }
 
-  compareSize(nodeA: TNode, nodeB: TNode): number {
+  compareSize(nodeA: TNode<T>, nodeB: TNode<T>): number {
     return this.getSize(nodeA) - this.getSize(nodeB);
   }
 
   /**
    * Compute the weighted average for a set of comparison values and weights.
    */
-  weightedAverage(items: (number | nu)[], weights: number[], defaultValue = 0): number {
+  weightedAverage(items: Nullable<number>[], weights: number[], defaultValue = 0): number {
     let itemSum = 0;
     let weightSum = 0;
     for (let i = 0; i < items.length; i++) {

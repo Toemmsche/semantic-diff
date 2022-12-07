@@ -1,261 +1,301 @@
 import GrammarNode from '../grammar/GrammarNode';
 import {arraySum} from '../Util';
-import NodeType from '../grammar/NodeType';
+import IData from "../data/IData";
+import ICopyable from "../data/ICopyable";
+import NodeType from "../grammar/NodeType";
+import {Nullable} from "../Types";
 
-export default class TNode {
+export class TNodeBuilder<T> {
 
-  private matchPartner ?: TNode;
 
-  constructor(public label: string,
-              public children: TNode[] = [],
-              public text ?: string,
-              public attributes: Map<String, string> = new Map(),
-              private grammarNode ?: GrammarNode, // property node if undefined
-              private parent ?: TNode,
-              private index ?: number,
-  ) {
-    this.adjustChildIndices();
-  }
+    private _children: TNode<T>[] = [];
 
-  getGrammarNode(): GrammarNode {
-    return this.grammarNode!!;
-  }
+    private _data: Nullable<T>;
 
-  appendChild(node: TNode): void {
-    this.children.push(node);
-  }
+    private _grammarNode: Nullable<GrammarNode>;
 
-  accessProperty(path: string): string | nu {
-    // We assume that descending according to the path is always unambiguous
-    // TODO performance improvements
-    const pathNodes = path.split('/');
-    let node: TNode | nu = this;
-    for (const pathNode of pathNodes) {
-      // Termination conditions
-      if (pathNode === '#text' || pathNode === '') {
+    children(children: TNode<T>[]) : TNodeBuilder<T>{
+        this._children = children;
+        return this;
+    }
+
+    data(data: T) : TNodeBuilder<T> {
+        this._data = data;
+        return this;
+    }
+
+    grammarNode(grammarNode: GrammarNode) : TNodeBuilder<T> {
+        this._grammarNode = grammarNode;
+        return this;
+    }
+
+    build() : TNode<T> {
+        if (!this._data) {
+            throw new Error("Missing data");
+        }
+        const node = new TNode<T>(this._data, this._grammarNode);
+        for (const child of this._children) {
+            node.appendChild(child);
+        }
+        return node;
+    }
+}
+export default class TNode<T> {
+
+    // Every node is matchable, this is fundamental to our approach
+    protected _matchPartner: Nullable<TNode<T>> = null;
+    protected readonly _children: TNode<T>[] = [];
+    protected _parent: Nullable<TNode<T>> = null;
+    private _index: number | null = null;
+
+    public constructor(public data: T, // data fully modifiable for now
+                       public readonly grammarNode: Nullable<GrammarNode>
+    ) {
+    }
+
+    /* TODO remove these */
+
+    get label(): string {
+        return (this.data as IData & ICopyable<T>).label;
+    }
+
+    get text(): Nullable<string> {
+        return (this.data as IData & ICopyable<T>).text;
+    }
+    set text(text: Nullable<string>) {
+        (this.data as IData & ICopyable<T>).text = text;
+    }
+
+    get attributes(): Map<string, string> {
+        return (this.data as IData & ICopyable<T>).attributes;
+    }
+
+    appendChild(child: TNode<T>): void {
+        child._parent = this;
+        child._index = this._children.length;
+        this._children.push(child);
+    }
+
+    get children(): TNode<T>[] {
+        return this._children;
+    }
+
+
+    accessProperty(path: string): Nullable<string> {
+        // We assume that descending according to the path is always unambiguous
+        // TODO performance improvements
+        const pathNodes = path.split('/');
+        let node: Nullable<TNode<T>> = this;
+        for (const pathNode of pathNodes) {
+            // Termination conditions
+            if (pathNode === '#text' || pathNode === '') {
+                return node.text;
+            }
+            if (pathNode.startsWith('@_')) {
+                const attributeName = pathNode.replace('@_', '');
+                return node.attributes.get(attributeName);
+            }
+            node = node._children.find((child) => child.label === pathNode);
+            if (!node) {
+                return null;
+            }
+        }
         return node.text;
-      }
-      if (pathNode.startsWith('@_')) {
-        const attributeName = pathNode.replace('@_', '');
-        return node.attributes.get(attributeName);
-      }
-      node = node.children.find((child) => child.label === pathNode);
-      if (!node) {
-        return null;
-      }
-    }
-    return node.text;
-  }
-
-  toJson(): string {
-    // Avoid circular JSON
-    function replacer(key: string, value: any) {
-      if (key === 'parent') {
-        return undefined;
-      }
-      return value;
     }
 
-    return JSON.stringify(this, replacer);
-  }
-
-  copy(includeChildren: Boolean = true): TNode {
-    let childCopies: TNode[] = [];
-    if (includeChildren) {
-      childCopies = this.children.map(child => child.copy(includeChildren));
+    copy(includeChildren: Boolean = true): TNode<T> {
+        const dataCopy = (this.data as IData & ICopyable<T>).copy();
+        // grammar node stays the same
+        const copy = new TNode<T>(dataCopy, this.grammarNode);
+        if (includeChildren) {
+            // appendChild sets parent and index
+            this._children.forEach(child => copy.appendChild(child.copy()));
+        }
+        return copy;
     }
-    const attributesCopy = new Map(this.attributes.entries());
-    return new TNode(
-        this.label,
-        childCopies,
-        this.text,
-        attributesCopy,
-        this.grammarNode
-    ); // leave parent and index undefined
-  }
 
-  xPath(): string {
-    // discard root node
-    return this.path()
-        .slice(1)
-        .map((node) => node.index)
-        .join('/');
-  }
-
-  path(limit ?: number) {
-    const pathArr = [];
-    let node: TNode | nu = this;
-    while (node != null && (limit == null || pathArr.length < limit)) {
-      pathArr.push(node);
-      node = node.parent;
+    xPath(): string {
+        // discard root node
+        return this.path()
+            .slice(1)
+            .map(node => node._index)
+            .join('/');
     }
-    // this node is always last in path
-    return pathArr.reverse();
-  }
 
-  size(): number {
-    return 1 + this.children.map(child => child.size()).reduce(arraySum, 0);
-  }
-
-  toPreOrderArray(arr: TNode[] = []): TNode[] {
-    arr.push(this);
-    for (const child of this.children) {
-      child.toPreOrderArray(arr);
+    path(limit ?: number) {
+        const pathArr = [];
+        let node: Nullable<TNode<T>> = this;
+        while (node != null && (limit == null || pathArr.length < limit)) {
+            pathArr.push(node);
+            node = node._parent;
+        }
+        // this node is always last in path
+        return pathArr.reverse();
     }
-    return arr;
-  }
 
-  toPostOrderArray(arr: TNode[] = []): TNode[] {
-    for (const child of this.children) {
-      child.toPostOrderArray(arr);
+    size(): number {
+        return 1 + this._children.map(child => child.size()).reduce(arraySum, 0);
     }
-    arr.push(this);
-    return arr;
-  }
 
-  removeFromParent(): void {
-    this.parent!!.children.splice(this.index!!, 1);
-    this.parent!!.adjustChildIndices();
-  }
-
-  childAt(index: number): TNode {
-    return this.children[index];
-  }
-
-  getIndex(): number {
-    return this.index!!;
-  }
-
-  setIndex(index: number): void {
-    throw new Error('unimplemented');
-  }
-
-  getParent(): TNode {
-    return this.parent!!;
-  }
-
-  insertChild(newIndex: number, newChild: TNode): void {
-    this.children.splice(newIndex, 0, newChild);
-    this.adjustChildIndices();
-  }
-
-  getSiblings(): TNode[] {
-    if (!this.parent) {
-      return [];
+    toPreOrderArray(arr: TNode<T>[] = []): TNode<T>[] {
+        arr.push(this);
+        for (const child of this._children) {
+            child.toPreOrderArray(arr);
+        }
+        return arr;
     }
-    return this.parent.children;
-  }
 
-  isRoot(): boolean {
-    return !this.parent;
-  }
-
-  contentEquals(other: TNode): boolean {
-    let attributesEqual = true;
-    const allKeys = new Set([
-      ...this.attributes.keys(),
-      ...other.attributes.keys()
-    ]);
-    for (const key of allKeys) {
-      if (this.attributes.get(key) != other.attributes.get(key)) {
-        attributesEqual = false;
-        break;
-      }
+    toPostOrderArray(arr: TNode<T>[] = []): TNode<T>[] {
+        for (const child of this._children) {
+            child.toPostOrderArray(arr);
+        }
+        arr.push(this);
+        return arr;
     }
-    // Do not perform nested equality check on children
-    return this.label === other.label && this.text == other.text && attributesEqual;
-  }
 
-  degree(): number {
-    return this.children.length;
-  }
-
-  changeIndex(newIndex: number) {
-    // delete
-    this.parent!!.children.splice(this.index!!, 1);
-    // insert
-    this.parent!!.children.splice(newIndex, 0, this);
-    // adjust indices of all children
-    this.parent!!.adjustChildIndices();
-  }
-
-  hasInternalOrdering() {
-    // Assume no ordering for property nodes
-    return this.grammarNode != null && this.grammarNode?.ordered;
-  }
-
-  isPropertyNode(): boolean {
-    return !this.grammarNode;
-  }
-
-  isLeaf(): boolean {
-    return this.grammarNode != null && this.grammarNode.type === NodeType.LEAF;
-  }
-
-  nonPropertyNodes(): TNode[] {
-    return this.toPreOrderArray().filter(node => !node.isPropertyNode());
-  }
-
-  leaves(): TNode[] {
-    return this.toPreOrderArray().filter(node => node.isLeaf());
-  }
-
-  getLeftSibling(): TNode | nu {
-    return this.getSiblings()[this.index!! - 1];
-  }
-
-  getRightSibling(): TNode | nu {
-    return this.getSiblings()[this.index!! + 1];
-  }
-
-  [Symbol.iterator]() {
-    return this.children[Symbol.iterator]();
-  }
-
-  /* =============== MATCHING STUFF ================== */
-
-  matchTo(other: TNode): boolean {
-    if (this.matchPartner || other.matchPartner) {
-      return false;
+    removeFromParent(): void {
+        this._parent!!._children.splice(this._index!!, 1);
+        this._parent!!.adjustChildIndices();
     }
-    // Bijective matching
-    this.matchPartner = other;
-    other.matchPartner = this;
-    return true;
-  }
 
-  getMatch(): TNode {
-    return this.matchPartner!!;
-  }
-
-  isMatchedTo(other: TNode): boolean {
-    return this.matchPartner === other;
-  }
-
-  isMatched(): boolean {
-    return !!this.matchPartner;
-  }
-
-  getMatchingMap(): Map<TNode, TNode> {
-    return new Map(this.toPreOrderArray()
-        .filter(node => node.isMatched())
-        .map(node => [
-          node,
-          node.getMatch()
-        ])
-    );
-  }
-
-  verifyMatching(): boolean {
-    return !this.matchPartner || (this.getMatch().isMatchedTo(this));
-  }
-
-  private adjustChildIndices(): void {
-    // Set children's parent and index
-    for (const [i, child] of this.children.entries()) {
-      child.parent = this;
-      child.index = i;
+    childAt(index: number): TNode<T> {
+        return this._children[index];
     }
-  }
+
+    getIndex(): number {
+        return this._index!!;
+    }
+
+    setIndex(index: number): void {
+        throw new Error('unimplemented');
+    }
+
+    getParent(): TNode<T> {
+        return this._parent!!;
+    }
+
+    insertChild(newIndex: number, newChild: TNode<T>): void {
+        this._children.splice(newIndex, 0, newChild);
+        this.adjustChildIndices();
+    }
+
+    getSiblings(): TNode<T>[] {
+        if (!this._parent) {
+            return [];
+        }
+        return this._parent._children;
+    }
+
+    isRoot(): boolean {
+        return !this._parent;
+    }
+
+    hasInternalOrdering() {
+        // Assume no ordering for property nodes
+        return this.grammarNode != null && this.grammarNode?.ordered;
+    }
+
+    isPropertyNode(): boolean {
+        return !this.grammarNode;
+    }
+
+    isLeaf(): boolean {
+        return this.grammarNode != null && this.grammarNode.type === NodeType.LEAF;
+    }
+
+    nonPropertyNodes(): TNode<T>[] {
+        return this.toPreOrderArray().filter(node => !node.isPropertyNode());
+    }
+
+    leaves(): TNode<T>[] {
+        return this.toPreOrderArray().filter(node => node.isLeaf());
+    }
+
+    contentEquals(other: TNode<T>): boolean {
+        let attributesEqual = true;
+        const allKeys = new Set([
+            ...this.attributes.keys(),
+            ...other.attributes.keys()
+        ]);
+        for (const key of allKeys) {
+            if (this.attributes.get(key) != other.attributes.get(key)) {
+                attributesEqual = false;
+                break;
+            }
+        }
+        // Do not perform nested equality check on children
+        return this.label === other.label && this.text == other.text && attributesEqual;
+    }
+
+    degree(): number {
+        return this._children.length;
+    }
+
+    changeIndex(newIndex: number) {
+        // delete
+        this._parent!!._children.splice(this._index!!, 1);
+        // insert
+        this._parent!!._children.splice(newIndex, 0, this);
+        // adjust indices of all children
+        this._parent!!.adjustChildIndices();
+    }
+
+    getLeftSibling(): Nullable<TNode<T>> {
+        return this.getSiblings()[this._index!! - 1];
+    }
+
+    getRightSibling(): Nullable<TNode<T>> {
+        return this.getSiblings()[this._index!! + 1];
+    }
+
+    [Symbol.iterator]() {
+        return this._children[Symbol.iterator]();
+    }
+
+    /* =============== MATCHING STUFF ================== */
+
+    matchTo(other: TNode<T>): boolean {
+        if (this._matchPartner || other._matchPartner) {
+            return false;
+        }
+        // Bijective matching
+        this._matchPartner = other;
+        other._matchPartner = this;
+        return true;
+    }
+
+    getMatch(): TNode<T> {
+        return this._matchPartner!!;
+    }
+
+    isMatchedTo(other: TNode<T>): boolean {
+        return this._matchPartner === other;
+    }
+
+    isMatched(): boolean {
+        return !!this._matchPartner;
+    }
+
+    getMatchingMap(): Map<TNode<T>, TNode<T>> {
+        return new Map(this.toPreOrderArray()
+            .filter(node => node.isMatched())
+            .map(node => [
+                node,
+                node.getMatch()
+            ])
+        );
+    }
+
+    verifyMatching(): boolean {
+        return !this._matchPartner || (this.getMatch().isMatchedTo(this));
+    }
+
+    private adjustChildIndices(): void {
+        // Set children's parent and index
+        for (const [i, child] of this._children.entries()) {
+            child._parent = this;
+            child._index = i;
+        }
+    }
 
 }

@@ -2,18 +2,18 @@ import IMatcher from './IMatcher';
 import {FixedMatcher} from './FixedMatcher';
 import {HashMatcher} from './HashMatcher';
 import TNode from '../tree/TNode';
-import {Comparator} from './Comparator';
+import {Comparator} from '../compare/Comparator';
 import MalformedMatchingError from '../error/MalformedMatchingError';
 import {SimilarityMatcher} from './SimilarityMatcher';
 import {PathMatcher} from './PathMatcher';
 import {SandwichMatcher} from './SandwichMatcher';
 import {PropertyMatcher} from './PropertyMatcher';
-import IComparator from './IComparator';
+import IComparator from '../compare/IComparator';
 import IMatchOptions from './IMatchOptions';
 
-export class MatchPipeline {
+export class MatchPipeline<T> {
 
-  constructor(private matchers: IMatcher[]) {
+  constructor(private matchers: IMatcher<T>[]) {
     const len = matchers.length;
     // FixedMatcher is always the first matching algorithm in the pipeline
     if (len === 0 || matchers[0].constructor !== FixedMatcher) {
@@ -62,7 +62,7 @@ export class MatchPipeline {
    * Construct a matching between the passed process trees by executing the
    * matching pipeline in order.
    */
-  execute(oldTree: TNode, newTree: TNode, comparator: IComparator): void {
+  execute(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>): void {
     for (const matcher of this.matchers) {
       matcher.match(oldTree, newTree, comparator);
       if (!this.verifyMatching(oldTree, newTree)) {
@@ -72,7 +72,7 @@ export class MatchPipeline {
     // TODO matching type
   }
 
-  private verifyMatching(oldTree: TNode, newTree: TNode): boolean {
+  private verifyMatching(oldTree: TNode<T>, newTree: TNode<T>): boolean {
     const oldNodeSet = new Set(oldTree.toPreOrderArray());
     const newNodeSet = new Set(newTree.toPreOrderArray());
 

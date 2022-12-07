@@ -3,7 +3,7 @@ import dagre from 'dagre';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 
-import {PlanNode} from "../model/PlanNode";
+import {PlanData} from "../model/PlanNode";
 // @ts-ignore
 import s from './DagreD3DiffGraphComponent.module.scss';
 import IRenderBackendProps from "./IRenderBackendProps";
@@ -31,25 +31,25 @@ export default function DagreD3DiffGraphComponent(props: IRenderBackendProps) {
      * @param g graph to fill with nodes and edges
      * @param element current {@link PlanGraphElement}
      */
-    function fillGraph(g: dagreD3.graphlib.Graph, element: PlanNode): void {
+    function fillGraph(g: dagreD3.graphlib.Graph, element: TNode<PlanData>): void {
         // create current node
         const label = document.createElement("div");
-        label.innerText = element.operatorId;
+        label.innerText = element.data.operatorId;
         const childLabel = document.createElement("div")
-        childLabel.innerText = element.operatorName;
+        childLabel.innerText = element.data.operatorName;
         childLabel.setAttribute("class", "nodeBody")
         label.appendChild(childLabel);
 
-        g.setNode(element.operatorId, {
+        g.setNode(element.data.operatorId, {
             label: label,
             class: s.simpleNode
         });
 
         // create edges to children
-        element.childPlanNodes.forEach(child=> {
+        element.children.forEach(child=> {
 
             fillGraph(g, child);
-            g.setEdge(element.operatorId, child.operatorId, {
+            g.setEdge(element.data.operatorId, child.data.operatorId, {
                 class: s.simplePath,
                 curve: d3.curveMonotoneY,
                 label: "edge"
