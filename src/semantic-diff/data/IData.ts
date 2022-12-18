@@ -1,7 +1,10 @@
 import TNode from "../tree/TNode";
 import {Nullable} from "../Types";
+import Equatable from "./Equatable";
 
-export default interface IData {
+
+
+export default interface IData extends Equatable {
 
     // comparable to key in a map
     get label(): string;

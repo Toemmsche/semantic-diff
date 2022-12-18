@@ -1,0 +1,59 @@
+.graphSvg {
+
+  height: 200vh;
+
+  .simpleNode {
+    rect {
+      fill: rgb(255, 255, 255);
+      text: rgb(0, 0, 0);
+      stroke: black;
+    }
+  }
+
+  .addedNode {
+    rect {
+      fill: rgb(255, 255, 255);
+      text: rgb(0, 0, 0);
+      stroke: green;
+    }
+  }
+
+  .removedNode {
+    rect {
+      fill: rgb(255, 255, 255);
+      text: rgb(0, 0, 0);
+      stroke: red;
+    }
+  }
+
+  .updatedNode {
+    rect {
+      fill: rgb(255, 255, 255);
+      text: rgb(0, 0, 0);
+      stroke: orange;
+    }
+  }
+
+  .movedNode {
+    rect {
+      fill: rgb(255, 255, 255);
+      text: rgb(0, 0, 0);
+      stroke: blue;
+    }
+  }
+
+  .simplePath {
+    path {
+      stroke: rgb(0, 0, 0);
+      stroke-width: 5px;
+      stroke-linecap: square;
+    }
+  }
+  .softPath {
+    path {
+      stroke: rgb(0, 0, 0);
+      stroke-width: 1px;
+      stroke-dasharray: 5, 5;
+    }
+  }
+}

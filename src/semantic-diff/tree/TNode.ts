@@ -212,19 +212,7 @@ export default class TNode<T> {
     }
 
     contentEquals(other: TNode<T>): boolean {
-        let attributesEqual = true;
-        const allKeys = new Set([
-            ...this.attributes.keys(),
-            ...other.attributes.keys()
-        ]);
-        for (const key of allKeys) {
-            if (this.attributes.get(key) != other.attributes.get(key)) {
-                attributesEqual = false;
-                break;
-            }
-        }
-        // Do not perform nested equality check on children
-        return this.label === other.label && this.text == other.text && attributesEqual;
+       return (this.data as IData & ICopyable<T>).equals(other.data);
     }
 
     degree(): number {

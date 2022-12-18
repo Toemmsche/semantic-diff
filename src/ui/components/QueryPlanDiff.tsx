@@ -1,13 +1,15 @@
 import React from 'react';
 // @ts-ignore
 import s from './QueryPlanDiff.module.scss';
-import DagreD3DiffGraphComponent from "./render/DagreD3DiffGraphComponent";
-import {duckPlanJson, pgPlanJson, qpGrammar} from "./model/plans";
+import {duckPlan15, pgPlan15, qpGrammar} from "./model/plans";
 
-import {defaultDiffOptions, TNodeJsonSerDes, TNode, Grammar} from "../../semantic-diff";
-import {PlanData, tNodeToPlanNode} from "./model/PlanNode";
-import GrammarXmlDomSerDes from "../../semantic-diff/io/node/GrammarXmlDomSerDes";
+import {defaultDiffOptions, TNodeBrowserSerDes} from "../../semantic-diff";
+import {PlanNode, tNodeToPlanNode} from "./model/PlanData";
 import GrammarBrowserSerDes from "../../semantic-diff/io/browser/GrammarBrowserSerDes";
+import {MatchPipeline} from "../../semantic-diff/match/MatchPipeline";
+import {Comparator} from "../../semantic-diff/compare/Comparator";
+import ReactFlowGraphComponent from "./render/ReactFlowGraphComponent";
+import DagreD3DiffGraphComponent from "./render/dagre/DagreD3DiffGraphComponent";
 
 interface IQueryPlanDiffProps {
     /**
@@ -27,22 +29,19 @@ interface IQueryPlanDiffState {
  */
 export default function QueryPlanDiff(props: IQueryPlanDiffProps) {
     const gramamr = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(qpGrammar);
-    const serdes = new TNodeJsonSerDes(gramamr, defaultDiffOptions);
-    const firstRoot : TNode<PlanData> = tNodeToPlanNode(serdes.parseFromString(duckPlanJson));
-    const secondRoot : TNode<PlanData> = tNodeToPlanNode(serdes.parseFromString(pgPlanJson));
+    const serdes = new TNodeBrowserSerDes(gramamr, defaultDiffOptions);
+    const firstPlan : PlanNode = tNodeToPlanNode(serdes.parseFromString(duckPlan15));
+    const secondPlan : PlanNode = tNodeToPlanNode(serdes.parseFromString(pgPlan15));
 
-    console.log(firstRoot);
-    console.log(secondRoot);
+    const matchPipeline = MatchPipeline.fromMode(defaultDiffOptions); // TODO with options
+    matchPipeline.execute(firstPlan, secondPlan, new Comparator(defaultDiffOptions)); // TODO maybe move
+
     return (
         <div className={s.queryPlanDiff}>
-            <div className={s.firstGraph}>
-                <DagreD3DiffGraphComponent
-                    rootElement={firstRoot}
-                />
-            </div>
-            <div className={s.secondGraph}>
-                <DagreD3DiffGraphComponent
-                    rootElement={secondRoot}
+            <div className={s.graph}>
+                <ReactFlowGraphComponent
+                    firstPlan={firstPlan}
+                    secondPlan={secondPlan}
                 />
             </div>
         </div>

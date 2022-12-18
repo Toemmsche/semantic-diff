@@ -1,0 +1,34 @@
+<Sort scan_discount_factor="0.2" active="False" limit="None">
+    <Projection scan_discount_factor="0.2" active="False">
+        <Join scan_discount_factor="0.2" active="True" type="None" method="hash" index_lookup_cost="2">
+            <Join scan_discount_factor="0.2" active="True" type="None" method="hash" index_lookup_cost="2">
+                <TableScan scan_discount_factor="0.2" active="False" table_name="supplier" table_size="None"
+                           type="None"/>
+                <GroupBy scan_discount_factor="0.2" active="True" mode="None" method="hash">
+                    <Projection scan_discount_factor="0.2" active="False">
+                        <TableScan scan_discount_factor="0.2" active="False" table_name="lineitem" table_size="None"
+                                   type="None"/>
+                    </Projection>
+                </GroupBy>
+            </Join>
+            <SimpleAggregate scan_discount_factor="0.2" active="True">
+                <Projection scan_discount_factor="0.2" active="False">
+                    <Limit scan_discount_factor="0.2" active="False">
+                        <SimpleAggregate scan_discount_factor="0.2" active="True">
+                            <Projection scan_discount_factor="0.2" active="False">
+                                <Projection scan_discount_factor="0.2" active="False">
+                                    <GroupBy scan_discount_factor="0.2" active="True" mode="None" method="hash">
+                                        <Projection scan_discount_factor="0.2" active="False">
+                                            <TableScan scan_discount_factor="0.2" active="False" table_name="lineitem"
+                                                       table_size="None" type="None"/>
+                                        </Projection>
+                                    </GroupBy>
+                                </Projection>
+                            </Projection>
+                        </SimpleAggregate>
+                    </Limit>
+                </Projection>
+            </SimpleAggregate>
+        </Join>
+    </Projection>
+</Sort>

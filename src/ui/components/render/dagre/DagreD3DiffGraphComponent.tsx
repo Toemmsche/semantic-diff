@@ -3,13 +3,13 @@ import dagre from 'dagre';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 
-import {PlanData} from "../model/PlanNode";
+import {PlanData, PlanNode} from "../../model/PlanData";
 // @ts-ignore
 import s from './DagreD3DiffGraphComponent.module.scss';
-import IRenderBackendProps from "./IRenderBackendProps";
+import IRenderBackendProps from "../IRenderBackendProps";
 // @ts-ignore
 import n from './NodeBody.module.scss';
-import {TNode} from "../../../semantic-diff";
+import {TNode} from "../../../../semantic-diff";
 
 
 /**
@@ -31,29 +31,51 @@ export default function DagreD3DiffGraphComponent(props: IRenderBackendProps) {
      * @param g graph to fill with nodes and edges
      * @param element current {@link PlanGraphElement}
      */
-    function fillGraph(g: dagreD3.graphlib.Graph, element: TNode<PlanData>): void {
+    function fillGraph(g: dagreD3.graphlib.Graph, element: PlanNode): void {
         // create current node
-        const label = document.createElement("div");
-        label.innerText = element.data.operatorId;
-        const childLabel = document.createElement("div")
-        childLabel.innerText = element.data.operatorName;
-        childLabel.setAttribute("class", "nodeBody")
-        label.appendChild(childLabel);
+
+        let cls: string;
+        if (!element.isMatched()) {
+            cls = s.addedNode
+        } else if (element.contentEquals(element.getMatch())) {
+            cls = s.updatedNode
+        } else if (!element.getParent().isMatched() ||
+            !element.getMatch().getParent().isMatched() ||
+            element.getMatch().getParent() != element.getParent().getMatch()) {
+            cls = s.movedNode
+        } else {
+            cls = s.simpleNode
+        }
 
         g.setNode(element.data.operatorId, {
-            label: label,
-            class: s.simpleNode
+            label: element.data.render(),
+            class: cls,
+            rank: "max"
         });
 
         // create edges to children
-        element.children.forEach(child=> {
-
+        element.children.forEach(child => {
             fillGraph(g, child);
             g.setEdge(element.data.operatorId, child.data.operatorId, {
                 class: s.simplePath,
                 curve: d3.curveMonotoneY,
-                label: "edge"
+                arrowheadStyle: "display: none"
             });
+        });
+    }
+
+    function fillMatches(g: dagreD3.graphlib.Graph, element: PlanNode): void {
+        if (element.isMatched()) {
+            g.node(element.data.operatorId).rank = 1
+
+            g.setEdge(element.data.operatorId, element.getMatch().data.operatorId, {
+                class: s.softPath,
+                curve: d3.curveMonotoneY,
+                arrowheadStyle: "display: none"
+            });
+        }
+        element.children.forEach(child => {
+            fillMatches(g, child);
         });
     }
 
@@ -63,8 +85,12 @@ export default function DagreD3DiffGraphComponent(props: IRenderBackendProps) {
      */
     function drawChart() {
         // create empty dagre graph and fill with nodes
-        const g: dagreD3.graphlib.Graph = new dagreD3.graphlib.Graph().setGraph({nodesep: 50, ranksep: 30});
-        fillGraph(g, props.rootElement);
+        const g: dagreD3.graphlib.Graph = new dagreD3.graphlib.Graph().setGraph({nodesep: 100, ranksep: 100});
+        fillGraph(g, props.firstPlan);
+        fillGraph(g, props.secondPlan);
+
+        //fillMatches(g, props.firstPlan);
+
         // @ts-ignore
         const g2: dagre.graphlib.Graph = g;
         dagre.layout(g2);

@@ -1,7 +1,9 @@
-import {PlanData} from "../model/PlanNode";
+import {PlanData, PlanNode} from "../model/PlanData";
 import {TNode} from "../../../semantic-diff";
 
 export default interface IRenderBackendProps {
     /** Result node with children */
-    rootElement: TNode<PlanData>;
+    firstPlan: PlanNode;
+
+    secondPlan: PlanNode
 }

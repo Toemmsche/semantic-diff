@@ -1,0 +1,22 @@
+<Sort id="2" scan_discount_factor="0.2" active="False" limit="None">
+    <Join id="3" scan_discount_factor="0.2" active="True" type="None" method="indexnl" index_lookup_cost="2">
+        <Join id="4" scan_discount_factor="0.2" active="True" type="None" method="hash" index_lookup_cost="2">
+            <GroupBy id="5" scan_discount_factor="0.2" active="True" mode="static" method="None">
+                <TempScan id="6" scan_discount_factor="0.2" active="False" scanned_id="7">
+                    <GroupBy id="7" scan_discount_factor="0.2" active="True" mode="regular" method="None">
+                        <TableScan id="8" scan_discount_factor="0.2" active="False" table_name="lineitem"
+                                   table_size="None" type="None"/>
+                    </GroupBy>
+                </TempScan>
+            </GroupBy>
+            <TempScan id="9" scan_discount_factor="0.2" active="False" scanned_id="7">
+                <GroupBy id="7" scan_discount_factor="0.2" active="True" mode="regular" method="None">
+                    <TableScan id="8" scan_discount_factor="0.2" active="False" table_name="lineitem" table_size="None"
+                               type="None"/>
+                </GroupBy>
+            </TempScan>
+        </Join>
+        <TableScan id="10" scan_discount_factor="0.2" active="False" table_name="supplier" table_size="None"
+                   type="None"/>
+    </Join>
+</Sort>
