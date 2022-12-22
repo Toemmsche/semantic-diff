@@ -1,15 +1,19 @@
 import React from 'react';
 // @ts-ignore
 import s from './QueryPlanDiff.module.scss';
-import {duckPlan15, pgPlan15, qpGrammar} from "./model/plans";
+import {duckPlan15, qpGrammar, umbraPlan15} from "../model/plans";
 
 import {defaultDiffOptions, TNodeBrowserSerDes} from "../../semantic-diff";
-import {PlanNode, tNodeToPlanNode} from "./model/PlanData";
+import {PlanNode} from "../model/PlanData";
 import GrammarBrowserSerDes from "../../semantic-diff/io/browser/GrammarBrowserSerDes";
 import {MatchPipeline} from "../../semantic-diff/match/MatchPipeline";
 import {Comparator} from "../../semantic-diff/compare/Comparator";
-import ReactFlowGraphComponent from "./render/ReactFlowGraphComponent";
-import DagreD3DiffGraphComponent from "./render/dagre/DagreD3DiffGraphComponent";
+import ReactFlowGraphComponent from "./reactflow/ReactFlowGraphComponent";
+import DagreD3DiffGraphComponent from "./dagre/DagreD3DiffGraphComponent";
+import PlanNodeBrowserSerDes from "../../semantic-diff/io/browser/PlanNodeBrowserSerDes";
+import QueryPlan from "../model/QueryPlan";
+import SideBar from "./SideBar";
+import {useGlobalState} from "../state/Store";
 
 interface IQueryPlanDiffProps {
     /**
@@ -28,22 +32,11 @@ interface IQueryPlanDiffState {
  * Root Component for QueryPlan diff view
  */
 export default function QueryPlanDiff(props: IQueryPlanDiffProps) {
-    const gramamr = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(qpGrammar);
-    const serdes = new TNodeBrowserSerDes(gramamr, defaultDiffOptions);
-    const firstPlan : PlanNode = tNodeToPlanNode(serdes.parseFromString(duckPlan15));
-    const secondPlan : PlanNode = tNodeToPlanNode(serdes.parseFromString(pgPlan15));
-
-    const matchPipeline = MatchPipeline.fromMode(defaultDiffOptions); // TODO with options
-    matchPipeline.execute(firstPlan, secondPlan, new Comparator(defaultDiffOptions)); // TODO maybe move
 
     return (
         <div className={s.queryPlanDiff}>
-            <div className={s.graph}>
-                <ReactFlowGraphComponent
-                    firstPlan={firstPlan}
-                    secondPlan={secondPlan}
-                />
-            </div>
+            <SideBar></SideBar>
+            <ReactFlowGraphComponent/>
         </div>
     );
 }

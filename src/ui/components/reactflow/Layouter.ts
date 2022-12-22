@@ -11,7 +11,8 @@ export type LayoutDirection = keyof typeof LayoutDirection
 export interface LayoutOptions {
     // distance between nodes
     nodeSep: number
-    direction: LayoutDirection
+    direction: LayoutDirection,
+    globalXOffset: number
 }
 
 export interface TreeLayoutOptions extends LayoutOptions {
@@ -26,15 +27,17 @@ export default class Layouter {
      * @param edges
      * @param options
      */
-    public static treeLayout(nodes: Node[], edges: Edge[], options?: TreeLayoutOptions) {
+    public static treeLayout(nodes: Node[], edges: Edge[], options: TreeLayoutOptions) {
         const dagreGraphOptions: any = {}
-        if (options) {
-            dagreGraphOptions.nodesep = options.nodeSep;
-            dagreGraphOptions.ranksep = options.rankSep;
-            switch(options.direction) {
-                case LayoutDirection.HORIZONTAL: dagreGraphOptions.rankdir = "LR"; break;
-                case LayoutDirection.VERTICAL: dagreGraphOptions.rankdir = "TB"; break;
-            }
+        dagreGraphOptions.nodesep = options.nodeSep;
+        dagreGraphOptions.ranksep = options.rankSep;
+        switch (options.direction) {
+            case LayoutDirection.HORIZONTAL:
+                dagreGraphOptions.rankdir = "LR";
+                break;
+            case LayoutDirection.VERTICAL:
+                dagreGraphOptions.rankdir = "TB";
+                break;
         }
         const dagreGraph = new dagre.graphlib.Graph().setGraph(dagreGraphOptions)
 
@@ -53,7 +56,7 @@ export default class Layouter {
         nodes.forEach((node) => {
             const dagreNode = dagreGraph.node(node.id);
 
-            const x = dagreNode.x;
+            const x = dagreNode.x + options.globalXOffset;
             const y = dagreNode.y;
 
             node.position = {x, y};

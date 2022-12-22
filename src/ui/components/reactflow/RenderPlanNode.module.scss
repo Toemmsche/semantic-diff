@@ -1,0 +1,22 @@
+.planNode {
+  background: lightgrey;
+  display: flex;
+  border-radius: 10%;
+
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+
+  width: max-content;
+}
+
+.operatorName {
+  border: 2px solid red;
+  font-weight: bold;
+  border-radius: 10%;
+}
+
+.operatorAttribute {
+  margin-top: 5%;
+  margin-bottom: 5%;
+}

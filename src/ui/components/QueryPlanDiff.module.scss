@@ -1,11 +1,6 @@
 .queryPlanDiff {
     height: 100vh;
     width: 100vw;
-
-    .graph {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-    }
+    display: flex;
+    flex-direction: row;
 }

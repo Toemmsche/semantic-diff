@@ -1,0 +1,33 @@
+.diffContainer {
+  display: grid;
+  grid-template-columns: 45vw 45vw;
+  grid-template-rows: 10vh 90vh;
+}
+
+.twoPlanView {
+  grid-column-start: 1;
+  grid-column-end: end;
+  grid-row-start: 2;
+  grid-row-end: end;
+}
+
+@mixin planMetadata {
+  text-align: center;
+}
+
+.firstPlanMetadata {
+  @include planMetadata;
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.secondPlanMetadata {
+  @include planMetadata;
+  grid-column-start: 2;
+  grid-column-end: end;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+

@@ -6,10 +6,10 @@ import dagreD3 from 'dagre-d3';
 import {PlanData, PlanNode} from "../../model/PlanData";
 // @ts-ignore
 import s from './DagreD3DiffGraphComponent.module.scss';
-import IRenderBackendProps from "../IRenderBackendProps";
+import IRenderBackendProps from "../reactflow/IRenderBackendProps";
 // @ts-ignore
 import n from './NodeBody.module.scss';
-import {TNode} from "../../../../semantic-diff";
+import {TNode} from "../../../semantic-diff";
 
 
 /**
@@ -48,7 +48,7 @@ export default function DagreD3DiffGraphComponent(props: IRenderBackendProps) {
         }
 
         g.setNode(element.data.operatorId, {
-            label: element.data.render(),
+            label: element.data.label,
             class: cls,
             rank: "max"
         });
@@ -86,8 +86,8 @@ export default function DagreD3DiffGraphComponent(props: IRenderBackendProps) {
     function drawChart() {
         // create empty dagre graph and fill with nodes
         const g: dagreD3.graphlib.Graph = new dagreD3.graphlib.Graph().setGraph({nodesep: 100, ranksep: 100});
-        fillGraph(g, props.firstPlan);
-        fillGraph(g, props.secondPlan);
+        fillGraph(g, props.firstPlan.root);
+        fillGraph(g, props.secondPlan.root);
 
         //fillMatches(g, props.firstPlan);
 

@@ -5,9 +5,9 @@ import ICopyable from "./ICopyable";
 
 export default class XmlData implements IData, ICopyable<XmlData> {
 
-    constructor(public _label: string,
-                public _text: Nullable<string>,
-                public _attributes: Map<string, string> = new Map()) {
+    constructor(private _label: string,
+                private  _text: Nullable<string>,
+                private  _attributes: Map<string, string> = new Map()) {
     }
 
     equals(other: any): boolean {

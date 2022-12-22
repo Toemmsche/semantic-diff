@@ -8,7 +8,7 @@ import XmlData from "../../data/XmlData";
 
 export default class TNodeBrowserSerDes extends SerDes<TNode<XmlData>> {
 
-    public constructor(private grammar: Grammar, private options: ISerDesOptions) {
+    public constructor(protected grammar: Grammar, protected options: ISerDesOptions) {
         super();
     }
 
