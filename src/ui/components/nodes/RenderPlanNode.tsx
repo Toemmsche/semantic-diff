@@ -1,6 +1,5 @@
 import React from "react";
 import {PlanData} from "../../model/PlanData";
-import IRenderBackendProps from "./IRenderBackendProps";
 // @ts-ignore
 import s from './RenderPlanNode.module.scss'
 import {Handle, Position} from "reactflow";

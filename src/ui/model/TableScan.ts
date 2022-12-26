@@ -1,4 +1,5 @@
 import {PlanData} from "./PlanData";
+import RenderTableScan from "../components/nodes/RenderTableScan";
 
 export class TableScan extends PlanData {
 
@@ -7,7 +8,7 @@ export class TableScan extends PlanData {
     get tableName(): string {
         return this.attributes.get("table_name")!!;
     }
-    componentName(): string {
-        return "renderTableScan";
+    component(): Function {
+        return RenderTableScan;
     }
 }

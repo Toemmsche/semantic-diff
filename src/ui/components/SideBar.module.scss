@@ -3,18 +3,22 @@
   justify-content: space-between;
 
   position: absolute;
-  background: grey;
   display: flex;
   flex-direction: column;
 
   width: 5vw;
-  height: 8vh
+  height: 12vh
 }
 
 .fileUploadBtn {
-  background: lightblue;
+  border: 2px solid black;
   padding-top: 10%;
   text-align: center;
+}
+
+.fileUploadBtn:hover {
+  background: lightgrey;
+  cursor: pointer;
 }
 
 input[type="file"] {

@@ -1,5 +1,7 @@
-import {Node, Edge} from "reactflow";
+import {Edge, Node} from "reactflow";
 import dagre from "dagre";
+import React from "react";
+import {PlanData} from "../../model/PlanData";
 
 export const LayoutDirection = {
     HORIZONTAL: "HORIZONTAL",
@@ -12,7 +14,8 @@ export interface LayoutOptions {
     // distance between nodes
     nodeSep: number
     direction: LayoutDirection,
-    globalXOffset: number
+    globalXOffset: number,
+    withDimensions: boolean
 }
 
 export interface TreeLayoutOptions extends LayoutOptions {
@@ -27,10 +30,13 @@ export default class Layouter {
      * @param edges
      * @param options
      */
-    public static treeLayout(nodes: Node[], edges: Edge[], options: TreeLayoutOptions) {
-        const dagreGraphOptions: any = {}
-        dagreGraphOptions.nodesep = options.nodeSep;
-        dagreGraphOptions.ranksep = options.rankSep;
+    public static treeLayout (nodes: Node<PlanData>[],
+                              edges: Edge[],
+                              options: TreeLayoutOptions): Node[] {
+        const dagreGraphOptions: any = {
+            nodesep: options.nodeSep,
+            ranksep: options.rankSep,
+        }
         switch (options.direction) {
             case LayoutDirection.HORIZONTAL:
                 dagreGraphOptions.rankdir = "LR";
@@ -43,7 +49,12 @@ export default class Layouter {
 
         nodes.forEach(node => {
             // passing an empty object as label is ESSENTIAL
-            dagreGraph.setNode(node.id, {});
+            const label : any = {};
+            if (options.withDimensions) {
+                label.width = node.width;
+                label.height = node.height;
+            }
+            dagreGraph.setNode(node.id, label);
         });
 
         edges.forEach(edge => {
@@ -53,13 +64,15 @@ export default class Layouter {
 
         dagre.layout(dagreGraph);
 
-        nodes.forEach((node) => {
+        return nodes.map((node) => {
             const dagreNode = dagreGraph.node(node.id);
+            const x = dagreNode.x + options.globalXOffset - node.data.renderWidth / 2;
+            const y = dagreNode.y - node.data.renderHeight / 2;
 
-            const x = dagreNode.x + options.globalXOffset;
-            const y = dagreNode.y;
-
-            node.position = {x, y};
-        });
+            return {
+                ...node,
+                position: {x, y}
+            }
+        })
     }
 }

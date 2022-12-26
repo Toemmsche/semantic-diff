@@ -125,7 +125,7 @@ export class EditScriptGenerator<T> {
     if (newNode.getIndex() > 0) {
       const leftSibling = newNode.getSiblings()[newNode.getIndex() - 1];
       // Left sibling has a match
-      insertionIndex = leftSibling.getIndex() + 1;
+      insertionIndex = leftSibling.getMatch().getIndex() + 1;
     } else {
       insertionIndex = 0;
     }

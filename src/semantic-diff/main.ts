@@ -13,6 +13,7 @@ import EditScriptXmlDomSerDes from './io/node/EditScriptXmlDomSerDes';
 import TNodeJsonSerDes from "./io/TNodeJsonSerDes";
 import Grammar from "./grammar/Grammar";
 import XmlData from "./data/XmlData";
+import DeltaTreeGenerator from "./delta/DeltaTreeGenerator";
 
 const argv = yargs(hideBin(process.argv))
     .command(
@@ -62,6 +63,7 @@ const argv = yargs(hideBin(process.argv))
                     type: 'string',
                     choices: [
                         'editScript',
+                        'deltaTree'
                     ],
                     default: 'editScript',
                 })
@@ -112,12 +114,19 @@ const argv = yargs(hideBin(process.argv))
             const oldTree = tNodeSerDes.parseFromString(fs.readFileSync(argv.old as string).toString());
             const newTree = tNodeSerDes.parseFromString(fs.readFileSync(argv.new as string).toString());
 
-            const editScript: EditScript<XmlData> = new SemanticDiff<XmlData>(diffOptions).diff(oldTree, newTree);
 
-            const editScriptSerDes = new EditScriptXmlDomSerDes(grammar, diffOptions);
             switch (argv.format) {
                 case 'editScript': {
+                    const editScript: EditScript<XmlData> = new SemanticDiff<XmlData>(diffOptions).diff(oldTree, newTree);
+                    const editScriptSerDes = new EditScriptXmlDomSerDes(grammar, diffOptions);
+
                     console.log(editScriptSerDes.buildString(editScript))
+                    break;
+                }
+                case 'deltaTree': {
+                    const deltaTreeGenerator = new DeltaTreeGenerator<XmlData>();
+                    const deltaTree = deltaTreeGenerator.generate(oldTree, newTree, diffOptions);
+                    console.log(tNodeSerDes.buildString(deltaTree))
                     break;
                 }
             }

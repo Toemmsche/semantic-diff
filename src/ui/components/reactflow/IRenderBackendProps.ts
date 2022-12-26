@@ -1,6 +1,4 @@
-import {PlanData, PlanNode} from "../../model/PlanData";
-import {TNode} from "../../../semantic-diff";
-import QueryPlan from "../../model/QueryPlan";
+import QueryPlan from "../../model/meta/QueryPlan";
 
 export default interface IRenderBackendProps {
     /** Result node with children */

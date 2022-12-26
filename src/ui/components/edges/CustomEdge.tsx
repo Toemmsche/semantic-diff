@@ -1,6 +1,5 @@
 import React from 'react';
 import {getBezierPath, Position} from 'reactflow';
-import {Nullable} from "../../../semantic-diff/Types";
 import {PlanNode} from "../../model/PlanData";
 
 export interface ICustomEdgeData {
