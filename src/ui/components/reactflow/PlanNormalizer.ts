@@ -1,37 +1,49 @@
 import {Edge, Node} from "reactflow";
 import {PlanNode} from "../../model/PlanData";
-import QueryPlan from "../../model/meta/QueryPlan";
 
 
 export interface INormalizeOptions {
-    computeDiffData: boolean
+    computeData: (planNode: PlanNode,
+                  flowNode: Node,
+                  flowNodes: Node[],
+                  flowEdges: Edge[]) => any
 }
+
+const defaultNormalizeOptions = {
+    computeData: (planNode: PlanNode,
+                  flowNode: Node,
+                  nodes: Node[],
+                  flowEdges: Edge[]) => {
+        return planNode.data
+    }
+}
+
 
 export default class PlanNormalizer {
 
-    public static getMatchEdges (firstPlan: QueryPlan,
-                                 secondPlan: QueryPlan): Edge[] {
+    public static getMatchEdges (firstPlan: PlanNode,
+                                 secondPlan: PlanNode): Edge[] {
         const matchEdges: Edge[] = [];
 
         function recAddMatchEdges (tNode: PlanNode) {
             if (tNode.isMatched()) {
                 const match = tNode.getMatch();
                 matchEdges.push({
-                                    id: "e" + firstPlan.id + tNode.data.operatorId + "-" + secondPlan.id + match.data.operatorId,
-                                    source: firstPlan.id + tNode.data.operatorId,
-                                    target: secondPlan.id + match.data.operatorId
+                                    id: "e" + 1 + tNode.data.operatorId + "-" + 2 + match.data.operatorId,
+                                    source: 1 + tNode.data.operatorId,
+                                    target: 2 + match.data.operatorId
                                 });
             }
             tNode.children.forEach((child) => recAddMatchEdges(child));
         }
 
-        recAddMatchEdges(firstPlan.root);
+        recAddMatchEdges(firstPlan);
 
         return matchEdges;
     }
 
-    public static normalize (plan: QueryPlan,
-                             options: INormalizeOptions): [Node[], Edge[]] {
+    public static normalize (plan: PlanNode, planIndex: number,
+                             options: INormalizeOptions = defaultNormalizeOptions): [Node[], Edge[]] {
 
         const nodes: Node[] = [];
         const edges: Edge[] = [];
@@ -45,28 +57,33 @@ export default class PlanNormalizer {
 
             // transform node
             const normalizedNode = {
-                id: plan.id + tNode.data.operatorId,
-                type: "diffPlanNode",
-                data: tNode.data as any,
+                id: planIndex + tNode.data.operatorId,
+                type: "customNode",
+
                 // placeholder position, should be overwritten by layouter
                 position: {x: 0, y: 0}
-            };
-            if (options.computeDiffData) {
-                normalizedNode.data.diffState = tNode.getDiffState();
-            }
+            } as any;
+            normalizedNode.data = options.computeData(tNode,
+                                                      normalizedNode,
+                                                      nodes, edges);
             nodes.push(normalizedNode);
             tNode.children.forEach(child => {
                 recNormalize(child);
                 edges.push({
-                               id: "e" + plan.id + tNode.data.operatorId + "-" + child.data.operatorId,
+                               id: "e" + planIndex + tNode.data.operatorId + "-" + child.data.operatorId,
+                               type: "customEdge",
                                label: child.data.exactCardinality,
-                               source: plan.id + tNode.data.operatorId,
-                               target: plan.id + child.data.operatorId
+                               source: planIndex + tNode.data.operatorId,
+                               target: planIndex + child.data.operatorId,
+                               data: {
+                                   parentPlanData: tNode.data,
+                                   childPlanData: child.data
+                               }
                            })
             });
         }
 
-        recNormalize(plan.root);
+        recNormalize(plan);
         return [nodes, edges]
     }
 

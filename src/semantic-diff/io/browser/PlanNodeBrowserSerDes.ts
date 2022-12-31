@@ -10,6 +10,11 @@ import {DBMS} from "../../../ui/model/meta/DBMS";
 import {Dataset} from "../../../ui/model/meta/Dataset";
 import Join from "../../../ui/model/Join";
 import {TempScan} from "../../../ui/model/TempScan";
+import QueryPlanResult, {
+    QueryPlanResultCollection
+} from "../../../ui/data/QueryPlanResult";
+import {Query} from "@testing-library/react";
+import BenchmarkResult from "../../../ui/data/BenchmarkResult";
 
 export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements SerDes<TNode<PlanData>> {
 
@@ -77,45 +82,36 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
         return this.parseXmlDom(root);
     }
 
-    public queryPlanFromXml (xml: string): QueryPlan {
-        const planElement = new DOMParser()
-            .parseFromString(xml, 'text/xml')
-            .childNodes
-            .item(0) as Element;
-        const planTreeRoot = this.parseXmlDom(planElement.children.item(0)!!);
-        const dbms = planElement.getAttribute("dbms")!!;
-        if (!(<any>Object).values(DBMS).includes(dbms)) {
-            throw new Error("Unrecognized DBMS " + dbms);
-        }
-        const dataset = planElement.getAttribute("dataset")!!;
-        if (!(<any>Object).values(Dataset).includes(dataset)) {
-            throw new Error("Unrecognized Dataset " + dataset);
-        }
-        const queryName = planElement.getAttribute("query_name")!!;
-        const queryText = planElement.getAttribute("query_text")!!;
-        let maybeRuntime = planElement.getAttribute("runtime");
-        let runtime;
-        if (!maybeRuntime) {
-            runtime = null;
-        } else {
-            runtime = parseFloat(maybeRuntime);
-        }
-        let maybeCompilationTime = planElement.getAttribute("compilation_time");
-        let compilationTime;
-        if (!maybeCompilationTime) {
-            compilationTime = null;
-        } else {
-            compilationTime = parseFloat(maybeCompilationTime);
-        }
 
-        // TODO read query plan
-        return new QueryPlan(planTreeRoot,
-                             dbms as DBMS,
-                             dataset as Dataset,
-                             queryName,
-                             queryText,
-                             runtime,
-                             compilationTime);
+    public benchmarkResultFromJsonNode (benchmarkResultRaw: any): BenchmarkResult {
+        for (const prop in benchmarkResultRaw) {
+            const member = benchmarkResultRaw[prop];
+            if (prop !== "result" && prop !== "error" && member instanceof Array) {
+                for (let i = 0; i < member.length; i++) {
+                    if (member[i] instanceof String) {
+                        // They are all floats
+                        member[i] = parseFloat(member[i]);
+                    }
+                }
+            }
+        }
+        return benchmarkResultRaw as BenchmarkResult;
+    }
+
+    public queryPlanResultCollectionFromJson (jsontext: string): QueryPlanResultCollection {
+        const collection = JSON.parse(jsontext) as QueryPlanResultCollection;
+        for (const result of collection) {
+            const dbms = result.dbms;
+            if (!(<any>Object).values(DBMS).includes(dbms)) {
+                throw new Error("Unrecognized DBMS " + dbms);
+            }
+
+            const dataset = result.dataset;
+            if (!(<any>Object).values(Dataset).includes(dataset)) {
+                throw new Error("Unrecognized Dataset " + dataset);
+            }
+        }
+        return collection;
     }
 
 }

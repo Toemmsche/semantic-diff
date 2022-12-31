@@ -2,31 +2,40 @@ import {TNode} from "../../semantic-diff";
 import XmlData from "../../semantic-diff/data/XmlData";
 import RenderPlanNode from "../components/nodes/RenderPlanNode";
 import IDiffNodeData from "../components/nodes/IDiffNodeData";
+import {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
 
 export class PlanData extends XmlData {
 
     // dirty id hack, be careful about null IDs
     static increasingId = 0;
     dummyId = String(PlanData.increasingId++);
-    get operatorName(): string {
+
+    get operatorName (): string {
         return this.label;
     }
 
-    get operatorId(): string {
+    get operatorId (): string {
         return this.dummyId;
     }
 
-    get exactCardinality(): number {
+    get exactCardinality (): number {
         return parseInt(this.attributes.get("exact_cardinality")!!)
     }
 
-    component(): Function {
+    component (): Function {
         return RenderPlanNode;
     }
 
-    // render props
-    renderWidth: number = 0;
-    renderHeight: number = 0;
+
+    // extension for unified viewer
+    origin (): Origin {
+        const originFromAttributes = this.attributes.get("origin")!!;
+        return originFromAttributes as Origin;
+    }
+
+    isExpanded (): boolean {
+        return this.attributes.get("isExpanded") === "true";
+    }
 }
 
 export type PlanNode = TNode<PlanData>;

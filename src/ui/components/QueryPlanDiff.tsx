@@ -3,6 +3,9 @@ import React from 'react';
 import s from './QueryPlanDiff.module.scss';
 import ReactFlowGraphComponent from "./reactflow/ReactFlowGraphComponent";
 import SideBar from "./SideBar";
+import PlanMetadata from "./PlanMetadata";
+import {useGlobalState} from "../data/Store";
+import UnifiedTreeViewer from "./reactflow/UnifiedTreeViewer";
 
 interface IQueryPlanDiffProps {
     /**
@@ -22,10 +25,16 @@ interface IQueryPlanDiffState {
  */
 export default function QueryPlanDiff (props: IQueryPlanDiffProps) {
 
+    const [state, actions] = useGlobalState();
+    const firstPlanResult = state.queryPlanResults[state.firstSelection];
+
+    const secondPlanResult = state.queryPlanResults[state.secondSelection];
     return (
         <div className={s.queryPlanDiff}>
             <SideBar></SideBar>
-            <ReactFlowGraphComponent/>
+            <PlanMetadata planResult={firstPlanResult} first={true}></PlanMetadata>
+            <PlanMetadata planResult={secondPlanResult} first={false}></PlanMetadata>
+            {state.showUnified ? <UnifiedTreeViewer/> : <ReactFlowGraphComponent/> }
         </div>
     );
 }

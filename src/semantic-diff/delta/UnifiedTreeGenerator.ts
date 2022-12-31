@@ -5,6 +5,11 @@ import {MatchPipeline} from "../match/MatchPipeline";
 import {Comparator} from "../compare/Comparator";
 import ISemanticDiffOptions from "../diff/ISemanticDiffOptions";
 
+export const enum Origin {
+    OLD = "old",
+    NEW = "new",
+}
+
 export default class UnifiedTreeGeneratory<T> {
 
 
@@ -16,8 +21,8 @@ export default class UnifiedTreeGeneratory<T> {
         matchPipeline.execute(oldTree, newTree, new Comparator(options));
 
         // tag nodes
-        oldTree.toPreOrderArray().forEach(node => node.attributes.set("origin", "old"));
-        newTree.toPreOrderArray().forEach(node => node.attributes.set("origin", "new"));
+        oldTree.toPreOrderArray().forEach(node => node.attributes.set("origin", Origin.OLD));
+        newTree.toPreOrderArray().forEach(node => node.attributes.set("origin", Origin.NEW));
 
         // Turn tree into DAG by reusing nodes
 

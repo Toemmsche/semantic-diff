@@ -1,20 +1,34 @@
 import {Action, createHook, createStore} from 'react-sweet-state';
-import {duckPlan15, umbraPlan15} from "./plans";
+import {batchPlans, qpGrammar} from "./plans";
+import {QueryPlanResultCollection} from "./QueryPlanResult";
+import {defaultDiffOptions, PlanNodeBrowserSerDes} from "../../semantic-diff";
 
 
 export interface IGlobalState {
-    firstPlanText: string,
-    secondPlanText: string,
+    queryPlanResults: QueryPlanResultCollection,
+    firstSelection: number,
+    secondSelection: number,
     showMatches: boolean,
     showUnified: boolean
 
 }
 
 const actions = {
-    setPlans: (firstPlanText: string, secondPlanText: string): Action<IGlobalState> =>
+    setQueryPlanResults: (text: string): Action<IGlobalState> =>
         ({setState, getState}) => {
-            setState({firstPlanText: firstPlanText,
-                         secondPlanText: secondPlanText
+            const queryPlanResults = new PlanNodeBrowserSerDes(qpGrammar,
+                                                               defaultDiffOptions).queryPlanResultCollectionFromJson(
+                text);
+            setState({
+                         queryPlanResults: queryPlanResults
+                     });
+        },
+    setSelection: (firstSelection: number,
+                   secondSelection: number): Action<IGlobalState> =>
+        ({setState, getState}) => {
+            setState({
+                         firstSelection,
+                         secondSelection
                      });
         },
     setShowMatches: (showMatches: boolean): Action<IGlobalState> =>
@@ -33,8 +47,10 @@ const actions = {
 const Store = createStore<IGlobalState, typeof actions>(
     {
         initialState: {
-            firstPlanText: duckPlan15,
-            secondPlanText: umbraPlan15,
+            queryPlanResults: new PlanNodeBrowserSerDes(qpGrammar,
+                                                        defaultDiffOptions).queryPlanResultCollectionFromJson(batchPlans),
+            firstSelection: 36,
+            secondSelection: 80,
             showMatches: false,
             showUnified: false
         },

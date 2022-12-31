@@ -1,0 +1,14 @@
+
+@mixin customEdge {
+
+}
+
+.firstPlanEdge {
+  @include customEdge;
+  stroke: blue;
+}
+
+.secondPlanEdge {
+  @include customEdge;
+  stroke: red;
+}

@@ -1,13 +1,11 @@
 import React from 'react';
 import {getBezierPath, Position} from 'reactflow';
-import {PlanData} from "../../model/PlanData";
+// @ts-ignore
+import s from './CustomUnifiedEdge.module.scss';
+import {ICustomEdgeData} from "./CustomEdge";
+import {Origin} from "../../../semantic-diff/delta/UnifiedTreeGenerator";
 
-export interface ICustomEdgeData {
-    parentPlanData: PlanData,
-    childPlanData: PlanData
-}
-
-export default function CustomEdge(props: {
+export default function CustomUnifiedEdge (props: {
     id: string,
     sourceX: number,
     sourceY: number,
@@ -32,13 +30,13 @@ export default function CustomEdge(props: {
         markerEnd
     } = props;
     const [edgePath] = getBezierPath({
-        sourceX,
-        sourceY,
-        sourcePosition,
-        targetX,
-        targetY,
-        targetPosition,
-    });
+                                         sourceX,
+                                         sourceY,
+                                         sourcePosition,
+                                         targetX,
+                                         targetY,
+                                         targetPosition,
+                                     });
 
     const {parentPlanData, childPlanData} = data;
 
@@ -47,12 +45,15 @@ export default function CustomEdge(props: {
             <path
                 id={id}
                 style={style}
-                className="react-flow__edge-path"
+                className={"react-flow__edge-path " + (childPlanData.origin() === Origin.NEW || parentPlanData.origin() === Origin.NEW
+                    ? s.secondPlanEdge
+                    : s.firstPlanEdge)}
                 d={edgePath}
                 markerEnd={markerEnd}
             />
             <text>
-                <textPath href={`#${id}`} style={{fontSize: 12}} startOffset="50%" textAnchor="middle">
+                <textPath href={`#${id}`} style={{fontSize: 12}}
+                          startOffset="50%" textAnchor="middle">
                     {childPlanData.exactCardinality}
                 </textPath>
             </text>

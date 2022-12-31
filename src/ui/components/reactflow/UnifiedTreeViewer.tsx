@@ -13,18 +13,19 @@ import Layouter, {LayoutDirection} from "./Layouter";
 
 // @ts-ignore
 import s from './GraphComponent.module.scss'
-import CustomEdge from "../edges/CustomEdge";
 import {useGlobalState} from "../../data/Store";
 import {
     defaultDiffOptions,
     PlanNodeBrowserSerDes
 } from "../../../semantic-diff";
 import {qpGrammar} from "../../data/plans";
-import {MatchPipeline} from "../../../semantic-diff/match/MatchPipeline";
-import {Comparator} from "../../../semantic-diff/compare/Comparator";
-import DiffPlanNode from "../nodes/DiffPlanNode";
+import UnifiedTreeGeneratory
+    from "../../../semantic-diff/delta/UnifiedTreeGenerator";
+import {PlanData} from "../../model/PlanData";
+import CustomUnifiedEdge from "../edges/CustomUnifiedEdge";
+import UnifiedDiffPlanNode from "../nodes/UnifiedDiffPlanNode";
 
-export default function ReactFlowGraphComponent (props: {}) {
+export default function UnifiedTreeViewer (props: {}) {
     const [state, actions] = useGlobalState();
 
     const [plans, setPlans] = useState({
@@ -40,63 +41,85 @@ export default function ReactFlowGraphComponent (props: {}) {
                                        });
 
     const nodeTypes = useMemo(() => ({
-        customNode: DiffPlanNode
+        customNode: UnifiedDiffPlanNode
     }), []);
 
     const edgeTypes = useMemo(() => ({
-        customEdge: CustomEdge
+        customEdge: CustomUnifiedEdge
     }), []);
-
-    useEffect(() => {
-        console.log("called effect")
-        setPlans({
-                     first: new PlanNodeBrowserSerDes(
-                         qpGrammar,
-                         defaultDiffOptions).parseFromString(
-                         state.queryPlanResults[state.firstSelection].queryPlanXml),
-                     second: new PlanNodeBrowserSerDes(
-                         qpGrammar,
-                         defaultDiffOptions).parseFromString(
-                         state.queryPlanResults[state.secondSelection].queryPlanXml),
-                 })
-    }, [state.firstSelection, state.secondSelection, state.queryPlanResults]);
-
 
     // empty initial state
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-        let allNodes: Node[] = [];
-        let allEdges: Edge[] = [];
-        if (state.showMatches) {
-            // Actually diff
-            const matchPipeline = MatchPipeline.fromMode(defaultDiffOptions);
-            matchPipeline.execute(plans.first,
-                                  plans.second,
-                                  new Comparator(defaultDiffOptions));
+        const plans = {
+            first: new PlanNodeBrowserSerDes(
+                qpGrammar,
+                defaultDiffOptions).parseFromString(
+                state.queryPlanResults[state.firstSelection].queryPlanXml),
+            second: new PlanNodeBrowserSerDes(
+                qpGrammar,
+                defaultDiffOptions).parseFromString(
+                state.queryPlanResults[state.secondSelection].queryPlanXml),
+        };
+
+        const unifiedTree = new UnifiedTreeGeneratory<PlanData>().generate(
+            plans.first,
+            plans.second,
+            defaultDiffOptions);
+
+        console.log("Unifiedtree", unifiedTree)
+
+        function getHider (flowNode: Node) {
+            return function hide (hidden: boolean) {
+                setNodes((nds) => nds.filter(nd => nd.id !== flowNode.id));
+                setEdges(eds => eds.filter(e => e.source !== flowNode.id && e.target !== flowNode.id));
+            }
         }
-        // first plan
-        let [normalizedFirstNodes, normalizedFirstEdges] = PlanNormalizer.normalize(
-            plans.first, 1);
-        // second plan
-        let [normalizedSecondNodes, normalizedSecondEdges] = PlanNormalizer.normalize(
-            plans.second, 2);
 
-        allNodes = normalizedFirstNodes.concat(normalizedSecondNodes);
-        allEdges = normalizedFirstEdges.concat(normalizedSecondEdges);
-
-        if (state.showMatches) {
-            const matchEdges = PlanNormalizer.getMatchEdges(plans.first,
-                                                            plans.second);
-            allEdges = allEdges.concat(matchEdges)
+        function getExpander (flowNode: Node,
+                              uniNodes: Node[],
+                              uniEdges: Edge[]) {
+            return function expand () {
+                console.log(uniNodes, uniEdges);
+                const addEdges = uniEdges.filter(e => e.source === flowNode.id);
+                const addNodes = uniNodes.filter(nd => !nodes.some(n => n.id === nd.id) && addEdges.some(
+                    e => e.target === nd.id));
+                console.log(addEdges, addNodes);
+                setNodes((nds) => nds.concat(addNodes));
+                setEdges((eds) => eds.concat(addEdges));
+            }
         }
 
 
-        setNodes(allNodes);
-        setEdges(allEdges);
-        console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`)
-    }, [state.showMatches, plans]);
+        // nodes are guaranteed to be in preorder
+        const [allNodes, allEdges] = PlanNormalizer.normalize(
+            plans.first, 0, {
+                computeData: (planNode,
+                              flowNode,
+                              flowNodes: Node[],
+                              flowEdges: Edge[]) => {
+                    return {
+                        expand: getExpander(flowNode, flowNodes, flowEdges),
+                        hide: getHider(flowNode),
+                        thisPlanData: planNode.data
+                    }
+                }
+            });
+
+        setPlans(plans);
+
+        setNodes([allNodes[0]]);
+        setEdges([]);
+        console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`);
+    }, [
+                  state.firstSelection,
+                  state.secondSelection,
+                  state.queryPlanResults,
+                  state.showUnified
+              ])
+
 
     // internal helper component that manages layouting/
     const NodeLayouter = ({}) => {
@@ -128,6 +151,7 @@ export default function ReactFlowGraphComponent (props: {}) {
             changeLayout()
         }}>change layout</button>)
     }
+
     return (
         <ReactFlowProvider>
             <NodeLayouter></NodeLayouter>
@@ -136,6 +160,7 @@ export default function ReactFlowGraphComponent (props: {}) {
                 className={s.twoPlanView}
                 nodes={nodes}
                 edges={edges}
+                // @ts-ignore
                 nodeTypes={nodeTypes}
                 // @ts-ignore
                 edgeTypes={edgeTypes}

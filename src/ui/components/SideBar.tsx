@@ -12,19 +12,15 @@ export default function SideBar (props: ISideBarProps) {
 
     const [state, actions] = useGlobalState();
 
-    function getOnLoad (first: boolean) {
-        return async function loadFile (event: any) {
-            event.preventDefault()
-            const reader = new FileReader()
-            reader.onload = (progressEvent) => {
-                const text: string = (progressEvent!!.target!!.result!!).toString()
-                console.log(text);
-                first
-                    ? actions.setPlans(text, state.secondPlanText)
-                    : actions.setPlans(state.firstPlanText, text);
-            };
-            reader.readAsText(event.target.files[0]);
-        }
+    async function loadCollection (event: any) {
+        event.preventDefault()
+        const reader = new FileReader()
+        reader.onload = (progressEvent) => {
+            const text: string = (progressEvent!!.target!!.result!!).toString()
+            console.log(text);
+            actions.setQueryPlanResults(text);
+        };
+        reader.readAsText(event.target.files[0]);
     }
 
     function onMatchToggle (event: any) {
@@ -38,12 +34,8 @@ export default function SideBar (props: ISideBarProps) {
     return (
         <div className={s.sideBar}>
             <label className={s.fileUploadBtn}>
-                <input type="file" onChange={getOnLoad(true)}/>
-                First Plan
-            </label>
-            <label className={s.fileUploadBtn}>
-                <input type="file" onChange={getOnLoad(false)}/>
-                Second Plan
+                <input type="file" onChange={loadCollection}/>
+                Collection
             </label>
             <label className={s.fileUploadBtn + " switch"}>
                 Show Matches

@@ -1,6 +1,6 @@
 export enum DBMS {
-    Umbra = "UmbraPrebuilt",
-    Hyper = "Hyper",
-    DuckDB = "DuckDB",
-    PostgreSQL = "PostgreSQL"
+    Umbra = "umbra_prebuilt",
+    Hyper = "hyper",
+    DuckDB = "duck",
+    PostgreSQL = "postgres_local"
 } 

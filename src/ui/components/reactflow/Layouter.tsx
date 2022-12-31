@@ -66,8 +66,8 @@ export default class Layouter {
 
         return nodes.map((node) => {
             const dagreNode = dagreGraph.node(node.id);
-            const x = dagreNode.x + options.globalXOffset - node.data.renderWidth / 2;
-            const y = dagreNode.y - node.data.renderHeight / 2;
+            const x = dagreNode.x + options.globalXOffset - node.width!! / 2;
+            const y = dagreNode.y - node.height!! / 2;
 
             return {
                 ...node,

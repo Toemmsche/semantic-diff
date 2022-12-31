@@ -5,6 +5,7 @@ import {MatchPipeline} from "../match/MatchPipeline";
 import {Comparator} from "../compare/Comparator";
 import ISemanticDiffOptions from "../diff/ISemanticDiffOptions";
 
+
 export default class DeltaTreeGenerator<T> {
 
     moveMap: Map<TNode<T>, TNode<T>> = new Map()

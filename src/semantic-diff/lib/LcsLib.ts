@@ -59,9 +59,9 @@ export default class LcsLib {
   /**
    * Faster LCS computation for sequences of maximum length r (path compare
    * range) due to matrix reuse.
-   * @param {Array<Number>} seqA The first sequence.
-   * @param {Array<Number>} seqB The second sequence.
-   * @return {Number} The length of the LCS.
+   * @param {Array<number>} seqA The first sequence.
+   * @param {Array<number>} seqB The second sequence.
+   * @return {number} The length of the LCS.
    */
   getLcsLengthFast(seqA: number[], seqB: number[]) {
     // The LCS of any sequence with a sequence of length zero

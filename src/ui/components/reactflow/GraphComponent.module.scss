@@ -1,7 +1,7 @@
-.diffContainer {
-  display: grid;
-  grid-template-columns: 45vw 45vw;
-  grid-template-rows: 15vh 85vh;
+.layoutBtn {
+  position: absolute;
+  left: 50vh;
+  top: 10px;
 }
 
 .twoPlanView {
@@ -9,10 +9,4 @@
   grid-column-end: end;
   grid-row-start: 2;
   grid-row-end: end;
-}
-
-.layoutBtn {
-  position: absolute;
-  left: 50vh;
-  top: 10px;
 }
