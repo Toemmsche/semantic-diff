@@ -15,8 +15,6 @@ export default interface QueryPlanResult {
     // Result data
     benchmarkResult: BenchmarkResult
     queryPlanXml: string
-
-
 }
 
 

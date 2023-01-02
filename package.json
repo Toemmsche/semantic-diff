@@ -29,6 +29,10 @@
     "url": "https://github.com/Toemmsche/semantic-diff/issues"
   },
   "dependencies": {
+    "d3-hierarchy": "latest",
+    "d3-scale": "latest",
+    "d3-timer": "latest",
+    "@types/d3": "latest",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",

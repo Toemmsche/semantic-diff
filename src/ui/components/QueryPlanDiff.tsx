@@ -2,7 +2,6 @@ import React from 'react';
 // @ts-ignore
 import s from './QueryPlanDiff.module.scss';
 import TwoWayDiffView from "./view/diff/TwoWayDiffView";
-import {useGlobalState} from "../data/Store";
 import UnifiedTreeView from "./view/unified/UnifiedTreeView";
 import {defaultDiffOptions, PlanNodeBrowserSerDes} from "../../semantic-diff";
 import {qpGrammar} from "../data/plans";
@@ -11,6 +10,8 @@ import UnifiedTreeGenerator
 import {PlanData} from "../model/PlanData";
 import QueryPlanResultDiff from "./QueryPlanResultDiff";
 import {Stack} from "@mui/material";
+import {useQueryPlanState} from "../data/QueryPlanResultStore";
+import {useParameterState} from "../data/Store";
 
 
 /**
@@ -18,7 +19,9 @@ import {Stack} from "@mui/material";
  */
 export default function QueryPlanDiff () {
 
-    const [state, actions] = useGlobalState();
+    const [state, actions] = useQueryPlanState();
+    const [parameters, parameterActions] = useParameterState();
+
     const firstPlanResult = state.queryPlanResults[state.firstSelection];
     const secondPlanResult = state.queryPlanResults[state.secondSelection];
 
@@ -34,14 +37,16 @@ export default function QueryPlanDiff () {
             <QueryPlanResultDiff firstPlanResult={firstPlanResult}
                                  secondPlanResult={secondPlanResult}></QueryPlanResultDiff>
             {
-                state.showUnified
+                parameters.showUnified
                     ? <UnifiedTreeView
                         unifiedTree={new UnifiedTreeGenerator<PlanData>(
                             defaultDiffOptions).generate(
                             firstPlan,
-                            secondPlan)}/>
+                            secondPlan)}
+                        hideNodes={parameters.hideNodes}/>
                     : <TwoWayDiffView firstPlan={firstPlan}
-                                      secondPlan={secondPlan}/>
+                                      secondPlan={secondPlan}
+                                      showMatches={parameters.showMatches}/>
             }
         </Stack>
     );

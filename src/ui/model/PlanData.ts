@@ -26,6 +26,9 @@ export class PlanData extends XmlData {
         return RenderPlanNode;
     }
 
+    // extension for two way viewer
+    hoverActive : boolean = false;
+
 
     // extension for unified viewer
     origin (): Origin {
@@ -33,9 +36,6 @@ export class PlanData extends XmlData {
         return originFromAttributes as Origin;
     }
 
-    isExpanded (): boolean {
-        return this.attributes.get("isExpanded") === "true";
-    }
 }
 
 export type PlanNode = TNode<PlanData>;

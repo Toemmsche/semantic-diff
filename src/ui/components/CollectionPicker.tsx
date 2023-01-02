@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 
-import {useGlobalState} from "../data/Store";
 import {Box, Chip, Stack} from "@mui/material";
 import React from "react";
 import ViewConfig from "./ViewConfig";
+import {useQueryPlanState} from "../data/QueryPlanResultStore";
 
 export default function CollectionPicker (props: {}) {
-    const [state, actions] = useGlobalState();
+    const [state, actions] = useQueryPlanState();
 
     const firstQpr = state.queryPlanResults[state.firstSelection];
     const secondQpr = state.queryPlanResults[state.secondSelection];

@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 // @ts-ignore
 import s from './SideBar.module.scss'
-import {useGlobalState} from "../data/Store";
+import {useParameterState} from "../data/Store";
 import CollectionPicker from "./CollectionPicker";
 import {Drawer, IconButton} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import {useQueryPlanState} from "../data/QueryPlanResultStore";
 
 
 export interface ISideBarProps {
@@ -13,7 +14,8 @@ export interface ISideBarProps {
 
 export default function SideBar (props: ISideBarProps) {
 
-    const [state, actions] = useGlobalState();
+    const [state, actions] = useQueryPlanState();
+    const [parameters, parameterActions] = useParameterState();
 
     const [open, setOpen] = useState(false);
 
@@ -29,11 +31,11 @@ export default function SideBar (props: ISideBarProps) {
     }
 
     function onMatchToggle (event: any) {
-        actions.setShowMatches(event.target.checked);
+        parameterActions.setShowMatches(event.target.checked);
     }
 
     function onUnifiedToggle (event: any) {
-        actions.setShowUnified(event.target.checked)
+        parameterActions.setShowUnified(event.target.checked)
     }
 
     return (

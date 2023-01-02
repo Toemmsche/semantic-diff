@@ -1,16 +1,18 @@
 import React, {useState} from "react";
 import {PlanData} from "../../../model/PlanData";
 import {Handle, Position} from "reactflow";
-import {useGlobalState} from "../../../data/Store";
+import {useParameterState} from "../../../data/Store";
 import {Box, Button} from "@mui/material";
 import {ExpandMore} from "@mui/icons-material";
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
+import {Nullable} from "../../../../semantic-diff/Types";
 
 export interface IUnifiedDiffProps {
     data: {
         expand: () => void,
         hide: (hidden: boolean, data: PlanData) => void,
-        thisPlanData: PlanData
+        firstPlanData: Nullable<PlanData>,
+        secondPlanData: Nullable<PlanData>,
     }
 }
 
@@ -21,22 +23,24 @@ export enum UnifiedColors {
 }
 
 export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
-    const [state, actions] = useGlobalState();
+    const [parameters, parameterActions] = useParameterState();
 
-    const {hide, thisPlanData, expand} = props.data;
+    const {hide, firstPlanData, secondPlanData, expand} = props.data;
+    
+    const metaPlanData = firstPlanData ?? secondPlanData!!;
 
     const [hasExpanded, setHasExpanded] = useState(false);
 
     // child component
-    let Component = thisPlanData.component();
+    let Component = metaPlanData.component();
 
     function onHide (event: any) {
         const hidden = event.target.checked;
-        hide(hidden, thisPlanData);
+        hide(hidden, metaPlanData);
     }
 
     let bgColor: string;
-    switch (thisPlanData.origin()) {
+    switch (metaPlanData.origin()) {
         case Origin.NEW:
             bgColor = UnifiedColors.EXCLUSIVE_NEW;
             break;
@@ -53,8 +57,8 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
              borderRadius={1}
              padding={1}>
             <Handle type="target" position={Position.Top}/>
-            <Component data={thisPlanData}/>
-            {state.hideNodes && !hasExpanded &&
+            <Component data={metaPlanData}/>
+            {parameters.hideNodes && !hasExpanded &&
                 <Button
                     variant="contained"
                     style={{

@@ -12,16 +12,17 @@ import {PlanNode} from "../../../model/PlanData";
 import CustomUnifiedEdge from "./CustomUnifiedEdge";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
 import NodeLayouter from "../NodeLayouter";
-import {useGlobalState} from "../../../data/Store";
+import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 
 
 export interface IUnifiedTreeViewProps {
-    unifiedTree: PlanNode
+    unifiedTree: PlanNode,
+
+    hideNodes: boolean
 }
 
 export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
-    const [state, actions] = useGlobalState();
-    const {unifiedTree} = props;
+    const {unifiedTree, hideNodes} = props;
 
     const nodeTypes = useMemo(() => ({
         customNode: UnifiedDiffPlanNode
@@ -73,12 +74,18 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
                     return {
                         expand: getExpander(flowNode, flowNodes, flowEdges),
                         hide: getHider(flowNode),
-                        thisPlanData: planNode.data
+                        firstPlanData: planNode.data.origin() === Origin.OLD ||
+                        planNode.data.origin() === Origin.SHARED
+                            ? planNode.data
+                            : planNode.getMatch()?.data,
+                        secondPlanData: planNode.data.origin() === Origin.NEW
+                            ? planNode.data
+                            : planNode.getMatch()?.data
                     }
                 }
             });
 
-        if (state.hideNodes) {
+        if (hideNodes) {
             setNodes([allNodes[0]]);
             setEdges([]);
         } else {
@@ -91,7 +98,7 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
         setTimeout(() => {
             document.getElementById("changeLayoutBtn")!!.click();
         }, 300)
-    }, [props.unifiedTree, state.hideNodes])
+    }, [props])
 
 
     return (

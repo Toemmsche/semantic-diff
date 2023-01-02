@@ -4,7 +4,7 @@ import Layouter, {LayoutDirection} from "./Layouter";
 import React from "react";
 
 export interface INodeLayouterProps {
-    nodeSetter: (nodes: Node[]) => void;
+    nodeSetter: (nodes: Node[] | ((nodes: Node[]) => Node[])) => void;
 }
 
 export default function NodeLayouter (props: INodeLayouterProps) {
@@ -29,7 +29,7 @@ export default function NodeLayouter (props: INodeLayouterProps) {
                                                           globalXOffset: 0,
                                                           withDimensions: true
                                                       });
-            props.nodeSetter(layoutedNodes);
+            props.nodeSetter((nds) => layoutedNodes);
         }
     }
 

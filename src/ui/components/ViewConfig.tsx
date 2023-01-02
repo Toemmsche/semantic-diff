@@ -6,7 +6,7 @@ import {
     Switch
 } from "@mui/material";
 import React from "react";
-import {useGlobalState} from "../data/Store";
+import {useParameterState} from "../data/Store";
 
 export enum DiffViewMode {
     TWO_WAY = 30,
@@ -27,26 +27,30 @@ const marks = [
 ]
 export default function ViewConfig () {
 
-    const [state, actions] = useGlobalState();
+    const [parameters, parameterActions] = useParameterState();
 
     function handleDiffViewModeChange (event: Event,
                                        newValue: number | number[]) {
         const modeIndex = newValue as number;
         if (modeIndex === DiffViewMode.UNIFIED) {
-            actions.setShowUnified(true);
+            parameterActions.setShowUnified(true);
         } else {
-            actions.setShowUnified(false);
+            parameterActions.setShowUnified(false);
         }
     }
 
     function handleHideNodeChange (event: React.ChangeEvent<HTMLInputElement>) {
-        actions.setHideNodes(event.target.checked);
+        parameterActions.setHideNodes(event.target.checked);
+    }
+
+    function handleShowMatchesChange (event: React.ChangeEvent<HTMLInputElement>) {
+        parameterActions.setShowMatches(event.target.checked);
     }
 
     return (
         <Stack direction="column">
             <Slider
-                defaultValue={state.showUnified
+                defaultValue={parameters.showUnified
                     ? DiffViewMode.UNIFIED
                     : DiffViewMode.TWO_WAY}
                 onChange={handleDiffViewModeChange}
@@ -57,8 +61,14 @@ export default function ViewConfig () {
                 <FormControlLabel
                     label="Hide Nodes"
                     control={
-                        <Switch defaultChecked={state.hideNodes}
+                        <Switch defaultChecked={parameters.hideNodes}
                                 onChange={handleHideNodeChange}/>
+                    }/>
+                <FormControlLabel
+                    label="Show Matches"
+                    control={
+                        <Switch defaultChecked={parameters.showMatches}
+                                onChange={handleShowMatchesChange}/>
                     }/>
             </FormGroup>
         </Stack>
