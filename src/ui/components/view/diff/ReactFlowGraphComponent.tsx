@@ -8,21 +8,21 @@ import ReactFlow, {
     useStore
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import PlanNormalizer from "./PlanNormalizer";
-import Layouter, {LayoutDirection} from "./Layouter";
+import PlanNormalizer from "../PlanNormalizer";
+import Layouter, {LayoutDirection} from "../Layouter";
 
 // @ts-ignore
-import s from './GraphComponent.module.scss'
-import CustomEdge from "../edges/CustomEdge";
-import {useGlobalState} from "../../data/Store";
+import s from '../GraphComponent.module.scss'
+import CustomEdge from "../../edges/CustomEdge";
+import {useGlobalState} from "../../../data/Store";
 import {
     defaultDiffOptions,
     PlanNodeBrowserSerDes
-} from "../../../semantic-diff";
-import {qpGrammar} from "../../data/plans";
-import {MatchPipeline} from "../../../semantic-diff/match/MatchPipeline";
-import {Comparator} from "../../../semantic-diff/compare/Comparator";
-import DiffPlanNode from "../nodes/DiffPlanNode";
+} from "../../../../semantic-diff";
+import {qpGrammar} from "../../../data/plans";
+import {MatchPipeline} from "../../../../semantic-diff/match/MatchPipeline";
+import {Comparator} from "../../../../semantic-diff/compare/Comparator";
+import DiffPlanNode from "./DiffPlanNode";
 
 export default function ReactFlowGraphComponent (props: {}) {
     const [state, actions] = useGlobalState();

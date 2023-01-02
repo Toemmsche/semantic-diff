@@ -1,4 +1,4 @@
-import DiffState from "../../../semantic-diff/delta/DiffState";
+import DiffState from "../../../../semantic-diff/delta/DiffState";
 
 
 export default interface IDiffNodeData {

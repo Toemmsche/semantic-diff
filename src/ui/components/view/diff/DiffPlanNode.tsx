@@ -1,7 +1,7 @@
 import React from "react";
-import {DiffPlanData, PlanData} from "../../model/PlanData";
+import {DiffPlanData, PlanData} from "../../../model/PlanData";
 import {Handle, Position} from "reactflow";
-import {useGlobalState} from "../../data/Store";
+import {useGlobalState} from "../../../data/Store";
 import IDiffNodeData from "./IDiffNodeData";
 
 export default function DiffPlanNode (props: { data: DiffPlanData }) {

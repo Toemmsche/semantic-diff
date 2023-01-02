@@ -35,6 +35,7 @@ new operators:
 - early execution: good when selectivity is high, can remove
 - early probe: early probe of other hash table for elimination
 - CTEs: find
+- cannot unexpand
 - inlinetable: constants
 - multiway
 - remove unnecessary operators from duckdb

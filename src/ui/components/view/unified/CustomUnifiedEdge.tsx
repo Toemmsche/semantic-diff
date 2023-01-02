@@ -2,8 +2,8 @@ import React from 'react';
 import {getBezierPath, Position} from 'reactflow';
 // @ts-ignore
 import s from './CustomUnifiedEdge.module.scss';
-import {ICustomEdgeData} from "./CustomEdge";
-import {Origin} from "../../../semantic-diff/delta/UnifiedTreeGenerator";
+import {ICustomEdgeData} from "../../edges/CustomEdge";
+import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 
 export default function CustomUnifiedEdge (props: {
     id: string,

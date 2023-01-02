@@ -2,6 +2,7 @@ import React from 'react';
 // @ts-ignore
 import s from './SideBar.module.scss'
 import {useGlobalState} from "../data/Store";
+import CollectionPicker from "./CollectionPicker";
 
 
 export interface ISideBarProps {
@@ -45,6 +46,7 @@ export default function SideBar (props: ISideBarProps) {
                 Show Unified
                 <input type="checkbox" onChange={onUnifiedToggle}></input>
             </label>
+            <CollectionPicker></CollectionPicker>
         </div>
     );
 }

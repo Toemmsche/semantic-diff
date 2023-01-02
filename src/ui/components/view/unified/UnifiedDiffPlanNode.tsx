@@ -1,18 +1,18 @@
 import React, {useEffect, useLayoutEffect, useRef} from "react";
-import {DiffPlanData, PlanData} from "../../model/PlanData";
-import IRenderBackendProps from "../reactflow/IRenderBackendProps";
+import {DiffPlanData, PlanData} from "../../../model/PlanData";
+import IRenderBackendProps from "../IRenderBackendProps";
 import {Handle, Position} from "reactflow";
-import RenderPlanNode from "./RenderPlanNode";
-import RenderTableScan from "./RenderTableScan";
-import {TableScan} from "../../model/TableScan";
-import RenderJoin from "./RenderJoin";
-import Join from "../../model/Join";
-import {useGlobalState} from "../../data/Store";
-import IDiffNodeData from "./IDiffNodeData";
-import RenderTempScan from "./RenderTempScan";
-import {TempScan} from "../../model/TempScan";
+import RenderPlanNode from "../../nodes/RenderPlanNode";
+import RenderTableScan from "../../nodes/RenderTableScan";
+import {TableScan} from "../../../model/TableScan";
+import RenderJoin from "../../nodes/RenderJoin";
+import Join from "../../../model/Join";
+import {useGlobalState} from "../../../data/Store";
+import IDiffNodeData from "../diff/IDiffNodeData";
+import RenderTempScan from "../../nodes/RenderTempScan";
+import {TempScan} from "../../../model/TempScan";
 // @ts-ignore
-import s from "../SideBar.module.scss";
+import s from "../../SideBar.module.scss";
 
 export interface IUnifiedDiffProps {
     data: {

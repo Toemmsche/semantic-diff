@@ -6,7 +6,7 @@ import dagreD3 from 'dagre-d3';
 import {PlanData, PlanNode} from "../../model/PlanData";
 // @ts-ignore
 import s from './DagreD3DiffGraphComponent.module.scss';
-import IRenderBackendProps from "../reactflow/IRenderBackendProps";
+import IRenderBackendProps from "../view/IRenderBackendProps";
 // @ts-ignore
 import n from './NodeBody.module.scss';
 import {TNode} from "../../../semantic-diff";

@@ -1,7 +1,7 @@
 import {TNode} from "../../semantic-diff";
 import XmlData from "../../semantic-diff/data/XmlData";
 import RenderPlanNode from "../components/nodes/RenderPlanNode";
-import IDiffNodeData from "../components/nodes/IDiffNodeData";
+import IDiffNodeData from "../components/view/diff/IDiffNodeData";
 import {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
 
 export class PlanData extends XmlData {
