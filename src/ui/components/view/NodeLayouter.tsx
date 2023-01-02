@@ -1,8 +1,6 @@
 // internal helper component that manages layouting/
 import {Node, useStore} from "reactflow";
 import Layouter, {LayoutDirection} from "./Layouter";
-// @ts-ignore
-import s from "./GraphComponent.module.scss";
 import React from "react";
 
 export interface INodeLayouterProps {
@@ -14,6 +12,7 @@ export default function NodeLayouter (props: INodeLayouterProps) {
     const edges = useStore(store => store.edges);
 
     const nodeHasDimension = (node: Node) => (node.width != null && node.height != null)
+
     function changeLayout () {
         const internalNodes = new Array(...internalNodeState.entries()).map(
             entry => {
@@ -34,7 +33,7 @@ export default function NodeLayouter (props: INodeLayouterProps) {
         }
     }
 
-    return (<button className={s.layoutBtn} id="changeLayoutBtn" onClick={() => {
+    return (<button id="changeLayoutBtn" onClick={() => {
         changeLayout()
     }}>change layout</button>)
 }

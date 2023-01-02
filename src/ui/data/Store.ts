@@ -9,7 +9,9 @@ export interface IGlobalState {
     firstSelection: number,
     secondSelection: number,
     showMatches: boolean,
-    showUnified: boolean
+    showUnified: boolean,
+
+    hideNodes: boolean,
 
 }
 
@@ -42,17 +44,25 @@ const actions = {
             setState({
                          showUnified: showUnified
                      });
+        },
+    setHideNodes: (hideNodes: boolean): Action<IGlobalState> =>
+        ({setState, getState}) => {
+            setState({
+                         hideNodes: hideNodes
+                     });
         }
 };
 const Store = createStore<IGlobalState, typeof actions>(
     {
         initialState: {
             queryPlanResults: new PlanNodeBrowserSerDes(qpGrammar,
-                                                        defaultDiffOptions).queryPlanResultCollectionFromJson(batchPlans),
+                                                        defaultDiffOptions).queryPlanResultCollectionFromJson(
+                batchPlans),
             firstSelection: 36,
             secondSelection: 80,
             showMatches: false,
-            showUnified: false
+            showUnified: false,
+            hideNodes: false
         },
         actions
     });

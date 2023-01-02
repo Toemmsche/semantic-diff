@@ -1,18 +1,10 @@
-import React, {useEffect, useLayoutEffect, useRef} from "react";
-import {DiffPlanData, PlanData} from "../../../model/PlanData";
-import IRenderBackendProps from "../IRenderBackendProps";
+import React, {useState} from "react";
+import {PlanData} from "../../../model/PlanData";
 import {Handle, Position} from "reactflow";
-import RenderPlanNode from "../../nodes/RenderPlanNode";
-import RenderTableScan from "../../nodes/RenderTableScan";
-import {TableScan} from "../../../model/TableScan";
-import RenderJoin from "../../nodes/RenderJoin";
-import Join from "../../../model/Join";
 import {useGlobalState} from "../../../data/Store";
-import IDiffNodeData from "../diff/IDiffNodeData";
-import RenderTempScan from "../../nodes/RenderTempScan";
-import {TempScan} from "../../../model/TempScan";
-// @ts-ignore
-import s from "../../SideBar.module.scss";
+import {Box, Button} from "@mui/material";
+import {ExpandMore} from "@mui/icons-material";
+import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 
 export interface IUnifiedDiffProps {
     data: {
@@ -22,8 +14,18 @@ export interface IUnifiedDiffProps {
     }
 }
 
+export enum UnifiedColors {
+    EXCLUSIVE_OLD = "lightpink",
+    EXCLUSIVE_NEW = "lightgreen",
+    SHARED = "lightblue"
+}
+
 export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
+    const [state, actions] = useGlobalState();
+
     const {hide, thisPlanData, expand} = props.data;
+
+    const [hasExpanded, setHasExpanded] = useState(false);
 
     // child component
     let Component = thisPlanData.component();
@@ -33,16 +35,40 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
         hide(hidden, thisPlanData);
     }
 
+    let bgColor: string;
+    switch (thisPlanData.origin()) {
+        case Origin.NEW:
+            bgColor = UnifiedColors.EXCLUSIVE_NEW;
+            break;
+        case Origin.OLD:
+            bgColor = UnifiedColors.EXCLUSIVE_OLD;
+            break;
+        case Origin.SHARED:
+            bgColor = UnifiedColors.SHARED;
+            break;
+    }
+
     return (
-        <div>
+        <Box bgcolor={bgColor}
+             borderRadius={1}
+             padding={1}>
             <Handle type="target" position={Position.Top}/>
             <Component data={thisPlanData}/>
-            <label className={s.fileUploadBtn + " switch"}>
-                Expand
-                <input type="checkbox" onChange={expand}></input>
-            </label>
+            {state.hideNodes && !hasExpanded &&
+                <Button
+                    variant="contained"
+                    style={{
+                        minWidth: "100%"
+                    }}
+                    onClick={() => {
+                        setHasExpanded(true);
+                        expand();
+                    }}
+                    endIcon={<ExpandMore/>}>
+                    Expand
+                </Button>}
             <Handle type="source" position={Position.Bottom}/>
-        </div>
+        </Box>
     );
 
 }

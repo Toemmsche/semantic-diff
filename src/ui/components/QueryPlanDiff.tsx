@@ -1,9 +1,7 @@
 import React from 'react';
 // @ts-ignore
 import s from './QueryPlanDiff.module.scss';
-import ReactFlowGraphComponent from "./view/diff/ReactFlowGraphComponent";
-import SideBar from "./SideBar";
-import PlanMetadata from "./PlanMetadata";
+import TwoWayDiffView from "./view/diff/TwoWayDiffView";
 import {useGlobalState} from "../data/Store";
 import UnifiedTreeView from "./view/unified/UnifiedTreeView";
 import {defaultDiffOptions, PlanNodeBrowserSerDes} from "../../semantic-diff";
@@ -11,24 +9,14 @@ import {qpGrammar} from "../data/plans";
 import UnifiedTreeGenerator
     from "../../semantic-diff/delta/UnifiedTreeGenerator";
 import {PlanData} from "../model/PlanData";
+import QueryPlanResultDiff from "./QueryPlanResultDiff";
+import {Stack} from "@mui/material";
 
-interface IQueryPlanDiffProps {
-    /**
-     * For Future:
-     * AppContext to be able to execute fetching of analyzed plan
-     */
-    //appContext: IAppContext;
-
-    /** The backend used to render the graphs */
-}
-
-interface IQueryPlanDiffState {
-}
 
 /**
  * Root Component for QueryPlan diff view
  */
-export default function QueryPlanDiff (props: IQueryPlanDiffProps) {
+export default function QueryPlanDiff () {
 
     const [state, actions] = useGlobalState();
     const firstPlanResult = state.queryPlanResults[state.firstSelection];
@@ -39,12 +27,12 @@ export default function QueryPlanDiff (props: IQueryPlanDiffProps) {
     const secondPlan = planSerdes.parseFromString(secondPlanResult.queryPlanXml);
 
     return (
-        <div className={s.queryPlanDiff}>
-            <SideBar/>
-            <PlanMetadata planResult={firstPlanResult}
-                          first={true}/>
-            <PlanMetadata planResult={secondPlanResult}
-                          first={false}/>
+
+        <Stack direction="column"
+               height="inherit"
+               width="inherit">
+            <QueryPlanResultDiff firstPlanResult={firstPlanResult}
+                                 secondPlanResult={secondPlanResult}></QueryPlanResultDiff>
             {
                 state.showUnified
                     ? <UnifiedTreeView
@@ -52,9 +40,10 @@ export default function QueryPlanDiff (props: IQueryPlanDiffProps) {
                             defaultDiffOptions).generate(
                             firstPlan,
                             secondPlan)}/>
-                    : <ReactFlowGraphComponent/>
+                    : <TwoWayDiffView firstPlan={firstPlan}
+                                      secondPlan={secondPlan}/>
             }
-        </div>
+        </Stack>
     );
 }
 

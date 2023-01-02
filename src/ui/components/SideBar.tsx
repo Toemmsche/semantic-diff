@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 // @ts-ignore
 import s from './SideBar.module.scss'
 import {useGlobalState} from "../data/Store";
 import CollectionPicker from "./CollectionPicker";
+import {Drawer, IconButton} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 
 export interface ISideBarProps {
@@ -12,6 +14,8 @@ export interface ISideBarProps {
 export default function SideBar (props: ISideBarProps) {
 
     const [state, actions] = useGlobalState();
+
+    const [open, setOpen] = useState(false);
 
     async function loadCollection (event: any) {
         event.preventDefault()
@@ -33,20 +37,17 @@ export default function SideBar (props: ISideBarProps) {
     }
 
     return (
-        <div className={s.sideBar}>
-            <label className={s.fileUploadBtn}>
-                <input type="file" onChange={loadCollection}/>
-                Collection
-            </label>
-            <label className={s.fileUploadBtn + " switch"}>
-                Show Matches
-                <input type="checkbox" onChange={onMatchToggle}></input>
-            </label>
-            <label className={s.fileUploadBtn + " switch"}>
-                Show Unified
-                <input type="checkbox" onChange={onUnifiedToggle}></input>
-            </label>
-            <CollectionPicker></CollectionPicker>
-        </div>
+        <>
+            <IconButton
+                onClick={() => setOpen(true)}>
+                <MenuIcon></MenuIcon>
+            </IconButton>
+            <Drawer
+                open={open}
+                onClose={() => setOpen(false)}
+            >
+                <CollectionPicker></CollectionPicker>
+            </Drawer>
+        </>
     );
 }

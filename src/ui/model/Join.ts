@@ -1,5 +1,4 @@
 import {PlanData} from "./PlanData";
-import RenderTableScan from "../components/nodes/RenderTableScan";
 import RenderJoin from "../components/nodes/RenderJoin";
 
 
@@ -16,7 +15,7 @@ export default class Join extends PlanData {
 
     public static LABEL = "Join";
 
-    get joinType(): string {
+    get joinType (): string {
         const type = this.attributes.get("type")!!;
         /*
         if (! (<any> Object).values(JoinType).includes(type)) {
@@ -24,10 +23,10 @@ export default class Join extends PlanData {
         }
 
          */
-        return type ;
+        return type;
     }
 
-    component(): Function {
+    component (): Function {
         return RenderJoin;
     }
 }

@@ -6,6 +6,8 @@ import ISemanticDiffOptions from "../diff/ISemanticDiffOptions";
 export const enum Origin {
     OLD = "old",
     NEW = "new",
+
+    SHARED = "shared"
 }
 
 export default class UnifiedTreeGenerator<T> {
@@ -22,9 +24,15 @@ export default class UnifiedTreeGenerator<T> {
 
         // tag nodes
         oldTree.toPreOrderArray()
-               .forEach(node => node.attributes.set("origin", Origin.OLD));
+               .forEach(node => node.attributes.set("origin",
+                                                    node.isMatched()
+                                                        ? Origin.SHARED
+                                                        : Origin.OLD));
         newTree.toPreOrderArray()
-               .forEach(node => node.attributes.set("origin", Origin.NEW));
+               .forEach(node => node.attributes.set("origin",
+                                                    node.isMatched()
+                                                        ? Origin.SHARED
+                                                        : Origin.NEW));
 
         // Turn tree into DAG by reusing nodes
 

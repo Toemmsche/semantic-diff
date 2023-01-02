@@ -1,6 +1,5 @@
 import {Dataset} from "../model/meta/Dataset";
 import {DBMS} from "../model/meta/DBMS";
-import {PlanNode} from "../model/PlanData";
 import BenchmarkResult from "./BenchmarkResult";
 
 export default interface QueryPlanResult {
@@ -17,6 +16,12 @@ export default interface QueryPlanResult {
     benchmarkResult: BenchmarkResult
     queryPlanXml: string
 
+
+}
+
+
+export function getKey (qpr: QueryPlanResult): string {
+    return qpr.dbms + qpr.dbmsVersion + qpr.dataset + qpr.queryName;
 }
 
 export type QueryPlanResultCollection = QueryPlanResult[]

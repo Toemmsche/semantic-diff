@@ -3,6 +3,7 @@ import {DiffPlanData, PlanData} from "../../../model/PlanData";
 import {Handle, Position} from "reactflow";
 import {useGlobalState} from "../../../data/Store";
 import IDiffNodeData from "./IDiffNodeData";
+import {Box} from "@mui/material";
 
 export default function DiffPlanNode (props: { data: DiffPlanData }) {
     const [state, actions] = useGlobalState();
@@ -15,14 +16,13 @@ export default function DiffPlanNode (props: { data: DiffPlanData }) {
     let Component = planData.component();
 
     return (
-        <div>
+        <Box bgcolor="lightgrey"
+             borderRadius={1}
+             padding={1}>
             <Handle type="target" position={Position.Top}/>
-            {state.showMatches && <div>
-                {diffData!!.diffState}
-            </div>}
             <Component data={planData}/>
             <Handle type="source" position={Position.Bottom}/>
-        </div>
+        </Box>
     )
 
 }

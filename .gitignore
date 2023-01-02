@@ -10,3 +10,5 @@ node_modules/
 # jetbrains
 /.idea/
 *.iml
+
+todo.md

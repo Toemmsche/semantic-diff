@@ -7,7 +7,7 @@ export interface ICustomEdgeData {
     childPlanData: PlanData
 }
 
-export default function CustomEdge(props: {
+export default function CustomEdge (props: {
     id: string,
     sourceX: number,
     sourceY: number,
@@ -32,13 +32,13 @@ export default function CustomEdge(props: {
         markerEnd
     } = props;
     const [edgePath] = getBezierPath({
-        sourceX,
-        sourceY,
-        sourcePosition,
-        targetX,
-        targetY,
-        targetPosition,
-    });
+                                         sourceX,
+                                         sourceY,
+                                         sourcePosition,
+                                         targetX,
+                                         targetY,
+                                         targetPosition,
+                                     });
 
     const {parentPlanData, childPlanData} = data;
 
@@ -52,7 +52,8 @@ export default function CustomEdge(props: {
                 markerEnd={markerEnd}
             />
             <text>
-                <textPath href={`#${id}`} style={{fontSize: 12}} startOffset="50%" textAnchor="middle">
+                <textPath href={`#${id}`} style={{fontSize: 12}}
+                          startOffset="50%" textAnchor="middle">
                     {childPlanData.exactCardinality}
                 </textPath>
             </text>

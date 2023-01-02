@@ -10,13 +10,13 @@ import {Nullable} from "../../../semantic-diff/Types";
 export default class QueryPlan {
     id: string = window.crypto.randomUUID()
 
-    constructor(public root: PlanNode,
-                public dbms: DBMS,
-                public dataset: Dataset,
-                public query_name: string,
-                public query_text: string,
-                public runtime: Nullable<number>,
-                public compilationTime: Nullable<number>) {
+    constructor (public root: PlanNode,
+                 public dbms: DBMS,
+                 public dataset: Dataset,
+                 public query_name: string,
+                 public query_text: string,
+                 public runtime: Nullable<number>,
+                 public compilationTime: Nullable<number>) {
 
     }
 }

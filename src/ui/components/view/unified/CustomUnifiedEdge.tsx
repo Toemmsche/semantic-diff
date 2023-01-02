@@ -1,9 +1,10 @@
+/** @jsxImportSource @emotion/react */
+
 import React from 'react';
 import {getBezierPath, Position} from 'reactflow';
-// @ts-ignore
-import s from './CustomUnifiedEdge.module.scss';
 import {ICustomEdgeData} from "../../edges/CustomEdge";
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
+import {UnifiedColors} from "./UnifiedDiffPlanNode";
 
 export default function CustomUnifiedEdge (props: {
     id: string,
@@ -40,16 +41,25 @@ export default function CustomUnifiedEdge (props: {
 
     const {parentPlanData, childPlanData} = data;
 
+
+    let pathStroke: string;
+    if (childPlanData.origin() === Origin.NEW || parentPlanData.origin() === Origin.NEW) {
+        pathStroke = UnifiedColors.EXCLUSIVE_NEW;
+    } else {
+        pathStroke = UnifiedColors.EXCLUSIVE_OLD;
+    }
+
     return (
         <>
             <path
                 id={id}
                 style={style}
-                className={"react-flow__edge-path " + (childPlanData.origin() === Origin.NEW || parentPlanData.origin() === Origin.NEW
-                    ? s.secondPlanEdge
-                    : s.firstPlanEdge)}
+                className="react-flow__edge-path"
                 d={edgePath}
                 markerEnd={markerEnd}
+                css={{
+                    stroke: pathStroke
+                }}
             />
             <text>
                 <textPath href={`#${id}`} style={{fontSize: 12}}

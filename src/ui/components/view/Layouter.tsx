@@ -49,7 +49,7 @@ export default class Layouter {
 
         nodes.forEach(node => {
             // passing an empty object as label is ESSENTIAL
-            const label : any = {};
+            const label: any = {};
             if (options.withDimensions) {
                 label.width = node.width;
                 label.height = node.height;

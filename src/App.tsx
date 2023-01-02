@@ -3,11 +3,18 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import QueryPlanDiff from "./ui/components/QueryPlanDiff";
+import SideBar from "./ui/components/SideBar";
+import {Box} from "@mui/material";
 
-function App() {
-  return (
-      <QueryPlanDiff></QueryPlanDiff>
-  );
+function App () {
+    return (
+        <Box
+            width="100vw"
+            height="100vh">
+            <SideBar></SideBar>
+            <QueryPlanDiff></QueryPlanDiff>
+        </Box>
+    );
 }
 
 export default App;

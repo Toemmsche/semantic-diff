@@ -4,7 +4,7 @@ import {
     GrammarBrowserSerDes
 } from "../../semantic-diff";
 
-export const umbraPlan15 : string = `
+export const umbraPlan15: string = `
 <QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
            query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
            runtime="3.9241699999999997" compilation_time="1.25195">
@@ -36,7 +36,7 @@ export const umbraPlan15 : string = `
         </Join>
     </Sort>
 </QueryPlan>`
-export const duckPlan15 : string = `
+export const duckPlan15: string = `
 <QueryPlan dbms="DuckDB" dataset="tpchSf0.01" query_name="15.sql"
            query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
            runtime="1.469">
@@ -80,7 +80,7 @@ export const duckPlan15 : string = `
         </Projection>
     </Sort>
 </QueryPlan>`
-export const hyperPlan15 : string = `
+export const hyperPlan15: string = `
 <QueryPlan dbms="Hyper" dataset="tpchSf0.01" query_name="15.sql"
            query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
            runtime="3.82733" compilation_time="3.3621540000000003">
@@ -12793,7 +12793,8 @@ export const batchPlans: string = `
     "queryPlanXml": "<Sort active=\\"False\\" limit=\\"None\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\"><GroupBy active=\\"True\\" mode=\\"None\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\"><Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"73\\"><Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"73\\"><Join active=\\"True\\" type=\\"None\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"73\\"><Join active=\\"True\\" type=\\"None\\" method=\\"piecewise_merge\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"190\\"><Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"429\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"429\\"><Join active=\\"True\\" type=\\"None\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500\\"><TableScan active=\\"False\\" table_name=\\"customer\\" table_size=\\"None\\" type=\\"None\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500\\" /><TableScan active=\\"False\\" table_name=\\"\\" table_size=\\"None\\" type=\\"None\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\" /></Join></Select></Projection><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Limit active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"387\\"><Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"387\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"387\\"><Join active=\\"True\\" type=\\"None\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1361\\"><TableScan active=\\"False\\" table_name=\\"customer\\" table_size=\\"None\\" type=\\"None\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1361\\" /><TableScan active=\\"False\\" table_name=\\"\\" table_size=\\"None\\" type=\\"None\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\" /></Join></Select></Projection></Projection></SimpleAggregate></Limit></Projection></SimpleAggregate></Join><TableScan active=\\"False\\" table_name=\\"orders\\" table_size=\\"None\\" type=\\"None\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"15000\\" /></Join></Projection></Projection></GroupBy></Sort>"
   }
 ]`;
-export const qpGrammar : Grammar = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(`
+export const qpGrammar: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(
+    `
 <grammar>
     <leaves>
         <TableScan ordered="false">

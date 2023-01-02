@@ -8,13 +8,11 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import PlanNormalizer from "../PlanNormalizer";
-
-// @ts-ignore
-import s from '../GraphComponent.module.scss'
 import {PlanNode} from "../../../model/PlanData";
 import CustomUnifiedEdge from "./CustomUnifiedEdge";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
 import NodeLayouter from "../NodeLayouter";
+import {useGlobalState} from "../../../data/Store";
 
 
 export interface IUnifiedTreeViewProps {
@@ -22,6 +20,7 @@ export interface IUnifiedTreeViewProps {
 }
 
 export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
+    const [state, actions] = useGlobalState();
     const {unifiedTree} = props;
 
     const nodeTypes = useMemo(() => ({
@@ -65,8 +64,6 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
             }
         }
 
-
-        // nodes are guaranteed to be in preorder
         const [allNodes, allEdges] = PlanNormalizer.normalize(
             unifiedTree, 0, {
                 computeData: (planNode,
@@ -81,11 +78,20 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
                 }
             });
 
-        setNodes([allNodes[0]]);
-        setEdges([]);
+        if (state.hideNodes) {
+            setNodes([allNodes[0]]);
+            setEdges([]);
+        } else {
+            setNodes(allNodes);
+            setEdges(allEdges);
+        }
 
         console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`);
-    }, [props.unifiedTree])
+
+        setTimeout(() => {
+            document.getElementById("changeLayoutBtn")!!.click();
+        }, 300)
+    }, [props.unifiedTree, state.hideNodes])
 
 
     return (
@@ -93,7 +99,6 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
             <NodeLayouter nodeSetter={setNodes}></NodeLayouter>
             <ReactFlow
                 zoomOnScroll={false}
-                className={s.twoPlanView}
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}

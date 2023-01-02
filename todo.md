@@ -18,22 +18,30 @@ new operators:
 - [ ] find better integration of react flow into state management library
 - [X] double render with acutal heights and widths
 - [x] use query plan results 
-- [IP] result collections
-  - add picker for selection
+- [DONE] result collections
+  - [DONE] add picker for selection
+  - move picker
 - [IP] use delta plans and collapse identical trees
+  - add option to only collpase identical subtrees or all
 - nicer names for DBMS
+- convert plans to generic format
+  - remove projections from Duckdb
+  - 
 - runtime in duckdb
-
-- switching between unified and match -> separate componenets for the views
+- [DONE] switching between unified and match -> separate componenets for the views
 - compute custom types via lambda
-- extract node layouter sub component
+- [DONE] extract node layouter sub component
 - use constant node id
 - move to d3-hierarchy
+- fix broken matchings on identical trees
+- enhance grammar
 - use collapse expand example from website
   - or implement custom hide (display: none/visibility: 0) on custom edges and nodes
+- [IP] use material ui and style nodes
 - add details to nodes, highlight updates/moves
 - early execution: good when selectivity is high, can remove
 - early probe: early probe of other hash table for elimination
+- how to deal with tempscan?
 - CTEs: find
 - cannot unexpand
 - inlinetable: constants
@@ -54,6 +62,12 @@ new operators:
   - visualization using a new rendereer (maybe react-flow)
   - diffing with your algorithm
 - diff can use tree graph for now
+
+
+# must do until meeting
+- two way diff view with match higlighting
+- bencharmk result details in comparison view
+- some details on the nodes
 
 
 
