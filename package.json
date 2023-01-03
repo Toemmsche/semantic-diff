@@ -29,10 +29,6 @@
     "url": "https://github.com/Toemmsche/semantic-diff/issues"
   },
   "dependencies": {
-    "d3-hierarchy": "latest",
-    "d3-scale": "latest",
-    "d3-timer": "latest",
-    "@types/d3": "latest",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",
@@ -41,6 +37,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/d3": "latest",
     "@types/jest": "^27.5.2",
     "@types/node": "^18.11.10",
     "@types/react": "^18.0.26",
@@ -48,6 +45,8 @@
     "@types/vkbeautify": "^0.99.2",
     "@types/yargs": "^17.0.10",
     "@xmldom/xmldom": "^0.8.6",
+    "d3-hierarchy": "^3.1.2",
+    "d3-timer": "latest",
     "dagre-d3": "^0.6.4",
     "fast-xml-parser": "^4.0.6",
     "murmur-32": "^1.0.0",

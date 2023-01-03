@@ -9,7 +9,7 @@ export interface INormalizeOptions {
                   flowEdges: Edge[]) => any
 }
 
-const defaultNormalizeOptions = {
+export const defaultNormalizeOptions = {
     computeData: (planNode: PlanNode,
                   flowNode: Node,
                   nodes: Node[],

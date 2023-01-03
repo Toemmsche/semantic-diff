@@ -7,6 +7,8 @@ import {Box} from "@mui/material";
 import {useRenderState} from "../../../data/RenderStore";
 import {Nullable} from "../../../../semantic-diff/Types";
 
+export const NODE_HEIGHT = 30;
+export const NODE_WIDTH = 80;
 
 export interface ITwoWayDiffPlanNodeProps {
     data: {
@@ -44,10 +46,16 @@ export default function TwoWayDiffPlanNode (props: ITwoWayDiffPlanNodeProps) {
         <Box bgcolor={state.hoveredData.some(pd => pd === metaPlanData)
             ? "lightyellow"
             : "lightgrey"}
+             width={80}
+             height={30}
              borderRadius={1}
              padding={1}
              onMouseOver={handleStartHover}
-             onMouseOut={handleEndHover}>
+             onMouseOut={handleEndHover}
+             display="flex"
+             flexDirection="row"
+             alignItems="center"
+             justifyContent="center">
             <Handle type="target" position={Position.Top}/>
             <Component data={metaPlanData}/>
             <Handle type="source" position={Position.Bottom}/>

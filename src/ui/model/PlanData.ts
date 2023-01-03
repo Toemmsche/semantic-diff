@@ -29,7 +29,6 @@ export class PlanData extends XmlData {
     // extension for two way viewer
     hoverActive : boolean = false;
 
-
     // extension for unified viewer
     origin (): Origin {
         const originFromAttributes = this.attributes.get("origin")!!;

@@ -8,9 +8,7 @@ export default function RenderPlanNode (props: { data: PlanData }) {
     const {data: planData} = props
 
     return (
-        <Box
-            borderRadius={1}
-            padding={1}>
+        <Box>
             <Box>{planData.operatorName}</Box>
         </Box>
     )

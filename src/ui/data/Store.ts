@@ -31,8 +31,8 @@ const Store = createStore<IParameterState, typeof actions>(
     {
         initialState: {
             showMatches: true,
-            showUnified: false,
-            hideNodes: false
+            showUnified: true,
+            hideNodes: true
         },
         actions
     });

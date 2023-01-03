@@ -11,9 +11,7 @@ export default function RenderJoin (props: { data: Join }) {
     const {data: joinData} = props;
 
     return (
-        <Box
-            borderRadius={1}
-            padding={1}>
+        <Box>
             <Stack direction="row"
                    justifyContent="center"
                    alignItems="center"

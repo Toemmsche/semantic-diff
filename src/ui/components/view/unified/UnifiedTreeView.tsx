@@ -1,18 +1,13 @@
-import React, {useEffect, useMemo} from 'react';
-import ReactFlow, {
-    Edge,
-    Node,
-    ReactFlowProvider,
-    useEdgesState,
-    useNodesState
-} from 'reactflow';
+import React, {useEffect, useMemo, useState} from 'react';
+import ReactFlow, {useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
-import PlanNormalizer from "../PlanNormalizer";
 import {PlanNode} from "../../../model/PlanData";
-import CustomUnifiedEdge from "./CustomUnifiedEdge";
-import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
 import NodeLayouter from "../NodeLayouter";
-import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
+import CustomEdge from '../../edges/CustomEdge';
+import StaticNormalizerAndLayouter from "../StaticNormalizerAndLayouter";
+import useAnimatedNodes from "../../useAnimatedNodes";
+import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
+import {LayoutDirection} from "../DynamicLayouter";
 
 
 export interface IUnifiedTreeViewProps {
@@ -28,81 +23,58 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
         customNode: UnifiedDiffPlanNode
     }), []);
 
+    // @ts-ignore
     const edgeTypes = useMemo(() => ({
-        customEdge: CustomUnifiedEdge
+        customEdge: CustomEdge
     }), []);
 
+    const [expandedNodes, setExpandedNodes] = useState([unifiedTree]);
+
     // empty initial state
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [nodes, setNodes] = useAnimatedNodes([])
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-
         console.log("Unifiedtree", unifiedTree)
 
-        function getHider (flowNode: Node) {
-            return function hide (hidden: boolean) {
-                setNodes((nds) => nds.filter(nd => nd.id !== flowNode.id));
-                setEdges(eds => eds.filter(e => e.source !== flowNode.id && e.target !== flowNode.id));
-            }
-        }
-
-        function getExpander (flowNode: Node,
-                              uniNodes: Node[],
-                              uniEdges: Edge[]) {
-            return function expand () {
-                console.log(uniNodes, uniEdges);
-                const addEdges = uniEdges.filter(e => e.source === flowNode.id);
-                const addNodes = uniNodes.filter(nd => nodes.every(n => n.id !== nd.id) && addEdges.some(
-                    e => e.target === nd.id));
-                console.log(addEdges, addNodes);
-                setNodes((nds) => nds.concat(addNodes));
-                setEdges((eds) => eds.concat(addEdges));
-
-                setTimeout(() => {
-                    document.getElementById("changeLayoutBtn")!!.click()
-                }, 100);
-            }
-        }
-
-        const [allNodes, allEdges] = PlanNormalizer.normalize(
-            unifiedTree, 0, {
-                computeData: (planNode,
-                              flowNode,
-                              flowNodes: Node[],
-                              flowEdges: Edge[]) => {
+        console.log(expandedNodes);
+        const [allNodes, allEdges] = StaticNormalizerAndLayouter.dagreTreeLayout(
+            unifiedTree,
+            0,
+            (planNode) => expandedNodes.some(pn => pn === planNode),
+            {
+                computeData: (planNode: PlanNode) => {
                     return {
-                        expand: getExpander(flowNode, flowNodes, flowEdges),
-                        hide: getHider(flowNode),
-                        firstPlanData: planNode.data.origin() === Origin.OLD ||
-                        planNode.data.origin() === Origin.SHARED
-                            ? planNode.data
-                            : planNode.getMatch()?.data,
-                        secondPlanData: planNode.data.origin() === Origin.NEW
-                            ? planNode.data
-                            : planNode.getMatch()?.data
-                    }
-                }
-            });
+                        hide: () => {
+                        },
+                        expand: () => {
+                            setExpandedNodes([
+                                                 ...expandedNodes,
+                                                 ...planNode.children
+                                             ])
+                        },
+                        firstPlanData: planNode.data,
+                        secondPlanData: planNode.isMatched()
+                            ? planNode.getMatch().data
+                            : null,
 
-        if (hideNodes) {
-            setNodes([allNodes[0]]);
-            setEdges([]);
-        } else {
-            setNodes(allNodes);
-            setEdges(allEdges);
-        }
+                    }
+                },
+                rankSep: 100,
+                nodeSep: 100,
+                direction: LayoutDirection.VERTICAL,
+                globalXOffset: 0,
+                withDimensions: true
+            } as any);
+
+        setNodes(allNodes);
+        setEdges(allEdges);
 
         console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`);
-
-        setTimeout(() => {
-            document.getElementById("changeLayoutBtn")!!.click();
-        }, 300)
-    }, [props])
-
+    }, [props, expandedNodes])
 
     return (
-        <ReactFlowProvider>
+        <>
             <NodeLayouter nodeSetter={setNodes}></NodeLayouter>
             <ReactFlow
                 zoomOnScroll={false}
@@ -113,6 +85,6 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
                 edgeTypes={edgeTypes}
             >
             </ReactFlow>
-        </ReactFlowProvider>
+        </>
     );
 }

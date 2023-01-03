@@ -1,9 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import ReactFlow, {
-    ReactFlowProvider,
-    useEdgesState,
-    useNodesState
-} from 'reactflow';
+import ReactFlow, {useEdgesState, useNodesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import PlanNormalizer from "../PlanNormalizer";
 
@@ -82,10 +78,6 @@ export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
                   setNodes(allNodes);
                   setEdges(allEdges);
                   console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`)
-
-                  setTimeout(() => {
-                      document.getElementById("changeLayoutBtn")!!.click();
-                  }, 300)
               },
               [props]
     );
@@ -127,21 +119,20 @@ export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
     console.log("refresh");
 
     return (
-
-        <ReactFlowProvider>
+        <>
             <NodeLayouter nodeSetter={setNodes}></NodeLayouter>
             <ReactFlow
                 style={{flexGrow: 1}}
                 zoomOnScroll={false}
                 nodes={nodes}
                 edges={edges}
+                fitView
                 // @ts-ignore
                 nodeTypes={nodeTypes}
                 // @ts-ignore
                 edgeTypes={edgeTypes}
             >
             </ReactFlow>
-        </ReactFlowProvider>
-
+        </>
     );
 }

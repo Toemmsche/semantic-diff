@@ -12,6 +12,7 @@ import QueryPlanResultDiff from "./QueryPlanResultDiff";
 import {Stack} from "@mui/material";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";
 import {useParameterState} from "../data/Store";
+import {ReactFlowProvider} from "reactflow";
 
 
 /**
@@ -36,18 +37,20 @@ export default function QueryPlanDiff () {
                width="inherit">
             <QueryPlanResultDiff firstPlanResult={firstPlanResult}
                                  secondPlanResult={secondPlanResult}></QueryPlanResultDiff>
-            {
-                parameters.showUnified
-                    ? <UnifiedTreeView
-                        unifiedTree={new UnifiedTreeGenerator<PlanData>(
-                            defaultDiffOptions).generate(
-                            firstPlan,
-                            secondPlan)}
-                        hideNodes={parameters.hideNodes}/>
-                    : <TwoWayDiffView firstPlan={firstPlan}
-                                      secondPlan={secondPlan}
-                                      showMatches={parameters.showMatches}/>
-            }
+            <ReactFlowProvider>
+                {
+                    parameters.showUnified
+                        ? <UnifiedTreeView
+                            unifiedTree={new UnifiedTreeGenerator<PlanData>(
+                                defaultDiffOptions).generate(
+                                firstPlan,
+                                secondPlan)}
+                            hideNodes={parameters.hideNodes}/>
+                        : <TwoWayDiffView firstPlan={firstPlan}
+                                          secondPlan={secondPlan}
+                                          showMatches={parameters.showMatches}/>
+                }
+            </ReactFlowProvider>
         </Stack>
     );
 }

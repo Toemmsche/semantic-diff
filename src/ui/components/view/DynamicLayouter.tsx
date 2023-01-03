@@ -22,7 +22,7 @@ export interface TreeLayoutOptions extends LayoutOptions {
     rankSep: number
 }
 
-export default class Layouter {
+export default class DynamicLayouter {
 
     /**
      * Creates a tree layout from the given nodes and edges, which should represent a single rooted tree graph

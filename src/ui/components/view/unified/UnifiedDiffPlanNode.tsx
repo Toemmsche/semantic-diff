@@ -6,6 +6,7 @@ import {Box, Button} from "@mui/material";
 import {ExpandMore} from "@mui/icons-material";
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {Nullable} from "../../../../semantic-diff/Types";
+import {NODE_HEIGHT, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
 
 export interface IUnifiedDiffProps {
     data: {
@@ -26,7 +27,7 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
     const [parameters, parameterActions] = useParameterState();
 
     const {hide, firstPlanData, secondPlanData, expand} = props.data;
-    
+
     const metaPlanData = firstPlanData ?? secondPlanData!!;
 
     const [hasExpanded, setHasExpanded] = useState(false);
@@ -50,15 +51,22 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
         case Origin.SHARED:
             bgColor = UnifiedColors.SHARED;
             break;
+        default:
+            bgColor = "lightgrey";
+            break;
     }
 
     return (
         <Box bgcolor={bgColor}
              borderRadius={1}
-             padding={1}>
+             width={NODE_WIDTH}
+             height={NODE_HEIGHT}
+             display="flex"
+             flexDirection="column"
+             alignItems="center"
+             justifyContent="center">
             <Handle type="target" position={Position.Top}/>
-            <Component data={metaPlanData}/>
-            {parameters.hideNodes && !hasExpanded &&
+            {parameters.hideNodes && !hasExpanded ?
                 <Button
                     variant="contained"
                     style={{
@@ -69,8 +77,9 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
                         expand();
                     }}
                     endIcon={<ExpandMore/>}>
-                    Expand
-                </Button>}
+                    <Component data={metaPlanData}/>
+                </Button>
+                : <Component data={metaPlanData}/>}
             <Handle type="source" position={Position.Bottom}/>
         </Box>
     );
