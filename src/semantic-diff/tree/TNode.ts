@@ -149,6 +149,19 @@ export default class TNode<T> {
         return arr;
     }
 
+    toPreOrderUnique(nodeSet = new Set<TNode<T>>()) : TNode<T>[] {
+        // early return
+        if (nodeSet.has(this)) return Array.from(nodeSet);
+
+        nodeSet.add(this);
+
+        for (const child of this._children) {
+            child.toPreOrderUnique(nodeSet);
+        }
+
+        return Array.from(nodeSet);
+    }
+
     toPostOrderArray (arr: TNode<T>[] = []): TNode<T>[] {
         for (const child of this._children) {
             child.toPostOrderArray(arr);

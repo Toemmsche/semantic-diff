@@ -7,7 +7,7 @@ import CustomEdge from '../../edges/CustomEdge';
 import StaticNormalizerAndLayouter from "../StaticNormalizerAndLayouter";
 import useAnimatedNodes from "../../useAnimatedNodes";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
-import {LayoutDirection} from "../DynamicLayouter";
+import {defaultTreeLayoutOptions} from "../DynamicLayouter";
 
 
 export interface IUnifiedTreeViewProps {
@@ -28,16 +28,24 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
         customEdge: CustomEdge
     }), []);
 
-    const [expandedNodes, setExpandedNodes] = useState([unifiedTree]);
+    const [expandedNodes, setExpandedNodes] = useState([] as PlanNode[]);
 
     // empty initial state
     const [nodes, setNodes] = useAnimatedNodes([])
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
+
+    useEffect(() => {
+        if (hideNodes) {
+            setExpandedNodes([unifiedTree]);
+        } else {
+            setExpandedNodes(unifiedTree.toPreOrderUnique());
+        }
+    }, [props])
+
     useEffect(() => {
         console.log("Unifiedtree", unifiedTree)
 
-        console.log(expandedNodes);
         const [allNodes, allEdges] = StaticNormalizerAndLayouter.dagreTreeLayout(
             unifiedTree,
             0,
@@ -60,11 +68,7 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
 
                     }
                 },
-                rankSep: 100,
-                nodeSep: 100,
-                direction: LayoutDirection.VERTICAL,
-                globalXOffset: 0,
-                withDimensions: true
+                ...defaultTreeLayoutOptions
             } as any);
 
         setNodes(allNodes);

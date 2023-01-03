@@ -1,39 +1,43 @@
 /** @jsxImportSource @emotion/react */
 
-import {Box, Chip, Stack} from "@mui/material";
-import React from "react";
-import ViewConfig from "./ViewConfig";
+import {Box, Button, Chip, Popover, Stack} from "@mui/material";
+import React, {useState} from "react";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";
+import QueryPlanResult from "../data/QueryPlanResult";
+import {Nullable} from "../../semantic-diff/Types";
 
-export default function CollectionPicker (props: {}) {
+
+export interface ICollectionPickerProps {
+    currentSelection: QueryPlanResult,
+    onSelect: (qpr: QueryPlanResult) => void;
+
+    label: string
+}
+
+
+export default function CollectionPicker (props: ICollectionPickerProps) {
     const [state, actions] = useQueryPlanState();
 
-    const firstQpr = state.queryPlanResults[state.firstSelection];
-    const secondQpr = state.queryPlanResults[state.secondSelection];
+    const {currentSelection, onSelect, label} = props;
+
+    const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
+
     const groups = new Set(state.queryPlanResults.map(qpr => qpr.dbms + " - " + qpr.dataset));
     const groupsRender = [];
     for (const group of groups) {
         const chipList = state.queryPlanResults
-            // TODO
                               .filter(qpr => qpr.dbms + " - " + qpr.dataset === group)
                               .map((qpr, i) => {
-                                  function selectQueryChip () {
-                                      actions.setSelection(state.queryPlanResults.indexOf(
-                                                               qpr),
-                                                           state.secondSelection);
-                                  }
-
-
-                                  if (qpr === firstQpr || qpr === secondQpr) {
+                                  if (qpr === currentSelection) {
                                       return <Chip
                                           key={i}
                                           label={qpr.queryName}
                                           color="primary"
-                                          onClick={selectQueryChip}></Chip>;
+                                          onClick={() => onSelect(qpr)}></Chip>;
                                   } else {
                                       return <Chip key={i}
                                                    label={qpr.queryName}
-                                                   onClick={selectQueryChip}></Chip>;
+                                                   onClick={() => onSelect(qpr)}></Chip>;
                                   }
                               });
         groupsRender.push(
@@ -54,12 +58,25 @@ export default function CollectionPicker (props: {}) {
         )
     }
     return (
-        <Stack
-            spacing={2}
-            marginLeft={2}
-            marginRight={10}>
-            <ViewConfig></ViewConfig>
-            {groupsRender}
-        </Stack>
+        <>
+            <Button onClick={(event) => setAnchorEl(event.currentTarget)}>
+                {label}
+            </Button>
+            <Popover
+                anchorEl={anchorEl}
+                open={anchorEl != null}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}>
+                <Stack
+                    spacing={2}
+                    marginLeft={2}
+                    marginRight={10}>
+                    {groupsRender}
+                </Stack>
+            </Popover>
+        </>
     )
 }

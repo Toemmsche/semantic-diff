@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 // @ts-ignore
 import s from './SideBar.module.scss'
 import {useParameterState} from "../data/Store";
-import CollectionPicker from "./CollectionPicker";
 import {Drawer, IconButton} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";
+import ViewConfig from "./ViewConfig";
+import {Settings} from "@mui/icons-material";
 
 
 export interface ISideBarProps {
@@ -42,13 +42,13 @@ export default function SideBar (props: ISideBarProps) {
         <>
             <IconButton
                 onClick={() => setOpen(true)}>
-                <MenuIcon></MenuIcon>
+                <Settings/>
             </IconButton>
             <Drawer
                 open={open}
                 onClose={() => setOpen(false)}
             >
-                <CollectionPicker></CollectionPicker>
+                <ViewConfig></ViewConfig>
             </Drawer>
         </>
     );

@@ -1,7 +1,11 @@
+/** @jsxImportSource @emotion/react */
+
 // internal helper component that manages layouting/
 import {Node, useStore} from "reactflow";
-import DynamicLayouter, {LayoutDirection} from "./DynamicLayouter";
+import DynamicLayouter, {defaultTreeLayoutOptions} from "./DynamicLayouter";
 import React from "react";
+import {Fab} from "@mui/material";
+import {Autorenew} from "@mui/icons-material";
 
 export interface INodeLayouterProps {
     nodeSetter: (nodes: Node[]) => void;
@@ -24,17 +28,21 @@ export default function NodeLayouter (props: INodeLayouterProps) {
             const layoutedNodes = DynamicLayouter.treeLayout(internalNodes,
                                                              edges,
                                                              {
-                                                          rankSep: 100,
-                                                          nodeSep: 100,
-                                                          direction: LayoutDirection.VERTICAL,
-                                                          globalXOffset: 0,
-                                                          withDimensions: true
-                                                      });
+                                                                 ...defaultTreeLayoutOptions,
+                                                                 withActualDimensions: true
+                                                             });
             props.nodeSetter(layoutedNodes);
         }
     }
 
-    return (<button id="changeLayoutBtn" onClick={() => {
-        changeLayout()
-    }}>change layout</button>)
+    return (
+        <Fab id="changeLayoutBtn" variant="extended" size="large"
+             css={{
+                 position: "absolute",
+                 right: 10,
+                 bottom: 20
+             }
+             }
+             onClick={() => changeLayout()}>
+            <Autorenew/>Refresh Layout</Fab>)
 }

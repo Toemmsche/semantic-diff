@@ -12,12 +12,12 @@ import {PlanNode} from "../../../model/PlanData";
 import {MatchPipeline} from "../../../../semantic-diff/match/MatchPipeline";
 import {Comparator} from "../../../../semantic-diff/compare/Comparator";
 import {defaultDiffOptions} from "../../../../semantic-diff";
+import DynamicLayouter, {defaultTreeLayoutOptions} from "../DynamicLayouter";
 
 
 export interface ITwoWayDiffViewProps {
     firstPlan: PlanNode,
     secondPlan: PlanNode,
-
     showMatches: boolean
 }
 
@@ -75,9 +75,16 @@ export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
                   const allNodes = normalizedFirstNodes.concat(normalizedSecondNodes);
                   const allEdges = normalizedFirstEdges.concat(normalizedSecondEdges);
 
-                  setNodes(allNodes);
+                  const layoutedNodes = DynamicLayouter.treeLayout(allNodes,
+                                                                   edges,
+                                                                   defaultTreeLayoutOptions);
+
+                  setNodes(layoutedNodes);
                   setEdges(allEdges);
-                  console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`)
+
+                  console.log(`Rendered ${layoutedNodes.length} nodes and ${allEdges.length} edges`,
+                              layoutedNodes,
+                              allEdges)
               },
               [props]
     );

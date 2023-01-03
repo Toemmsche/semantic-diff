@@ -48,16 +48,20 @@ export default function ViewConfig () {
     }
 
     return (
-        <Stack direction="column">
-            <Slider
-                defaultValue={parameters.showUnified
-                    ? DiffViewMode.UNIFIED
-                    : DiffViewMode.TWO_WAY}
-                onChange={handleDiffViewModeChange}
-                step={null}
-                marks={marks}
-            />
+        <Stack direction="column"
+               width="25vw"
+               margin={5}>
+            <h2>Configuration</h2>
+
             <FormGroup>
+                <Slider
+                    defaultValue={parameters.showUnified
+                        ? DiffViewMode.UNIFIED
+                        : DiffViewMode.TWO_WAY}
+                    onChange={handleDiffViewModeChange}
+                    step={null}
+                    marks={marks}
+                />
                 <FormControlLabel
                     label="Hide Nodes"
                     control={
