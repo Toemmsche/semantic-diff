@@ -8,11 +8,12 @@ import {qpGrammar} from "../data/plans";
 import UnifiedTreeGenerator
     from "../../semantic-diff/delta/UnifiedTreeGenerator";
 import {PlanData} from "../model/PlanData";
-import QueryPlanResultDiff from "./QueryPlanResultDiff";
+import PlanPicker from "./PlanPicker";
 import {Stack} from "@mui/material";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";
 import {useParameterState} from "../data/Store";
 import {ReactFlowProvider} from "reactflow";
+import QueryPlanDiffChart from "./QueryPlanDiffChart";
 
 
 /**
@@ -23,34 +24,46 @@ export default function QueryPlanDiff () {
     const [state, actions] = useQueryPlanState();
     const [parameters, parameterActions] = useParameterState();
 
-    const firstPlanResult = state.queryPlanResults[state.firstSelection];
-    const secondPlanResult = state.queryPlanResults[state.secondSelection];
+    // TODO allow nullable
+    let GraphView, ChartView;
+    if (state.resultSelection) {
+        const [firstPlanResult, secondPlanResult] = state.resultSelection
 
-    const planSerdes = new PlanNodeBrowserSerDes(qpGrammar, defaultDiffOptions);
-    const firstPlan = planSerdes.parseFromString(firstPlanResult.queryPlanXml);
-    const secondPlan = planSerdes.parseFromString(secondPlanResult.queryPlanXml);
+        const planSerdes = new PlanNodeBrowserSerDes(qpGrammar,
+                                                     defaultDiffOptions);
+        const firstPlan = planSerdes.parseFromString(firstPlanResult.queryPlanXml);
+        const secondPlan = planSerdes.parseFromString(secondPlanResult.queryPlanXml);
+
+        GraphView = <ReactFlowProvider>
+            {
+                parameters.showUnified
+                    ? <UnifiedTreeView
+                        unifiedTree={new UnifiedTreeGenerator<PlanData>(
+                            defaultDiffOptions).generate(
+                            firstPlan,
+                            secondPlan)}
+                        hideNodes={parameters.hideNodes}/>
+                    : <TwoWayDiffView firstPlan={firstPlan}
+                                      secondPlan={secondPlan}
+                                      showMatches={parameters.showMatches}/>
+            }
+        </ReactFlowProvider>
+
+        ChartView = <QueryPlanDiffChart firstPlanResult={firstPlanResult}
+                                        secondPlanResult={secondPlanResult}></QueryPlanDiffChart>
+    } else {
+        GraphView = <span>Please select</span>;
+        ChartView = <span>Please select</span>;
+    }
 
     return (
 
         <Stack direction="column"
                height="inherit"
                width="inherit">
-            <QueryPlanResultDiff firstPlanResult={firstPlanResult}
-                                 secondPlanResult={secondPlanResult}></QueryPlanResultDiff>
-            <ReactFlowProvider>
-                {
-                    parameters.showUnified
-                        ? <UnifiedTreeView
-                            unifiedTree={new UnifiedTreeGenerator<PlanData>(
-                                defaultDiffOptions).generate(
-                                firstPlan,
-                                secondPlan)}
-                            hideNodes={parameters.hideNodes}/>
-                        : <TwoWayDiffView firstPlan={firstPlan}
-                                          secondPlan={secondPlan}
-                                          showMatches={parameters.showMatches}/>
-                }
-            </ReactFlowProvider>
+            <PlanPicker></PlanPicker>
+            {ChartView}
+            {GraphView}
         </Stack>
     );
 }

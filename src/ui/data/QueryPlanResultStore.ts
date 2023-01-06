@@ -1,14 +1,14 @@
 import {Action, createHook, createStore} from 'react-sweet-state';
 import {batchPlans, qpGrammar} from "./plans";
-import {QueryPlanResultCollection} from "./QueryPlanResult";
+import QueryPlanResult, {QueryPlanResultCollection} from "./QueryPlanResult";
 import {defaultDiffOptions, PlanNodeBrowserSerDes} from "../../semantic-diff";
-import {PlanData} from "../model/PlanData";
+import {Nullable} from "../../semantic-diff/Types";
 
 
-export interface IQueryPlanResultsState{
+export interface IQueryPlanResultsState {
     queryPlanResults: QueryPlanResultCollection,
-    firstSelection: number,
-    secondSelection: number,
+
+    resultSelection: Nullable<[QueryPlanResult, QueryPlanResult]>
 }
 
 const actions = {
@@ -17,18 +17,23 @@ const actions = {
             const queryPlanResults = new PlanNodeBrowserSerDes(qpGrammar,
                                                                defaultDiffOptions).queryPlanResultCollectionFromJson(
                 text);
+
+            // TODO verify that all dbms have all queries
+
             setState({
-                         queryPlanResults: queryPlanResults
+                         queryPlanResults: queryPlanResults,
+                         resultSelection: null
                      });
         },
-    setSelection: (firstSelection: number,
-                   secondSelection: number): Action<IQueryPlanResultsState> =>
+
+    setResultSelection: (firstPlanResult: QueryPlanResult,
+                         secondPlanResult: QueryPlanResult): Action<IQueryPlanResultsState> =>
         ({setState, getState}) => {
             setState({
-                         firstSelection,
-                         secondSelection
+                         resultSelection: [firstPlanResult, secondPlanResult]
                      });
-        }
+        },
+
 };
 const Store = createStore<IQueryPlanResultsState, typeof actions>(
     {
@@ -36,10 +41,24 @@ const Store = createStore<IQueryPlanResultsState, typeof actions>(
             queryPlanResults: new PlanNodeBrowserSerDes(qpGrammar,
                                                         defaultDiffOptions).queryPlanResultCollectionFromJson(
                 batchPlans),
-            firstSelection: 36,
-            secondSelection: 80,
+            resultSelection: null
         },
         actions
     });
 
 export const useQueryPlanState = createHook(Store);
+
+export const useAllLabels = createHook(Store, {
+    selector: (state: IQueryPlanResultsState) => {
+        return Object.keys(state.queryPlanResults[0].benchmarkResult)
+                     .filter(l => l !== "error" && l !== "result")
+    }
+});
+
+export const useUniqueDbms = createHook(Store, {
+    selector: (state: IQueryPlanResultsState) => {
+        const dbmsSet = new Set(state.queryPlanResults.map(qpr => qpr.dbms))
+        const uniqueDbmsArr = Array.from(dbmsSet.entries()).map(val => val[1]);
+        return uniqueDbmsArr;
+    }
+})

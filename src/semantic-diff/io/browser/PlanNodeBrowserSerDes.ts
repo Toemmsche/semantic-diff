@@ -5,23 +5,20 @@ import {PlanData} from "../../../ui/model/PlanData";
 import TNodeBrowserSerDes from "./TNodeBrowserSerDes";
 import {TableScan} from "../../../ui/model/TableScan";
 import {Nullable} from "../../Types";
-import QueryPlan from "../../../ui/model/meta/QueryPlan";
 import {DBMS} from "../../../ui/model/meta/DBMS";
 import {Dataset} from "../../../ui/model/meta/Dataset";
 import Join from "../../../ui/model/Join";
 import {TempScan} from "../../../ui/model/TempScan";
-import QueryPlanResult, {
-    QueryPlanResultCollection
-} from "../../../ui/data/QueryPlanResult";
-import {Query} from "@testing-library/react";
+import {QueryPlanResultCollection} from "../../../ui/data/QueryPlanResult";
 import BenchmarkResult from "../../../ui/data/BenchmarkResult";
+import {median} from "d3";
 
 export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements SerDes<TNode<PlanData>> {
 
 
     private getInitializedBuilderFromTagName (tagName: string,
-                                              text: Nullable<string>,
-                                              attributes: Map<string, string>): TNodeBuilder<PlanData> {
+        text: Nullable<string>,
+        attributes: Map<string, string>): TNodeBuilder<PlanData> {
         switch (tagName) {
             case TableScan.LABEL:
                 return new TNodeBuilder<TableScan>()
@@ -39,7 +36,7 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
     }
 
     public parseXmlDom (xmlElement: Element,
-                        includeChildren = true): TNode<PlanData> {
+        includeChildren = true): TNode<PlanData> {
         const tagName = xmlElement.localName;
 
         // parse attributes
@@ -61,10 +58,9 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
         // get associated grammar Node
         const grammarNode = this.grammar.getGrammarNodeByLabel(tagName);
 
-        const builder = this.getInitializedBuilderFromTagName(tagName,
-                                                              text,
-                                                              attributes)
-                            .children(children)
+        const builder = this.getInitializedBuilderFromTagName(tagName, text,
+            attributes)
+            .children(children)
 
         if (grammarNode) {
             builder.grammarNode(grammarNode)
@@ -74,7 +70,7 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
     }
 
     public override parseFromString (xml: string,
-                                     includeChildren: boolean = true): TNode<PlanData> {
+        includeChildren: boolean = true): TNode<PlanData> {
         const root = new DOMParser()
             .parseFromString(xml, 'text/xml')
             .childNodes
@@ -86,7 +82,12 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
     public benchmarkResultFromJsonNode (benchmarkResultRaw: any): BenchmarkResult {
         for (const prop in benchmarkResultRaw) {
             const member = benchmarkResultRaw[prop];
-            if (prop !== "result" && prop !== "error" && member instanceof Array) {
+            if (prop !==
+                "result" &&
+                prop !==
+                "error" &&
+                member instanceof
+                Array) {
                 for (let i = 0; i < member.length; i++) {
                     if (member[i] instanceof String) {
                         // They are all floats
@@ -109,6 +110,17 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
             const dataset = result.dataset;
             if (!(<any>Object).values(Dataset).includes(dataset)) {
                 throw new Error("Unrecognized Dataset " + dataset);
+            }
+
+            for (const benchProp in result.benchmarkResult) {
+                if (benchProp === "error" || benchProp === "result") continue;
+
+                const val = (result.benchmarkResult as any)[benchProp];
+                if (val instanceof Array && !isNaN(val[0])) { // dirty isNumber() check
+                    (result.benchmarkResult as any)[benchProp] = median(val);
+                } else {
+                    (result.benchmarkResult as any)[benchProp] = null;
+                }
             }
         }
         return collection;
