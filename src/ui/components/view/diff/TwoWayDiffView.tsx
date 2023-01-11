@@ -79,6 +79,7 @@ export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
                                                                    edges,
                                                                    defaultTreeLayoutOptions);
 
+                  console.log(layoutedNodes);
                   setNodes(layoutedNodes);
                   setEdges(allEdges);
 

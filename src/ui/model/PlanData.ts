@@ -3,6 +3,7 @@ import XmlData from "../../semantic-diff/data/XmlData";
 import RenderPlanNode from "../components/nodes/RenderPlanNode";
 import IDiffNodeData from "../components/view/diff/IDiffNodeData";
 import {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
+import RenderPlanNodeDetails from "../components/details/RenderPlanNodeDetails";
 
 export class PlanData extends XmlData {
 
@@ -24,6 +25,10 @@ export class PlanData extends XmlData {
 
     component (): Function {
         return RenderPlanNode;
+    }
+
+    detailComponent() : Function {
+        return RenderPlanNodeDetails;
     }
 
     // extension for two way viewer

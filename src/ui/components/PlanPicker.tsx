@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {
     Box,
-    Chip, Divider,
+    Chip,
+    Divider,
     FormControl,
     FormControlLabel,
     IconButton,
@@ -131,7 +132,9 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                 const color = (worstDiff < 0) ? betterColorScale(
                     worstDiff / bestOverallDiff) : worseColorScale(
                     worstDiff / worstOverallDiff);
-                return (<Stack direction="row" justifyContent="start"
+                return (<Stack key={query}
+                               direction="row"
+                               justifyContent="start"
                                alignItems="center">
                     <Radio key={query}
                            checked={selectedQuery === query}
@@ -166,7 +169,7 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
         const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
 
         const BaselineRadios = availableDbms.map(dbms => {
-            return <FormControlLabel value={dbms} control={<Radio/>}
+            return <FormControlLabel key={dbms} value={dbms} control={<Radio/>}
                                      label={dbms}/>
         })
 
