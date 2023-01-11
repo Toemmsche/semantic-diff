@@ -26,11 +26,10 @@ const actions = {
                      });
         },
 
-    setResultSelection: (firstPlanResult: QueryPlanResult,
-                         secondPlanResult: QueryPlanResult): Action<IQueryPlanResultsState> =>
+    setResultSelection: (selection: Nullable<[QueryPlanResult, QueryPlanResult]>): Action<IQueryPlanResultsState> =>
         ({setState, getState}) => {
             setState({
-                         resultSelection: [firstPlanResult, secondPlanResult]
+                         resultSelection: selection
                      });
         },
 
