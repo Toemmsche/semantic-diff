@@ -11,6 +11,7 @@ import IComparator from '../compare/IComparator';
 import IMatchOptions from './IMatchOptions';
 import TopDownMatcher from "./TopDownMatcher";
 import {Origin} from "../delta/UnifiedTreeGenerator";
+import BottomUpMatcher from "./BottomUpMatcher";
 
 export class MatchPipeline<T> {
 
@@ -64,7 +65,25 @@ export class MatchPipeline<T> {
 
     static topDownOnly (options: IMatchOptions) {
         return new MatchPipeline([
-            new FixedMatcher(), new TopDownMatcher(options),
+            new FixedMatcher(),
+            new TopDownMatcher(options)
+        ])
+    }
+
+    static bottomUpOnly(options: IMatchOptions) {
+        return new MatchPipeline([
+            new FixedMatcher(),
+            new SimilarityMatcher(options),
+            new BottomUpMatcher(options)
+        ])
+    }
+
+    static onlySimpleMatchers(options: IMatchOptions) {
+        return new MatchPipeline([
+            new FixedMatcher(),
+            new TopDownMatcher(options),
+            new SimilarityMatcher(options),
+            new BottomUpMatcher(options)
         ])
     }
 
