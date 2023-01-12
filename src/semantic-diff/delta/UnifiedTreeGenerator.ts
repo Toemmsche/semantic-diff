@@ -16,18 +16,6 @@ export default class UnifiedTreeGenerator<T> {
     }
 
     generate (oldTree: TNode<T>, newTree: TNode<T>): TNode<T> {
-        // TODO refactor
-        const matchPipeline = MatchPipeline.fromMode(this.options)
-        matchPipeline.execute(oldTree, newTree, new Comparator(this.options));
-
-        // tag nodes
-        oldTree.toPreOrderArray()
-            .forEach(node => node.attributes.set("origin",
-                node.isMatched() ? Origin.SHARED : Origin.OLD));
-        newTree.toPreOrderArray()
-            .forEach(node => node.attributes.set("origin",
-                node.isMatched() ? Origin.SHARED : Origin.NEW));
-
         // Turn tree into DAG by reusing nodes
 
         // make all matched nodes in the new tree point to their match partner
@@ -36,6 +24,7 @@ export default class UnifiedTreeGenerator<T> {
             .forEach(node => {
                 for (let i = 0; i < node.children.length; i++) {
                     if (node.childAt(i).isMatched()) {
+                        // do not clear parent
                         node.children[i] = node.childAt(i).getMatch();
                     }
                 }

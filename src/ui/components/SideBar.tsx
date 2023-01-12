@@ -41,7 +41,12 @@ export default function SideBar (props: ISideBarProps) {
     return (
         <>
             <IconButton
-                onClick={() => setOpen(true)}>
+                onClick={() => setOpen(true)}
+            sx={{
+                position: "absolute",
+                top: 10,
+                left: 10
+            }}>
                 <Settings/>
             </IconButton>
             <Drawer

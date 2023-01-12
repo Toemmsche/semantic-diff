@@ -6,12 +6,18 @@ import {Box, Button, IconButton, Popover} from "@mui/material";
 import {ExpandMore, Menu} from "@mui/icons-material";
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {Nullable} from "../../../../semantic-diff/Types";
-import {NODE_HEIGHT, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
+import {
+    NODE_BORDER_RADIUS, NODE_HEIGHT, NODE_PADDING, NODE_WIDTH
+} from "../diff/TwoWayDiffPlanNode";
+import UnifiedDiffPlanNodeDetails
+    from "../../details/UnifiedDiffPlanNodeDetails";
 
 export interface IUnifiedDiffProps {
     data: {
         expand: () => void, hide: (hidden: boolean,
-            data: PlanData) => void, firstPlanData: Nullable<PlanData>, secondPlanData: Nullable<PlanData>,
+            data: PlanData) => void,
+        firstPlanData: Nullable<PlanData>,
+        secondPlanData: Nullable<PlanData>,
     }
 }
 
@@ -41,8 +47,16 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
     // child component
     let Component = metaPlanData.component();
 
-    // detail component
-    let DetailComponent = metaPlanData.detailComponent();
+    let Details;
+    if (firstPlanData && secondPlanData) {
+        Details = <UnifiedDiffPlanNodeDetails firstPlanData={firstPlanData}
+                                              secondPlanData={secondPlanData}></UnifiedDiffPlanNodeDetails>
+    } else {
+        // retrieve detail component from node
+        let DetailComponent = metaPlanData.detailComponent();
+        Details = <DetailComponent data={metaPlanData}></DetailComponent>
+    }
+
 
     function onHide (event: any) {
         const hidden = event.target.checked;
@@ -50,7 +64,7 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
     }
 
     let bgColor: string;
-    switch (metaPlanData.origin()) {
+    switch (metaPlanData.origin) {
         case Origin.NEW:
             bgColor = UnifiedColors.EXCLUSIVE_NEW;
             break;
@@ -66,9 +80,10 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
     }
 
     return (<Box bgcolor={bgColor}
-                 borderRadius={1}
                  width={NODE_WIDTH}
                  height={NODE_HEIGHT}
+                 borderRadius={NODE_BORDER_RADIUS}
+                 padding={NODE_PADDING}
                  display="flex"
                  flexDirection="column"
                  alignItems="center"
@@ -78,7 +93,8 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
             variant="contained"
             style={{
                 backgroundColor: bgColor,
-                minWidth: "100%"
+                minWidth: "100%",
+                color: "black" // change text color to black
             }}
             onClick={() => {
                 setHasExpanded(true);
@@ -93,7 +109,7 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
         </IconButton>
         <Popover anchorEl={detailsAnchorEl} open={detailsAnchorEl != null}
                  onClose={() => setDetailsAnchorEl(null)}>
-            <DetailComponent data={metaPlanData}></DetailComponent>
+            {Details}
         </Popover>
         <Handle type="source" position={Position.Bottom}/>
     </Box>);

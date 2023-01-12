@@ -5,6 +5,7 @@ import ICopyable from "../data/ICopyable";
 import NodeType from "../grammar/NodeType";
 import {Nullable} from "../Types";
 import DiffState from "../delta/DiffState";
+import {Origin} from "../delta/UnifiedTreeGenerator";
 
 export class TNodeBuilder<T> {
 
@@ -46,13 +47,15 @@ export default class TNode<T> {
 
     // Every node is matchable, this is fundamental to our approach
     protected _matchPartner: Nullable<TNode<T>> = null;
+
+    // will be set by matcher
+    public _origin: Origin = Origin.OLD;
     protected readonly _children: TNode<T>[] = [];
     protected _parent: Nullable<TNode<T>> = null;
-    private _index: number | null = null;
+    protected _index: number | null = null;
 
     public constructor (public data: T, // data fully modifiable for now
-                        public readonly grammarNode: Nullable<GrammarNode>
-    ) {
+        public readonly grammarNode: Nullable<GrammarNode>) {
     }
 
     /* TODO remove these */
@@ -81,6 +84,18 @@ export default class TNode<T> {
 
     get children (): TNode<T>[] {
         return this._children;
+    }
+
+
+    get sourceOrigin (): Origin {
+        return this._origin;
+    }
+
+    get unifiedOrigin (): Origin {
+        if (this.isMatched()) {
+            return Origin.SHARED;
+        }
+        return this.sourceOrigin;
     }
 
 
@@ -120,9 +135,9 @@ export default class TNode<T> {
     xPath (): string {
         // discard root node
         return this.path()
-                   .slice(1)
-                   .map(node => node._index)
-                   .join('/');
+            .slice(1)
+            .map(node => node._index)
+            .join('/');
     }
 
     path (limit ?: number) {
@@ -138,7 +153,7 @@ export default class TNode<T> {
 
     size (): number {
         return 1 + this._children.map(child => child.size())
-                       .reduce(arraySum, 0);
+            .reduce(arraySum, 0);
     }
 
     toPreOrderArray (arr: TNode<T>[] = []): TNode<T>[] {
@@ -149,7 +164,7 @@ export default class TNode<T> {
         return arr;
     }
 
-    toPreOrderUnique(nodeSet = new Set<TNode<T>>()) : TNode<T>[] {
+    toPreOrderUnique (nodeSet = new Set<TNode<T>>()): TNode<T>[] {
         // early return
         if (nodeSet.has(this)) return Array.from(nodeSet);
 
@@ -217,7 +232,10 @@ export default class TNode<T> {
     }
 
     isLeaf (): boolean {
-        return this.grammarNode != null && this.grammarNode.type === NodeType.LEAF;
+        return this.grammarNode !=
+               null &&
+               this.grammarNode.type ===
+               NodeType.LEAF;
     }
 
     nonPropertyNodes (): TNode<T>[] {
@@ -283,12 +301,10 @@ export default class TNode<T> {
 
     getMatchingMap (): Map<TNode<T>, TNode<T>> {
         return new Map(this.toPreOrderArray()
-                           .filter(node => node.isMatched())
-                           .map(node => [
-                               node,
-                               node.getMatch()
-                           ])
-        );
+            .filter(node => node.isMatched())
+            .map(node => [
+                node, node.getMatch()
+            ]));
     }
 
     verifyMatching (): boolean {

@@ -1,9 +1,5 @@
 import {
-    FormControlLabel,
-    FormGroup,
-    Slider,
-    Stack,
-    Switch
+    FormControlLabel, FormGroup, Slider, Stack, Switch
 } from "@mui/material";
 import React from "react";
 import {useParameterState} from "../data/Store";
@@ -19,8 +15,7 @@ const marks = [
     {
         value: DiffViewMode.UNIFIED,
         label: "unified diff"
-    },
-    {
+    }, {
         value: DiffViewMode.TWO_WAY,
         label: "two way diff"
     }
@@ -30,7 +25,7 @@ export default function ViewConfig () {
     const [parameters, parameterActions] = useParameterState();
 
     function handleDiffViewModeChange (event: Event,
-                                       newValue: number | number[]) {
+        newValue: number | number[]) {
         const modeIndex = newValue as number;
         if (modeIndex === DiffViewMode.UNIFIED) {
             parameterActions.setShowUnified(true);
@@ -47,10 +42,9 @@ export default function ViewConfig () {
         parameterActions.setShowMatches(event.target.checked);
     }
 
-    return (
-        <Stack direction="column"
-               width="25vw"
-               margin={5}>
+    return (<Stack direction="column"
+                   width="25vw"
+                   margin={5}>
             <h2>Configuration</h2>
 
             <FormGroup>
@@ -64,17 +58,17 @@ export default function ViewConfig () {
                 />
                 <FormControlLabel
                     label="Hide Nodes"
-                    control={
-                        <Switch defaultChecked={parameters.hideNodes}
-                                onChange={handleHideNodeChange}/>
-                    }/>
+                    control={<Switch defaultChecked={parameters.hideNodes}
+                                     onChange={handleHideNodeChange}/>}/>
                 <FormControlLabel
                     label="Show Matches"
-                    control={
-                        <Switch defaultChecked={parameters.showMatches}
-                                onChange={handleShowMatchesChange}/>
-                    }/>
+                    control={<Switch defaultChecked={parameters.showMatches}
+                                     onChange={handleShowMatchesChange}/>}/>
+                <FormControlLabel
+                    label="Only Use Top-Down Matching"
+                    control={<Switch defaultChecked={parameters.topDownOnly}
+                                     onChange={(event) => parameterActions.setTopDownOnly(
+                                         event.target.checked)}/>}/>
             </FormGroup>
-        </Stack>
-    )
+        </Stack>)
 }

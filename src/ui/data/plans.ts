@@ -12807,5 +12807,8 @@ export const qpGrammar: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).p
         <GroupBy></GroupBy>
         <Select></Select>
         <TempScan></TempScan>
+        <EarlyProbe></EarlyProbe>
+        <Unknown></Unknown>
+        <Sort></Sort>
     </inners>
 </grammar>`);

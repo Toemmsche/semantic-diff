@@ -4,6 +4,7 @@ import RenderPlanNode from "../components/nodes/RenderPlanNode";
 import IDiffNodeData from "../components/view/diff/IDiffNodeData";
 import {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
 import RenderPlanNodeDetails from "../components/details/RenderPlanNodeDetails";
+import DiffState from "../../semantic-diff/delta/DiffState";
 
 export class PlanData extends XmlData {
 
@@ -35,11 +36,10 @@ export class PlanData extends XmlData {
     hoverActive : boolean = false;
 
     // extension for unified viewer
-    origin (): Origin {
-        const originFromAttributes = this.attributes.get("origin")!!;
-        return originFromAttributes as Origin;
-    }
 
+    origin: Origin = Origin.OLD;
+
+    diffState: DiffState = DiffState.IDENTICAL;
 }
 
 export type PlanNode = TNode<PlanData>;

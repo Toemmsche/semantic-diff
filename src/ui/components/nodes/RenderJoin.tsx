@@ -17,7 +17,7 @@ export default function RenderJoin (props: { data: Join }) {
                    alignItems="center"
                    spacing={1}>
                 <Box>{UTF8_INNER_JOIN}</Box>
-                <Box>Join</Box>
+                <Box>{joinData.operatorName.toUpperCase()}</Box>
             </Stack>
         </Box>
     )

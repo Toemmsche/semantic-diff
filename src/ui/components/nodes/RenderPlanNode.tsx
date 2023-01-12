@@ -9,7 +9,7 @@ export default function RenderPlanNode (props: { data: PlanData }) {
 
     return (
         <Box>
-            <Box>{planData.operatorName}</Box>
+            <Box>{planData.operatorName.toUpperCase()}</Box>
         </Box>
     )
 

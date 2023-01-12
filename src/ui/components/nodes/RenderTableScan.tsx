@@ -15,7 +15,7 @@ export default function RenderTableScan (props: { data: TableScan }) {
                    alignItems="center"
                    spacing={1}>
                 <ManageSearch></ManageSearch>
-                <Box>{tableScanData.tableName}</Box>
+                <Box>{tableScanData.tableName.toUpperCase()}</Box>
             </Stack>
         </Box>
     )

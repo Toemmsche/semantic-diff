@@ -3,21 +3,35 @@ import dagre from "dagre";
 import React from "react";
 import {PlanNode} from "../../model/PlanData";
 import {hierarchy as d3Hierarchy, tree as d3Tree} from 'd3-hierarchy';
-import {defaultNormalizeOptions} from "./PlanNormalizer";
-import {LayoutDirection, TreeLayoutOptions} from "./DynamicLayouter";
+import {
+    defaultTreeLayoutOptions, LayoutDirection, TreeLayoutOptions
+} from "./DynamicLayouter";
 import {NODE_HEIGHT, NODE_WIDTH} from "./diff/TwoWayDiffPlanNode";
 
 export interface IStaticNormalizeOptions {
     computeData: (planNode: PlanNode) => any;
+    computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => any;
+}
+
+export const defaultStaticNormalizeOptions = {
+    computeData: (planNode: PlanNode) => {
+        return planNode.data
+    },
+
+    computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => {
+        return {
+            parentPlanData: parentPlanNode.data,
+            childPlanData: childPlanNode.data
+        }
+    }, ...defaultTreeLayoutOptions
 }
 
 export default class StaticNormalizerAndLayouter {
 
     public static dagreTreeLayout (plan: PlanNode,
-                                   planIndex: number,
-                                   filter: (planNode: PlanNode) => boolean,
-                                   options: IStaticNormalizeOptions & TreeLayoutOptions = defaultNormalizeOptions as any):
-        [Node[], Edge[]] {
+        planIndex: number,
+        filter: (planNode: PlanNode) => boolean,
+        options: IStaticNormalizeOptions & TreeLayoutOptions = defaultStaticNormalizeOptions): [Node[], Edge[]] {
 
 
         const dagreGraphOptions: any = {
@@ -33,7 +47,8 @@ export default class StaticNormalizerAndLayouter {
                 dagreGraphOptions.rankdir = "TB";
                 break;
         }
-        const dagreGraph = new dagre.graphlib.Graph().setGraph(dagreGraphOptions)
+        const dagreGraph = new dagre.graphlib.Graph().setGraph(
+            dagreGraphOptions)
 
 
         const nodes: Node[] = [];
@@ -73,10 +88,7 @@ export default class StaticNormalizerAndLayouter {
                     target,
                     id: `${planIndex}-${source}-${target}`,
                     type: "customEdge",
-                    data: {
-                        parentPlanData: planNode.data,
-                        childPlanData: child.data
-                    }
+                    data: options.computeEdgeData(planNode, child)
                 }
                 edges.push(normalizedEdge);
 
@@ -100,7 +112,10 @@ export default class StaticNormalizerAndLayouter {
 
             return {
                 ...node,
-                position: {x, y}
+                position: {
+                    x,
+                    y
+                }
             }
         });
 
@@ -108,14 +123,13 @@ export default class StaticNormalizerAndLayouter {
     }
 
 
-    public static d3TreeLayout (plan: PlanNode, planIndex: number,
-                                filter: (planNode: PlanNode) => boolean,
-                                options: IStaticNormalizeOptions & TreeLayoutOptions = defaultNormalizeOptions as any):
-        [Node[], Edge[]] {
+    public static d3TreeLayout (plan: PlanNode,
+        planIndex: number,
+        filter: (planNode: PlanNode) => boolean,
+        options: IStaticNormalizeOptions & TreeLayoutOptions = defaultStaticNormalizeOptions): [Node[], Edge[]] {
 
         const hierarchy = d3Hierarchy<PlanNode>(plan,
-                                                (planNode) => planNode.children.filter(
-                                                    filter));
+            (planNode) => planNode.children.filter(filter));
         const layout = d3Tree<PlanNode>().nodeSize([100, 100]);
 
         const root = layout(hierarchy);
@@ -127,7 +141,10 @@ export default class StaticNormalizerAndLayouter {
             const normalizedNode = {
                 id: `${planIndex}-${planNode.data.operatorId}`,
                 type: "customNode",
-                position: {x: d.x, y: d.y}
+                position: {
+                    x: d.x,
+                    y: d.y
+                }
             } as any;
 
             normalizedNode.data = options.computeData(planNode);
@@ -141,10 +158,7 @@ export default class StaticNormalizerAndLayouter {
                 type: "customEdge",
                 source: `${planIndex}-${sourcePlanData.operatorId}`,
                 target: `${planIndex}-${targetPlanData.operatorId}`,
-                data: {
-                    parentPlanData: sourcePlanData,
-                    childPlanData: targetPlanData
-                }
+                data: options.computeEdgeData(d.source.data, d.target.data)
             }
         });
 

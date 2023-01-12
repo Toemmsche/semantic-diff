@@ -1,5 +1,8 @@
 export const arraySum = (a: number, b: number) => a + b;
 
+
+export const arrayMin = (a: number, b: number) => a < b ? a : b;
+
 export function getElementChildren(xmlDom: Element) : Element[] {
   const children : Element[] = [];
   for (let i = 0; i < xmlDom.childNodes.length; i++) {
@@ -25,3 +28,4 @@ export function getTextContentWithoutChildren(xmlDom: Element) : string | undefi
   }
   return res;
 }
+

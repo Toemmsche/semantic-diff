@@ -2,9 +2,6 @@ import React, {useEffect, useMemo} from 'react';
 import ReactFlow, {useEdgesState, useNodesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import PlanNormalizer from "../PlanNormalizer";
-
-// @ts-ignore
-import s from '../GraphComponent.module.scss'
 import CustomEdge from "../../edges/CustomEdge";
 import TwoWayDiffPlanNode from "./TwoWayDiffPlanNode";
 import NodeLayouter from "../NodeLayouter";
@@ -17,12 +14,11 @@ import DynamicLayouter, {defaultTreeLayoutOptions} from "../DynamicLayouter";
 
 export interface ITwoWayDiffViewProps {
     firstPlan: PlanNode,
-    secondPlan: PlanNode,
-    showMatches: boolean
+    secondPlan: PlanNode
 }
 
 export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
-    const {firstPlan, secondPlan, showMatches} = props;
+    const {firstPlan, secondPlan} = props;
 
     const nodeTypes = useMemo(() => ({
         customNode: TwoWayDiffPlanNode
@@ -37,14 +33,6 @@ export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-                  // Compute matches first?
-                  if (showMatches) {
-                      const matchPipeline = MatchPipeline.fromMode(defaultDiffOptions)
-                      matchPipeline.execute(firstPlan,
-                                            secondPlan,
-                                            new Comparator(defaultDiffOptions));
-                  }
-
                   // first plan
                   let [normalizedFirstNodes, normalizedFirstEdges] = PlanNormalizer.normalize(
                       firstPlan, 1, {

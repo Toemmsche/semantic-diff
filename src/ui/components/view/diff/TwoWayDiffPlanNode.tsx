@@ -6,27 +6,36 @@ import {Handle, Position} from "reactflow";
 import {Box} from "@mui/material";
 import {useRenderState} from "../../../data/RenderStore";
 import {Nullable} from "../../../../semantic-diff/Types";
+import {useParameterState} from "../../../data/Store";
 
 export const NODE_HEIGHT = 30;
 export const NODE_WIDTH = 80;
 
+export const NODE_BORDER_RADIUS = 1;
+
+export const NODE_PADDING = 1;
+
 export interface ITwoWayDiffPlanNodeProps {
     data: {
-        firstPlanData: Nullable<PlanData>,
-        secondPlanData: Nullable<PlanData>,
+        firstPlanData: Nullable<PlanData>, secondPlanData: Nullable<PlanData>,
     }
 }
 
 export default function TwoWayDiffPlanNode (props: ITwoWayDiffPlanNodeProps) {
 
     const [state, actions] = useRenderState();
+    const [parameters] = useParameterState();
 
-    const {firstPlanData, secondPlanData} = props.data;
+    const {
+        firstPlanData,
+        secondPlanData
+    } = props.data;
 
     // if the first one is null, the second one definitely isn't
     const metaPlanData = firstPlanData ?? secondPlanData!!;
 
-    const [isHoverActive, setHoverActive] = useState(metaPlanData.hoverActive ?? false);
+    const [isHoverActive, setHoverActive] = useState(
+        metaPlanData.hoverActive ?? false);
 
     // child component
     let Component = metaPlanData.component();
@@ -42,24 +51,26 @@ export default function TwoWayDiffPlanNode (props: ITwoWayDiffPlanNodeProps) {
         actions.setHoveredData([]);
     }
 
-    return (
-        <Box bgcolor={state.hoveredData.some(pd => pd === metaPlanData)
+    return (<Box bgcolor={state.hoveredData.some(pd => pd === metaPlanData)
             ? "lightyellow"
             : "lightgrey"}
-             width={80}
-             height={30}
-             borderRadius={1}
-             padding={1}
-             onMouseOver={handleStartHover}
-             onMouseOut={handleEndHover}
-             display="flex"
-             flexDirection="row"
-             alignItems="center"
-             justifyContent="center">
+                 width={NODE_WIDTH}
+                 height={NODE_HEIGHT}
+                 borderRadius={NODE_BORDER_RADIUS}
+                 padding={NODE_PADDING}
+                 onMouseOver={parameters.showMatches
+                     ? handleStartHover
+                     : undefined}
+                 onMouseOut={parameters.showMatches
+                     ? handleEndHover
+                     : undefined}
+                 display="flex"
+                 flexDirection="row"
+                 alignItems="center"
+                 justifyContent="center">
             <Handle type="target" position={Position.Top}/>
             <Component data={metaPlanData}/>
             <Handle type="source" position={Position.Bottom}/>
-        </Box>
-    )
+        </Box>)
 
 }
