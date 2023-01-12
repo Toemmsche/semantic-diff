@@ -12810,5 +12810,6 @@ export const qpGrammar: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).p
         <EarlyProbe></EarlyProbe>
         <Unknown></Unknown>
         <Sort></Sort>
+        <Map></Map>
     </inners>
 </grammar>`);

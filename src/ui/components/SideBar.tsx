@@ -1,6 +1,4 @@
 import React, {useState} from 'react';
-// @ts-ignore
-import s from './SideBar.module.scss'
 import {useParameterState} from "../data/Store";
 import {Drawer, IconButton} from "@mui/material";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";

@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {PlanData} from "../../../model/PlanData";
 import {Handle, Position} from "reactflow";
 import {useParameterState} from "../../../data/Store";
-import {Box, Button, IconButton, Popover} from "@mui/material";
+import {Box, Button, IconButton, Popover, Stack} from "@mui/material";
 import {ExpandMore, Menu} from "@mui/icons-material";
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {Nullable} from "../../../../semantic-diff/Types";
@@ -15,9 +15,7 @@ import UnifiedDiffPlanNodeDetails
 export interface IUnifiedDiffProps {
     data: {
         expand: () => void, hide: (hidden: boolean,
-            data: PlanData) => void,
-        firstPlanData: Nullable<PlanData>,
-        secondPlanData: Nullable<PlanData>,
+            data: PlanData) => void, firstPlanData: Nullable<PlanData>, secondPlanData: Nullable<PlanData>,
     }
 }
 
@@ -89,28 +87,31 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
                  alignItems="center"
                  justifyContent="center">
         <Handle type="target" position={Position.Top}/>
-        {parameters.hideNodes && !hasExpanded ? <Button
-            variant="contained"
-            style={{
-                backgroundColor: bgColor,
-                minWidth: "100%",
-                color: "black" // change text color to black
-            }}
-            onClick={() => {
-                setHasExpanded(true);
-                expand();
-            }}
-            endIcon={<ExpandMore/>}>
-            <Component data={metaPlanData}/>
-        </Button> : <Component data={metaPlanData}/>}
-        <IconButton
-            onClick={(event) => setDetailsAnchorEl(event.currentTarget)}>
-            <Menu/>
-        </IconButton>
-        <Popover anchorEl={detailsAnchorEl} open={detailsAnchorEl != null}
-                 onClose={() => setDetailsAnchorEl(null)}>
-            {Details}
-        </Popover>
+        <Stack
+            width="100%" direction="row" alignItems="center" justifyContent="space-between">
+            {parameters.hideNodes && !hasExpanded ? <Button
+                variant="contained"
+                style={{
+                    backgroundColor: bgColor,
+                    minWidth: "100%",
+                    color: "black" // change text color to black
+                }}
+                onClick={() => {
+                    setHasExpanded(true);
+                    expand();
+                }}
+                endIcon={<ExpandMore/>}>
+                <Component data={metaPlanData}/>
+            </Button> : <Component data={metaPlanData}/>}
+            <IconButton
+                onClick={(event) => setDetailsAnchorEl(event.currentTarget)}>
+                <Menu/>
+            </IconButton>
+            <Popover anchorEl={detailsAnchorEl} open={detailsAnchorEl != null}
+                     onClose={() => setDetailsAnchorEl(null)}>
+                {Details}
+            </Popover>
+        </Stack>
         <Handle type="source" position={Position.Bottom}/>
     </Box>);
 

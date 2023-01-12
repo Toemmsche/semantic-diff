@@ -9,14 +9,13 @@ import UnifiedTreeGenerator, {
     Origin
 } from "../../semantic-diff/delta/UnifiedTreeGenerator";
 import {PlanData} from "../model/PlanData";
-import PlanPicker from "./PlanPicker";
 import {Stack} from "@mui/material";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";
 import {useParameterState} from "../data/Store";
 import {ReactFlowProvider} from "reactflow";
-import QueryPlanDiffChart from "./QueryPlanDiffChart";
 import {MatchPipeline} from "../../semantic-diff/match/MatchPipeline";
 import {Comparator} from "../../semantic-diff/compare/Comparator";
+import FloatingBar from "./FloatingBar";
 
 
 /**
@@ -79,26 +78,18 @@ export default function QueryPlanDiff () {
             GraphView = <TwoWayDiffView firstPlan={firstPlan}
                                         secondPlan={secondPlan}/>
         }
-
-
-        ChartView = <QueryPlanDiffChart firstPlanResult={firstPlanResult}
-                                        secondPlanResult={secondPlanResult}></QueryPlanDiffChart>
     } else {
         GraphView = <></>;
-        ChartView = <></>;
     }
 
-    return (
-
-        <Stack direction="column"
-               height="inherit"
-               width="inherit">
-            <PlanPicker></PlanPicker>
-            {ChartView}
-            <ReactFlowProvider>
-                {GraphView}
-            </ReactFlowProvider>
-        </Stack>);
+    return (<Stack direction="column"
+                   height="inherit"
+                   width="inherit">
+        <FloatingBar></FloatingBar>
+        <ReactFlowProvider>
+            {GraphView}
+        </ReactFlowProvider>
+    </Stack>);
 }
 
 /**

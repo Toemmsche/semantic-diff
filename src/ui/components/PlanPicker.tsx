@@ -125,9 +125,9 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                 // if worstOtherDbmsResult is negative, then our time is
                 // increased in comparison
                 const label = query +
-                              "(" +
+                              " (" +
                               (worstDiff < 0 ? "" : "+") +
-                              (worstDiff * 100) +
+                              (worstDiff * 100).toFixed(0) +
                               "%)";
                 const color = (worstDiff < 0) ? betterColorScale(
                     worstDiff / bestOverallDiff) : worseColorScale(
@@ -143,24 +143,32 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                 </Stack>)
             })
 
-        return (<Stack direction="row" alignItems="center">
-            <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
-                {selectedQuery == null ? <QueryStats/> : <Edit/>}
-            </IconButton>
-            <span>{selectedQuery}</span>
-            <Popover
-                anchorEl={anchorEl}
-                open={anchorEl != null}
-                onClose={() => setAnchorEl(null)}>
-                <Paper style={{
-                    maxHeight: 300,
-                    overflow: 'auto'
-                }}
-                       elevation={6}>
-                    <Stack direction="column"
-                           padding={2}>{QueryRadios}</Stack>
-                </Paper>
-            </Popover>
+        return (<Stack direction="column"
+                       height="100%"
+                       justifyContent="space-between">
+            <Box textAlign="center">
+                <h3>Query</h3>
+            </Box>
+            <Stack direction="row" alignItems="center">
+                <IconButton
+                    onClick={(event) => setAnchorEl(event.currentTarget)}>
+                    {selectedQuery == null ? <QueryStats/> : <Edit/>}
+                </IconButton>
+                <span>{selectedQuery}</span>
+                <Popover
+                    anchorEl={anchorEl}
+                    open={anchorEl != null}
+                    onClose={() => setAnchorEl(null)}>
+                    <Paper style={{
+                        maxHeight: 300,
+                        overflow: 'auto'
+                    }}
+                           elevation={6}>
+                        <Stack direction="column"
+                               padding={2}>{QueryRadios}</Stack>
+                    </Paper>
+                </Popover>
+            </Stack>
         </Stack>)
     }
 
@@ -173,46 +181,60 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                                      label={dbms}/>
         })
 
-        return (<>
-            <IconButton onClick={(event) => setAnchorEl(
-                event.currentTarget)}><Edit/></IconButton>
-            <Popover anchorEl={anchorEl} open={anchorEl != null}
-                     onClose={() => setAnchorEl(null)}>
-                <FormControl>
-                    <RadioGroup onChange={(event) => resetBaseline(
-                        event.target.value as DBMS)}>
-                        {BaselineRadios}
-                    </RadioGroup>
-                </FormControl>
-            </Popover>
-            <h1>{baselineDbms ?? "Please select a baseline"}</h1>
-            <span>{baseLineQprForSelectedQuery?.benchmarkResult?.execution ??
-                   ""}</span>
-        </>)
+        return (<Stack direction="column"
+                       height="100%"
+                       justifyContent="space-between">
+            <Box textAlign="center">
+                <h3>Baseline</h3>
+            </Box>
+            <Stack direction="row">
+                <IconButton onClick={(event) => setAnchorEl(
+                    event.currentTarget)}><Edit/></IconButton>
+                <Popover anchorEl={anchorEl} open={anchorEl != null}
+                         onClose={() => setAnchorEl(null)}>
+                    <FormControl>
+                        <RadioGroup onChange={(event) => resetBaseline(
+                            event.target.value as DBMS)}>
+                            {BaselineRadios}
+                        </RadioGroup>
+                    </FormControl>
+                </Popover>
+                <Stack textAlign="center"
+                       alignItems="center"
+                       justifyContent="center">
+                    <Chip color="primary"
+                          label={baselineDbms ?? "Please select a baseline"}></Chip>
+                </Stack>
+            </Stack>
+        </Stack>)
     }
 
     function CompComponent (props: {}) {
         const CompCandidateItems = availableDbms
             .filter(dbms => dbms !== baselineDbms)
             .map(dbms => {
-                let executionTime = qprForSelectedQuery.find(
-                    qpr => qpr.dbms === dbms)?.benchmarkResult?.execution;
-
                 return (<Chip
                     key={dbms}
                     color={dbms === compDbms ? "primary" : "default"}
                     sx={{
                         borderRadius: '16px'
                     }}
-                    label={dbms + (executionTime ?? "")}
+                    label={dbms}
                     onClick={() => setCompDbms(dbms)}></Chip>)
             });
 
-        return <Stack key="second"
-                      direction="column"
-                      alignItems="center"
-                      spacing={2}>
-            {CompCandidateItems}
+        return <Stack direction="column"
+                      height="100%"
+                      justifyContent="space-between">
+            <Box textAlign="center">
+                <h3>Comparison</h3>
+            </Box>
+            <Stack key="second"
+                   direction="row"
+                   alignItems="center"
+                   spacing={2}>
+                {CompCandidateItems}
+            </Stack>
         </Stack>
     }
 

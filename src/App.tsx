@@ -3,7 +3,6 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import QueryPlanDiff from "./ui/components/QueryPlanDiff";
-import SideBar from "./ui/components/SideBar";
 import {Box} from "@mui/material";
 import {
     BarElement,
@@ -14,26 +13,18 @@ import {
     Title,
     Tooltip
 } from "chart.js";
+import FloatingBar from "./ui/components/FloatingBar";
 
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip,
+    Legend);
 
 function App () {
-    return (
-        <Box
+    return (<Box
             width="100vw"
             height="100vh">
-            <SideBar></SideBar>
             <QueryPlanDiff></QueryPlanDiff>
-        </Box>
-    );
+        </Box>);
 }
 
 export default App;

@@ -1,40 +1,44 @@
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Chip,
-    Stack
+    Accordion, AccordionDetails, AccordionSummary, Box, Chip, Stack
 } from "@mui/material";
 import QueryPlanResult from "../data/QueryPlanResult";
 import React, {useState} from "react";
 import {Bar} from "react-chartjs-2";
-import {useAllLabels} from "../data/QueryPlanResultStore";
+import {useAllLabels, useQueryPlanState} from "../data/QueryPlanResultStore";
+import {UnifiedColors} from "./view/unified/UnifiedDiffPlanNode";
 
-export interface IQueryPlanDiffChartProps {
-    firstPlanResult: QueryPlanResult,
-    secondPlanResult: QueryPlanResult
-}
 
-export default function QueryPlanDiffChart (props: IQueryPlanDiffChartProps) {
+export default function QueryPlanDiffChart (props: {}) {
     const [allLabels, _] = useAllLabels();
     const initialLabels = ["compilation", "execution", "total"]
     const [activeLabels, setActiveLabels] = useState(initialLabels);
 
-    const {firstPlanResult, secondPlanResult} = props;
+    const [qprState, qprActions] = useQueryPlanState();
+
+    // TODO get the selected query some other way
+
+    let selectedQprs = [] as QueryPlanResult[];
+    if (qprState.resultSelection) {
+        const selectedQuery = qprState.resultSelection!![0].queryName;
+        selectedQprs =
+            qprState.queryPlanResults.filter(
+                qpr => qpr.queryName === selectedQuery);
+    }
+
 
     const chips = [];
     for (const label of allLabels) {
         if (activeLabels.some(l => l === label)) {
-            chips.push(
-                <Chip key={label} label={label}
-                      color="primary"
-                      onClick={() => setActiveLabels(activeLabels.filter(l => l !== label))}
-                ></Chip>)
+            chips.push(<Chip key={label} label={label}
+                             color="primary"
+                             onClick={() => setActiveLabels(
+                                 activeLabels.filter(l => l !== label))}
+            ></Chip>)
         } else {
-            chips.push(
-                <Chip key={label} label={label}
-                      onClick={() => setActiveLabels([...activeLabels, label])}
-                ></Chip>)
+            chips.push(<Chip key={label} label={label}
+                             onClick={() => setActiveLabels(
+                                 [...activeLabels, label])}
+            ></Chip>)
         }
     }
 
@@ -52,7 +56,15 @@ export default function QueryPlanDiffChart (props: IQueryPlanDiffChartProps) {
     }
 
 
-    const getDataset = (qpr: QueryPlanResult, first: boolean) => {
+    const getDataset = (qpr: QueryPlanResult) => {
+        let bgColor;
+        if (qpr.dbms === qprState.resultSelection!![0].dbms) {
+            bgColor = UnifiedColors.EXCLUSIVE_OLD;
+        } else if (qpr.dbms === qprState.resultSelection!![1].dbms) {
+            bgColor = UnifiedColors.EXCLUSIVE_NEW;
+        } else {
+            bgColor = 'rgba(0, 0, 0, 0.5)'
+        }
         return {
             label: qpr.dbms,
             data: activeLabels.map(cat => {
@@ -63,32 +75,32 @@ export default function QueryPlanDiffChart (props: IQueryPlanDiffChartProps) {
                 }
                 return val;
             }),
-            backgroundColor: first
-                ? 'rgba(255, 99, 132, 0.5)'
-                : 'rgba(53, 162, 235, 0.5)'
+            backgroundColor: bgColor
         }
     }
 
     const chartData = {
         labels: activeLabels,
-        datasets: [
-            getDataset(firstPlanResult, true),
-            getDataset(secondPlanResult, false)
-        ]
+        datasets: selectedQprs.map(qpr => getDataset(qpr))
     }
 
-    return <Accordion>
-        <AccordionSummary>
-            Detailed benchmark results
-        </AccordionSummary>
-        <AccordionDetails>
-            <Stack direction="row" spacing={1}>
-                {chips}
-            </Stack>
-            <Bar
-                options={chartOptions}
-                data={chartData}
-            ></Bar>
-        </AccordionDetails>
-    </Accordion>
+    return <Box>
+        <Accordion sx={{
+            marginLeft: "10%",
+            marginRight: "10%"
+        }}>
+            <AccordionSummary>
+                Detailed benchmark results
+            </AccordionSummary>
+            <AccordionDetails>
+                <Stack direction="row" flexWrap="wrap" spacing={1}>
+                    {chips}
+                </Stack>
+                <Bar
+                    options={chartOptions}
+                    data={chartData}
+                ></Bar>
+            </AccordionDetails>
+        </Accordion>
+    </Box>
 }
