@@ -1,5 +1,5 @@
 import {PlanData} from "./PlanData";
-import RenderPlanNode from "../components/nodes/RenderPlanNode";
+import {RenderPlanNode} from "./PlanData";
 
 export class TempScan extends PlanData {
 

@@ -42,13 +42,14 @@ export default function ViewConfig () {
         parameterActions.setShowMatches(event.target.checked);
     }
 
-    return (<Stack direction="column"
+    return (<Stack direction="row"
                    width="25vw"
-                   margin={5}>
-            <h2>Configuration</h2>
-
-            <FormGroup>
+                   marginLeft="auto">
+        <FormGroup>
+            <Stack direction="row"
+                   spacing={8}>
                 <Slider
+                    orientation="vertical"
                     defaultValue={parameters.showUnified
                         ? DiffViewMode.UNIFIED
                         : DiffViewMode.TWO_WAY}
@@ -56,19 +57,25 @@ export default function ViewConfig () {
                     step={null}
                     marks={marks}
                 />
-                <FormControlLabel
-                    label="Hide Nodes"
-                    control={<Switch defaultChecked={parameters.hideNodes}
-                                     onChange={handleHideNodeChange}/>}/>
-                <FormControlLabel
-                    label="Show Matches"
-                    control={<Switch defaultChecked={parameters.showMatches}
-                                     onChange={handleShowMatchesChange}/>}/>
-                <FormControlLabel
-                    label="Only Use Top-Down Matching"
-                    control={<Switch defaultChecked={parameters.topDownOnly}
-                                     onChange={(event) => parameterActions.setTopDownOnly(
-                                         event.target.checked)}/>}/>
-            </FormGroup>
-        </Stack>)
+                <Stack
+                    direction="column"
+                    spacing={0}
+                >
+                    <FormControlLabel
+                        label="Hide Nodes"
+                        control={<Switch defaultChecked={parameters.hideNodes}
+                                         onChange={handleHideNodeChange}/>}/>
+                    <FormControlLabel
+                        label="Show Matches"
+                        control={<Switch defaultChecked={parameters.showMatches}
+                                         onChange={handleShowMatchesChange}/>}/>
+                    <FormControlLabel
+                        label="Top-Down Matching"
+                        control={<Switch defaultChecked={parameters.topDownOnly}
+                                         onChange={(event) => parameterActions.setTopDownOnly(
+                                             event.target.checked)}/>}/>
+                </Stack>
+            </Stack>
+        </FormGroup>
+    </Stack>)
 }

@@ -12,6 +12,7 @@ import {TempScan} from "../../../ui/model/TempScan";
 import {QueryPlanResultCollection} from "../../../ui/data/QueryPlanResult";
 import BenchmarkResult from "../../../ui/data/BenchmarkResult";
 import {median} from "d3";
+import {Result} from "../../../ui/model/Result";
 
 export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements SerDes<TNode<PlanData>> {
 
@@ -75,7 +76,19 @@ export default class PlanNodeBrowserSerDes extends TNodeBrowserSerDes implements
             .parseFromString(xml, 'text/xml')
             .childNodes
             .item(0) as Element; // assume single root node as an element
-        return this.parseXmlDom(root);
+
+        const rootOperator = this.parseXmlDom(root);
+        // Insert a dummy root node (the result) since we always match the root
+        // node even when it is not the same operator
+        const resultRoot = new TNode<Result>(
+            new Result("Result", null, new Map([
+                [
+                    "exact_cardinality",
+                    rootOperator.data.exactCardinality.toString()
+                ]
+            ])), this.grammar.getGrammarNodeByLabel("Result"))
+        resultRoot.appendChild(rootOperator);
+        return resultRoot;
     }
 
 

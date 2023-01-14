@@ -1,7 +1,12 @@
 /** @jsxImportSource @emotion/react */
 
 import React from 'react';
-import {getBezierPath, Position} from 'reactflow';
+import {
+    BaseEdge, EdgeLabelRenderer,
+    EdgeProps,
+    getBezierPath,
+    Position
+} from 'reactflow';
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {UnifiedColors} from "./UnifiedDiffPlanNode";
 import {PlanData} from "../../../model/PlanData";
@@ -14,9 +19,7 @@ export interface ICustomUnifiedEdgeData {
     edgeOrigin: Origin
 }
 
-export default function CustomUnifiedEdge (props: {
-    id: string, sourceX: number, sourceY: number, targetX: number, targetY: number, sourcePosition: Position | undefined, targetPosition: Position | undefined, style: {}, data: ICustomUnifiedEdgeData, markerEnd: any,
-}) {
+export default function CustomUnifiedEdge (props: EdgeProps) {
     const {
         id,
         sourceX,
@@ -29,7 +32,7 @@ export default function CustomUnifiedEdge (props: {
         data,
         markerEnd
     } = props;
-    const [edgePath] = getBezierPath({
+    const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,
         sourceY,
         sourcePosition,
@@ -53,6 +56,8 @@ export default function CustomUnifiedEdge (props: {
         pathStroke = UnifiedColors.EXCLUSIVE_NEW;
     }
 
+    const card = childPlanData.exactCardinality;
+
     return (<>
         <path
             id={id}
@@ -61,14 +66,26 @@ export default function CustomUnifiedEdge (props: {
             d={edgePath}
             markerEnd={markerEnd}
             css={{
+                strokeWidth: Math.log(card) +
+                             1, // for some reason, we have to set this in here
                 stroke: pathStroke
             }}
         />
-        <text>
-            <textPath href={`#${id}`} style={{fontSize: 12}}
-                      startOffset="50%" textAnchor="middle">
+        <EdgeLabelRenderer>
+            <div
+                style={{
+                    position: 'absolute',
+                    transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                    background: '#ffffffcc',
+                    padding: 10,
+                    borderRadius: 5,
+                    fontSize: 12,
+                    fontWeight: 700,
+                }}
+                className="nodrag nopan"
+            >
                 {childPlanData.exactCardinality}
-            </textPath>
-        </text>
+            </div>
+        </EdgeLabelRenderer>
     </>);
 }

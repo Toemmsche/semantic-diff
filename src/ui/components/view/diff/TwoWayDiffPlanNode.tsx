@@ -8,7 +8,7 @@ import {useRenderState} from "../../../data/RenderStore";
 import {Nullable} from "../../../../semantic-diff/Types";
 import {useParameterState} from "../../../data/Store";
 
-export const NODE_HEIGHT = 30;
+export const NODE_HEIGHT = 50;
 export const NODE_WIDTH = 120;
 
 export const NODE_BORDER_RADIUS = 1;

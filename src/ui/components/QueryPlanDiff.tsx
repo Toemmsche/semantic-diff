@@ -16,6 +16,7 @@ import {ReactFlowProvider} from "reactflow";
 import {MatchPipeline} from "../../semantic-diff/match/MatchPipeline";
 import {Comparator} from "../../semantic-diff/compare/Comparator";
 import FloatingBar from "./FloatingBar";
+import Legend from "./Legend";
 
 
 /**

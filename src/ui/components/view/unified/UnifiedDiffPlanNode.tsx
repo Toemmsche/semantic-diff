@@ -88,21 +88,16 @@ export default function UnifiedDiffPlanNode (props: IUnifiedDiffProps) {
                  justifyContent="center">
         <Handle type="target" position={Position.Top}/>
         <Stack
-            width="100%" direction="row" alignItems="center" justifyContent="space-between">
-            {parameters.hideNodes && !hasExpanded ? <Button
-                variant="contained"
-                style={{
-                    backgroundColor: bgColor,
-                    minWidth: "100%",
-                    color: "black" // change text color to black
-                }}
+            width="100%" direction="row" alignItems="center"
+            justifyContent="space-between">
+            <Component data={metaPlanData}/>
+            {parameters.hideNodes && !hasExpanded && <IconButton
                 onClick={() => {
                     setHasExpanded(true);
                     expand();
-                }}
-                endIcon={<ExpandMore/>}>
-                <Component data={metaPlanData}/>
-            </Button> : <Component data={metaPlanData}/>}
+                }}>
+                <ExpandMore/>
+            </IconButton>}
             <IconButton
                 onClick={(event) => setDetailsAnchorEl(event.currentTarget)}>
                 <Menu/>

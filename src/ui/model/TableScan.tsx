@@ -1,15 +1,12 @@
-import {TableScan} from "../../model/TableScan";
-// @ts-ignore
-import s from "./RenderPlanNode.module.scss";
-import React from "react";
+import {PlanData} from "./PlanData";
 import {Box, Stack} from "@mui/material";
 import {ManageSearch} from "@mui/icons-material";
+import React from "react";
 
-export default function RenderTableScan (props: { data: TableScan }) {
+export function RenderTableScan (props: { data: TableScan }) {
     const {data: tableScanData} = props
 
-    return (
-        <Box>
+    return (<Box>
             <Stack direction="row"
                    justifyContent="center"
                    alignItems="center"
@@ -17,6 +14,18 @@ export default function RenderTableScan (props: { data: TableScan }) {
                 <ManageSearch></ManageSearch>
                 <Box>{tableScanData.tableName.toUpperCase()}</Box>
             </Stack>
-        </Box>
-    )
+        </Box>)
+}
+
+export class TableScan extends PlanData {
+
+    public static LABEL = "TableScan";
+
+    get tableName (): string {
+        return this.attributes.get("table_name")!!;
+    }
+
+    component (): Function {
+        return RenderTableScan;
+    }
 }

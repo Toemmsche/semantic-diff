@@ -18,18 +18,18 @@ import {
 import {Nullable} from "../../semantic-diff/Types";
 import {DBMS} from "../model/meta/DBMS";
 import {max, scaleLinear as d3ScaleLinear} from "d3";
-import {Edit, QueryStats} from "@mui/icons-material";
+import {Edit, Subject} from "@mui/icons-material";
 
 export interface IQueryPlanResultDiffProps {
 }
 
 // Color scales for results that are better / worse
 const betterColorScale = d3ScaleLinear<string>()
-    .domain([0, 1])
-    .range(['#00ff00', '#c0ffc0']); // green
+    .domain([1, 0])
+    .range(['#00bb00', '#808080']); // green
 const worseColorScale = d3ScaleLinear<string>()
     .domain([0, 1])
-    .range(['#ffc0c0', '#ff0000']); //red
+    .range(['#808080', '#ff0000']); //red
 
 export default function PlanPicker (props: IQueryPlanResultDiffProps) {
 
@@ -91,19 +91,21 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
     }))
         .map(obj => ({
             ...obj,
-            worstDiff: max(obj.otherResults.map(qpr => {
-                if (!qpr.benchmarkResult.execution ||
-                    !obj.baseLineResult.benchmarkResult.execution) {
-                    return 0;
-                } else {
-                    const baseLineMetric = obj.baseLineResult.benchmarkResult.execution;
-                    const otherMetric = qpr.benchmarkResult.execution;
+            worstDiff: max(obj.otherResults
+                .map(qpr => {
+                    if (!qpr.benchmarkResult.total ||
+                        !obj.baseLineResult.benchmarkResult.total) {
+                        return null;
+                    } else {
+                        const baseLineMetric = obj.baseLineResult.benchmarkResult.total;
+                        const otherMetric = qpr.benchmarkResult.total;
 
-                    let diff = (baseLineMetric / otherMetric) - 1;
+                        let diff = (baseLineMetric / otherMetric) - 1;
 
-                    return diff;
-                }
-            }))!!
+                        return diff;
+                    }
+                })
+                .filter(r => r != null) as number[])!!
         }))
         // sort descending by diff
         .sort((a, b) => b.worstDiff - a.worstDiff);
@@ -113,7 +115,10 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                                                  1].worstDiff;
 
     function QueryComponent (props: {}) {
-        const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
+        const [listAnchorEl, setListAnchorEl] = useState(
+            null as Nullable<HTMLElement>);
+        const [textAnchorEl, setTextAnchorEl] = useState(
+            null as Nullable<HTMLElement>);
 
         const QueryRadios = worstResultsPerQuery
             .map(obj => {
@@ -151,14 +156,14 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
             </Box>
             <Stack direction="row" alignItems="center">
                 <IconButton
-                    onClick={(event) => setAnchorEl(event.currentTarget)}>
-                    {selectedQuery == null ? <QueryStats/> : <Edit/>}
+                    onClick={(event) => setListAnchorEl(event.currentTarget)}>
+                    <Edit/>
                 </IconButton>
                 <span>{selectedQuery}</span>
                 <Popover
-                    anchorEl={anchorEl}
-                    open={anchorEl != null}
-                    onClose={() => setAnchorEl(null)}>
+                    anchorEl={listAnchorEl}
+                    open={listAnchorEl != null}
+                    onClose={() => setListAnchorEl(null)}>
                     <Paper style={{
                         maxHeight: 300,
                         overflow: 'auto'
@@ -168,6 +173,25 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                                padding={2}>{QueryRadios}</Stack>
                     </Paper>
                 </Popover>
+                {selectedQuery != null && <>
+                    <IconButton
+                        onClick={(event) => setTextAnchorEl(
+                            event.currentTarget)}>
+                        <Subject/>
+                    </IconButton>
+                    <Popover
+                        anchorEl={textAnchorEl}
+                        open={textAnchorEl != null}
+                        onClose={() => setTextAnchorEl(null)}>
+                        <Paper style={{
+                            maxHeight: 300,
+                            overflow: 'auto'
+                        }}
+                               elevation={6}>
+                            {baseLineQprForSelectedQuery?.queryText}
+                        </Paper>
+                    </Popover>
+                </>}
             </Stack>
         </Stack>)
     }
@@ -203,23 +227,41 @@ export default function PlanPicker (props: IQueryPlanResultDiffProps) {
                        alignItems="center"
                        justifyContent="center">
                     <Chip color="primary"
-                          label={baselineDbms ?? "Please select a baseline"}></Chip>
+                          label={baselineDbms ??
+                                 "Please select a baseline"}></Chip>
                 </Stack>
             </Stack>
         </Stack>)
     }
 
     function CompComponent (props: {}) {
-        const CompCandidateItems = availableDbms
-            .filter(dbms => dbms !== baselineDbms)
-            .map(dbms => {
+        const CompCandidateItems = qprForSelectedQuery
+            .filter(qpr => qpr != baseLineQprForSelectedQuery)
+            .map(qpr => {
+                const dbms = qpr.dbms;
+
+                let addLabel = "";
+                if (baseLineQprForSelectedQuery) {
+                    const diff = baseLineQprForSelectedQuery.benchmarkResult.total!! /
+                                 qpr.benchmarkResult.total!! -
+                                 1;
+                    addLabel =
+                        " (" +
+                        (diff < 0 ? "" : "+") +
+                        (diff * 100).toFixed(0) +
+                        "%)";
+                    const color = (diff < 0) ? betterColorScale(
+                        diff / bestOverallDiff) : worseColorScale(
+                        diff / worstOverallDiff);
+                }
+
                 return (<Chip
                     key={dbms}
                     color={dbms === compDbms ? "primary" : "default"}
                     sx={{
                         borderRadius: '16px'
                     }}
-                    label={dbms}
+                    label={dbms + addLabel}
                     onClick={() => setCompDbms(dbms)}></Chip>)
             });
 

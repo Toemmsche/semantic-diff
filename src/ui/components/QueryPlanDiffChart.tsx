@@ -1,19 +1,20 @@
-import {
-    Accordion, AccordionDetails, AccordionSummary, Box, Chip, Stack
-} from "@mui/material";
+import {Box, Chip, IconButton, Popover, Stack} from "@mui/material";
 import QueryPlanResult from "../data/QueryPlanResult";
 import React, {useState} from "react";
 import {Bar} from "react-chartjs-2";
 import {useAllLabels, useQueryPlanState} from "../data/QueryPlanResultStore";
 import {UnifiedColors} from "./view/unified/UnifiedDiffPlanNode";
+import {Nullable} from "../../semantic-diff/Types";
+import {QueryStats} from "@mui/icons-material";
 
 
 export default function QueryPlanDiffChart (props: {}) {
     const [allLabels, _] = useAllLabels();
     const initialLabels = ["compilation", "execution", "total"]
     const [activeLabels, setActiveLabels] = useState(initialLabels);
-
     const [qprState, qprActions] = useQueryPlanState();
+
+    const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
 
     // TODO get the selected query some other way
 
@@ -84,15 +85,19 @@ export default function QueryPlanDiffChart (props: {}) {
         datasets: selectedQprs.map(qpr => getDataset(qpr))
     }
 
-    return <Box>
-        <Accordion sx={{
-            marginLeft: "10%",
-            marginRight: "10%"
-        }}>
-            <AccordionSummary>
-                Detailed benchmark results
-            </AccordionSummary>
-            <AccordionDetails>
+    return <>
+        <IconButton
+            onClick={(event) => setAnchorEl(event.currentTarget)}>
+            <QueryStats sx={{
+                fontSize:  60
+            }}></QueryStats>
+        </IconButton>
+        <Popover
+            anchorEl={anchorEl}
+            open={anchorEl != null}
+            onClose={() => setAnchorEl(null)}>
+            <Box
+                margin={4}>
                 <Stack direction="row" flexWrap="wrap" spacing={1}>
                     {chips}
                 </Stack>
@@ -100,7 +105,7 @@ export default function QueryPlanDiffChart (props: {}) {
                     options={chartOptions}
                     data={chartData}
                 ></Bar>
-            </AccordionDetails>
-        </Accordion>
-    </Box>
+            </Box>
+        </Popover>
+    </>
 }

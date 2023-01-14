@@ -1,10 +1,22 @@
 import {TNode} from "../../semantic-diff";
 import XmlData from "../../semantic-diff/data/XmlData";
-import RenderPlanNode from "../components/nodes/RenderPlanNode";
 import IDiffNodeData from "../components/view/diff/IDiffNodeData";
 import {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
 import RenderPlanNodeDetails from "../components/details/RenderPlanNodeDetails";
 import DiffState from "../../semantic-diff/delta/DiffState";
+import {Box} from "@mui/material";
+import React from "react";
+
+export function RenderPlanNode (props: { data: PlanData }) {
+    const {data: planData} = props
+
+    return (
+        <Box>
+            <Box>{planData.operatorName.toUpperCase()}</Box>
+        </Box>
+    )
+
+}
 
 export class PlanData extends XmlData {
 
