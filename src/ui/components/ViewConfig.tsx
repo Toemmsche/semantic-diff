@@ -1,5 +1,5 @@
 import {
-    FormControlLabel, FormGroup, IconButton, Slider, Stack, Switch
+    Button, FormControlLabel, FormGroup, IconButton, Slider, Stack, Switch
 } from "@mui/material";
 import React from "react";
 import {useParameterState} from "../data/Store";
@@ -24,7 +24,6 @@ const marks = [
 ]
 export default function ViewConfig () {
 
-    const [qpr, qprActions] = useQueryPlanState();
     const [parameters, parameterActions] = useParameterState();
 
     function handleDiffViewModeChange (event: Event,
@@ -35,17 +34,6 @@ export default function ViewConfig () {
         } else {
             parameterActions.setShowUnified(false);
         }
-    }
-
-    async function loadCollection (event: any) {
-        event.preventDefault()
-        const reader = new FileReader()
-        reader.onload = (progressEvent) => {
-            const text: string = (progressEvent!!.target!!.result!!).toString()
-            console.log(text);
-            qprActions.setQueryPlanResults(text);
-        };
-        reader.readAsText(event.target.files[0]);
     }
 
 
@@ -90,12 +78,6 @@ export default function ViewConfig () {
                                          onChange={(event) => parameterActions.setTopDownOnly(
                                              event.target.checked)}/>}/>
                 </Stack>
-                <IconButton onClick={loadCollection}>Upload File
-                    <UploadFile></UploadFile>
-                    <input
-                        type="file"
-                        hidden
-                    /></IconButton>
             </Stack>
         </FormGroup>
     </Stack>)

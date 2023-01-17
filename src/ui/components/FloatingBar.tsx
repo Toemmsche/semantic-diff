@@ -3,6 +3,7 @@ import React from "react";
 import QueryPlanDiffChart from "./QueryPlanDiffChart";
 import {Box, Stack} from "@mui/material";
 import ViewConfig from "./ViewConfig";
+import UploadCollection from "./UploadCollection";
 
 export default function FloatingBar (props: {}) {
 
@@ -27,8 +28,8 @@ export default function FloatingBar (props: {}) {
                 borderWidth: 5,
                 borderColor: "black"
             }}>
+            <UploadCollection></UploadCollection>
             <PlanPicker ></PlanPicker>
-
             <QueryPlanDiffChart></QueryPlanDiffChart>
             <ViewConfig></ViewConfig>
         </Box>
