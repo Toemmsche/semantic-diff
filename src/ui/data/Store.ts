@@ -41,7 +41,7 @@ const Store = createStore<IParameterState, typeof actions>({
   initialState: {
     topDownOnly: false,
     showMatches: true,
-    showUnified: false,
+    showUnified: true,
     hideNodes: false
   },
   actions
