@@ -57,6 +57,10 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
                 computeData: (planNode: PlanNode) => {
                     return {
                         hide: () => {
+                            // all descendants
+                            const descendants = new Set(planNode.toPreOrderUnique());
+                            descendants.delete(planNode);
+                            setExpandedNodes(expandedNodes.filter(n => !descendants.has(n)));
                         },
                         expand: () => {
                             setExpandedNodes([
@@ -64,51 +68,13 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
                                 ...planNode.children
                             ])
                         },
-                        firstPlanData: (planNode.data.origin ===
-                                        Origin.OLD ||
-                                        planNode.data.origin ===
-                                        Origin.SHARED) ? planNode.data : null,
-                        secondPlanData: planNode.data.origin === Origin.NEW
-                            ? planNode.data
-                            : (planNode.data.origin === Origin.SHARED
-                                ? planNode.getMatch().data
-                                : null)
-
+                        planNode: planNode
                     }
                 },
                 computeEdgeData: (parentPlanNode: PlanNode,
                     childPlanNode: PlanNode) => {
-                    let edgeOrigin;
-                    if (parentPlanNode.unifiedOrigin ===
-                        Origin.NEW ||
-                        childPlanNode.unifiedOrigin ===
-                        Origin.NEW) {
-                        edgeOrigin = Origin.NEW;
-                    } else if (parentPlanNode.unifiedOrigin ===
-                               Origin.OLD ||
-                               childPlanNode.unifiedOrigin ===
-                               Origin.OLD) {
-                        edgeOrigin = Origin.OLD;
-                    } else {
-
-                        const existsInNew = childPlanNode.getMatch()
-                                                .getParent() ===
-                                            parentPlanNode.getMatch();
-                        const existsInOld = childPlanNode.getParent() ==
-                                            parentPlanNode;
-
-                        if (existsInNew && existsInOld) {
-                            edgeOrigin = Origin.SHARED;
-                        } else if (existsInOld) {
-                            edgeOrigin = Origin.OLD;
-                        } else {
-                            edgeOrigin = Origin.NEW;
-                        }
-                    }
                     return {
-                        parentPlanData: parentPlanNode.data,
-                        childPlanData: childPlanNode.data,
-                        edgeOrigin
+                        childPlanNode: childPlanNode,
                     } as ICustomUnifiedEdgeData
                 }, ...defaultTreeLayoutOptions
             });

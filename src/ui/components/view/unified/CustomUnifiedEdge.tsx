@@ -9,14 +9,11 @@ import {
 } from 'reactflow';
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {UnifiedColors} from "./UnifiedDiffPlanNode";
-import {PlanData} from "../../../model/PlanData";
+import {PlanData, PlanNode} from "../../../model/PlanData";
 
 export interface ICustomUnifiedEdgeData {
 
-    parentPlanData: PlanData,
-    childPlanData: PlanData,
-
-    edgeOrigin: Origin
+    childPlanNode: PlanNode
 }
 
 export default function CustomUnifiedEdge (props: EdgeProps) {
@@ -42,10 +39,38 @@ export default function CustomUnifiedEdge (props: EdgeProps) {
     });
 
     const {
-        parentPlanData,
-        childPlanData,
-        edgeOrigin
+        childPlanNode
     } = data;
+
+    const parentPlanNode = childPlanNode.getParent();
+    const [childPlanData, parentPlanData] = [childPlanNode.data, parentPlanNode.data];
+
+    let edgeOrigin;
+    if (parentPlanNode.unifiedOrigin ===
+        Origin.NEW ||
+        childPlanNode.unifiedOrigin ===
+        Origin.NEW) {
+        edgeOrigin = Origin.NEW;
+    } else if (parentPlanNode.unifiedOrigin ===
+        Origin.OLD ||
+        childPlanNode.unifiedOrigin ===
+        Origin.OLD) {
+        edgeOrigin = Origin.OLD;
+    } else {
+        const existsInNew = childPlanNode.getMatch()
+                .getParent() ===
+            parentPlanNode.getMatch();
+        const existsInOld = childPlanNode.getParent() ==
+            parentPlanNode;
+
+        if (existsInNew && existsInOld) {
+            edgeOrigin = Origin.SHARED;
+        } else if (existsInOld) {
+            edgeOrigin = Origin.OLD;
+        } else {
+            edgeOrigin = Origin.NEW;
+        }
+    }
 
     let pathStroke: string;
     if (edgeOrigin === Origin.OLD) {
