@@ -34,9 +34,6 @@ export default function TwoWayDiffPlanNode (props: ITwoWayDiffPlanNodeProps) {
     // if the first one is null, the second one definitely isn't
     const metaPlanData = firstPlanData ?? secondPlanData!!;
 
-    const [isHoverActive, setHoverActive] = useState(
-        metaPlanData.hoverActive ?? false);
-
     // child component
     let Component = metaPlanData.component();
 

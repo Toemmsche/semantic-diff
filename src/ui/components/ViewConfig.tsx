@@ -1,47 +1,40 @@
-import {
-    Button, FormControlLabel, FormGroup, IconButton, Slider, Stack, Switch
-} from "@mui/material";
+import {FormControlLabel, FormGroup, Slider, Stack, Switch} from "@mui/material";
 import React from "react";
-import {useParameterState} from "../data/Store";
-import {useQueryPlanState} from "../data/QueryPlanResultStore";
-import {UploadFile} from "@mui/icons-material";
+import {DiffViewMode, MatchAlgorithm, useParameterState} from "../data/Store";
 
-export enum DiffViewMode {
-    TWO_WAY = 30,
+const viewModeSliderMarks = [{
+    value: DiffViewMode.UNIFIED,
+    label: "unified diff"
+}, {
+    value: DiffViewMode.TWO_WAY,
+    label: "two way diff"
+}]
 
-    UNIFIED = 70,
+const matchAlgorithmSliderMarks = [{
+    value: MatchAlgorithm.TOP_DOWN,
+    label: "top down"
+}, {
+    value: MatchAlgorithm.BOTTOM_UP,
+    label: "bottom up"
+}, {
+    value: MatchAlgorithm.SIMPLE,
+    label: "top down & bottom up"
+} ,{
+    value: MatchAlgorithm.SEMANTIC_DIFF,
+    label: "semantic diff"
+}]
 
-}
 
-const marks = [
-    {
-        value: DiffViewMode.UNIFIED,
-        label: "unified diff"
-    }, {
-        value: DiffViewMode.TWO_WAY,
-        label: "two way diff"
-    }
-]
-export default function ViewConfig () {
+export default function ViewConfig() {
 
     const [parameters, parameterActions] = useParameterState();
 
-    function handleDiffViewModeChange (event: Event,
-        newValue: number | number[]) {
-        const modeIndex = newValue as number;
-        if (modeIndex === DiffViewMode.UNIFIED) {
-            parameterActions.setShowUnified(true);
-        } else {
-            parameterActions.setShowUnified(false);
-        }
-    }
 
-
-    function handleHideNodeChange (event: React.ChangeEvent<HTMLInputElement>) {
+    function handleHideNodeChange(event: React.ChangeEvent<HTMLInputElement>) {
         parameterActions.setHideNodes(event.target.checked);
     }
 
-    function handleShowMatchesChange (event: React.ChangeEvent<HTMLInputElement>) {
+    function handleShowMatchesChange(event: React.ChangeEvent<HTMLInputElement>) {
         parameterActions.setShowMatches(event.target.checked);
     }
 
@@ -49,18 +42,26 @@ export default function ViewConfig () {
                    width="25vw"
                    marginLeft="auto">
         <FormGroup>
-            <Stack direction="row"
-                   spacing={8}>
+            <Stack direction="row">
                 <Slider
                     orientation="vertical"
-                    defaultValue={parameters.showUnified
-                        ? DiffViewMode.UNIFIED
-                        : DiffViewMode.TWO_WAY}
-                    onChange={handleDiffViewModeChange}
+                    defaultValue={parameters.viewMode}
+                    onChange={(_, newValue) => parameterActions.setViewMode(newValue as number)}
                     step={null}
-                    marks={marks}
+                    marks={viewModeSliderMarks}
+                />
+                <Slider
+                    sx={{
+                    marginLeft: 8
+                        }}
+                    orientation="vertical"
+                    defaultValue={parameters.matchAlgorithm}
+                    onChange={(_, newValue) => parameterActions.setMatchAlgorithm(newValue as number)}
+                    step={null}
+                    marks={matchAlgorithmSliderMarks}
                 />
                 <Stack
+                    marginLeft={15}
                     direction="column"
                     spacing={0}
                 >
@@ -72,11 +73,6 @@ export default function ViewConfig () {
                         label="Show Matches"
                         control={<Switch defaultChecked={parameters.showMatches}
                                          onChange={handleShowMatchesChange}/>}/>
-                    <FormControlLabel
-                        label="Top-Down Matching"
-                        control={<Switch defaultChecked={parameters.topDownOnly}
-                                         onChange={(event) => parameterActions.setTopDownOnly(
-                                             event.target.checked)}/>}/>
                 </Stack>
             </Stack>
         </FormGroup>

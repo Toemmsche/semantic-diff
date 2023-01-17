@@ -1,14 +1,11 @@
 import React, {useEffect, useMemo} from 'react';
-import ReactFlow, {useEdgesState, useNodesState} from 'reactflow';
+import ReactFlow, {ReactFlowProvider, useEdgesState, useNodesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import PlanNormalizer from "../PlanNormalizer";
 import CustomEdge from "../../edges/CustomEdge";
 import TwoWayDiffPlanNode from "./TwoWayDiffPlanNode";
 import NodeLayouter from "../NodeLayouter";
 import {PlanNode} from "../../../model/PlanData";
-import {MatchPipeline} from "../../../../semantic-diff/match/MatchPipeline";
-import {Comparator} from "../../../../semantic-diff/compare/Comparator";
-import {defaultDiffOptions} from "../../../../semantic-diff";
 import DynamicLayouter, {defaultTreeLayoutOptions} from "../DynamicLayouter";
 
 
@@ -17,8 +14,15 @@ export interface ITwoWayDiffViewProps {
     secondPlan: PlanNode
 }
 
-export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
-    const {firstPlan, secondPlan} = props;
+export default function TwoWayDiffView(props: ITwoWayDiffViewProps) {
+    return <ReactFlowProvider><TwoWayDiffFlow{...props}></TwoWayDiffFlow></ReactFlowProvider>
+}
+
+export function TwoWayDiffFlow(props: ITwoWayDiffViewProps) {
+    const {
+        firstPlan,
+        secondPlan
+    } = props;
 
     const nodeTypes = useMemo(() => ({
         customNode: TwoWayDiffPlanNode
@@ -33,50 +37,36 @@ export default function TwoWayDiffView (props: ITwoWayDiffViewProps) {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     useEffect(() => {
-                  // first plan
-                  let [normalizedFirstNodes, normalizedFirstEdges] = PlanNormalizer.normalize(
-                      firstPlan, 1, {
-                          computeData: (planNode: PlanNode) => {
-                              return {
-                                  firstPlanData: planNode.data,
-                                  secondPlanData: planNode.isMatched()
-                                      ? planNode.getMatch().data
-                                      : null,
+        // first plan
+        let [normalizedFirstNodes, normalizedFirstEdges] = PlanNormalizer.normalize(firstPlan, 1, {
+            computeData: (planNode: PlanNode) => {
+                return {
+                    firstPlanData: planNode.data,
+                    secondPlanData: planNode.isMatched() ? planNode.getMatch().data : null,
 
-                              }
-                          }
-                      });
-                  // second plan
-                  let [normalizedSecondNodes, normalizedSecondEdges] = PlanNormalizer.normalize(
-                      secondPlan, 2, {
-                          computeData: (planNode: PlanNode) => {
-                              return {
-                                  firstPlanData: planNode.isMatched()
-                                      ? planNode.getMatch().data
-                                      : null,
-                                  secondPlanData: planNode.data
+                }
+            }
+        });
+        // second plan
+        let [normalizedSecondNodes, normalizedSecondEdges] = PlanNormalizer.normalize(secondPlan, 2, {
+            computeData: (planNode: PlanNode) => {
+                return {
+                    firstPlanData: planNode.isMatched() ? planNode.getMatch().data : null,
+                    secondPlanData: planNode.data
+                }
+            }
+        });
 
-                              }
-                          }
-                      });
+        const allNodes = normalizedFirstNodes.concat(normalizedSecondNodes);
+        const allEdges = normalizedFirstEdges.concat(normalizedSecondEdges);
 
-                  const allNodes = normalizedFirstNodes.concat(normalizedSecondNodes);
-                  const allEdges = normalizedFirstEdges.concat(normalizedSecondEdges);
+        const layoutedNodes = DynamicLayouter.treeLayout(allNodes, edges, defaultTreeLayoutOptions);
 
-                  const layoutedNodes = DynamicLayouter.treeLayout(allNodes,
-                                                                   edges,
-                                                                   defaultTreeLayoutOptions);
+        setNodes(layoutedNodes);
+        setEdges(allEdges);
 
-                  console.log(layoutedNodes);
-                  setNodes(layoutedNodes);
-                  setEdges(allEdges);
-
-                  console.log(`Rendered ${layoutedNodes.length} nodes and ${allEdges.length} edges`,
-                              layoutedNodes,
-                              allEdges)
-              },
-              [props]
-    );
+        console.log(`Rendered ${layoutedNodes.length} nodes and ${allEdges.length} edges`, layoutedNodes, allEdges)
+    }, [props]);
 
 
     /*

@@ -57,8 +57,11 @@ export default class PlanNormalizer {
       } as any;
       normalizedNode.data = options.computeData(tNode, normalizedNode, nodes, edges);
       nodes.push(normalizedNode);
+      console.log("normalize", tNode)
       tNode.children.forEach((child) => {
         recNormalize(child);
+
+
         edges.push({
           id: 'e' + planIndex + tNode.data.operatorId + '-' + child.data.operatorId,
           type: 'customEdge',

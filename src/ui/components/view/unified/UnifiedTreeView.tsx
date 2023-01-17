@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import ReactFlow, {useEdgesState} from 'reactflow';
+import ReactFlow, {Edge, ReactFlowProvider, useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import {PlanNode} from "../../../model/PlanData";
 import NodeLayouter from "../NodeLayouter";
@@ -9,7 +9,6 @@ import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
 import {defaultTreeLayoutOptions} from "../DynamicLayouter";
 import Legend from "../../Legend";
 import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './CustomUnifiedEdge';
-import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 
 
 export interface IUnifiedTreeViewProps {
@@ -18,7 +17,11 @@ export interface IUnifiedTreeViewProps {
     hideNodes: boolean
 }
 
-export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
+export default function UnifiedTreeView(props: IUnifiedTreeViewProps) {
+    return <ReactFlowProvider><UnifiedTreeFlow {...props}></UnifiedTreeFlow></ReactFlowProvider>
+}
+
+export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
     const {
         unifiedTree,
         hideNodes
@@ -37,7 +40,7 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
 
     // empty initial state
     const [nodes, setNodes] = useAnimatedNodes([])
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [edges, setEdges] = useEdgesState([]);
 
 
     useEffect(() => {
@@ -51,39 +54,34 @@ export default function UnifiedTreeView (props: IUnifiedTreeViewProps) {
     useEffect(() => {
         console.log("Unifiedtree", unifiedTree)
 
-        const [allNodes, allEdges] = StaticNormalizerAndLayouter.dagreTreeLayout(
-            unifiedTree, 0,
-            (planNode) => expandedNodes.some(pn => pn === planNode), {
-                computeData: (planNode: PlanNode) => {
-                    return {
-                        hide: () => {
-                            // all descendants
-                            const descendants = new Set(planNode.toPreOrderUnique());
-                            descendants.delete(planNode);
-                            setExpandedNodes(expandedNodes.filter(n => !descendants.has(n)));
-                        },
-                        expand: () => {
-                            setExpandedNodes([
-                                ...expandedNodes, // TODO what about duplicates
-                                ...planNode.children
-                            ])
-                        },
-                        planNode: planNode
-                    }
-                },
-                computeEdgeData: (parentPlanNode: PlanNode,
-                    childPlanNode: PlanNode) => {
-                    return {
-                        childPlanNode: childPlanNode,
-                    } as ICustomUnifiedEdgeData
-                }, ...defaultTreeLayoutOptions
-            });
+        const [allNodes, allEdges] = StaticNormalizerAndLayouter.dagreTreeLayout(unifiedTree, 0, (planNode) => expandedNodes.some(pn => pn === planNode), {
+            computeData: (planNode: PlanNode) => {
+                return {
+                    hide: () => {
+                        // all descendants
+                        const descendants = new Set(planNode.toPreOrderUnique());
+                        descendants.delete(planNode);
+                        setExpandedNodes(expandedNodes.filter(n => !descendants.has(n)));
+                    },
+                    expand: () => {
+                        setExpandedNodes([...expandedNodes, // TODO what about duplicates
+                            ...planNode.children])
+                    },
+                    planNode: planNode
+                }
+            },
+            computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => {
+                return {
+                    childPlanNode: childPlanNode,
+                    parentPlanNode: parentPlanNode
+                } as ICustomUnifiedEdgeData
+            }, ...defaultTreeLayoutOptions
+        });
 
         setNodes(allNodes);
         setEdges(allEdges);
 
-        console.log(
-            `Rendered ${allNodes.length} nodes and ${allEdges.length} edges`);
+        console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`);
     }, [props, expandedNodes])
 
     return (<>

@@ -1,50 +1,64 @@
-import { Action, createHook, createStore } from 'react-sweet-state';
+import {Action, createHook, createStore} from 'react-sweet-state';
+
+export enum DiffViewMode {
+    TWO_WAY = 30, UNIFIED = 70,
+
+}
+
+export enum MatchAlgorithm {
+    TOP_DOWN = 20, BOTTOM_UP = 40, SIMPLE = 60, SEMANTIC_DIFF = 80
+}
 
 export interface IParameterState {
-  showMatches: boolean;
-  showUnified: boolean;
-  hideNodes: boolean;
-  topDownOnly: boolean;
+    showMatches: boolean;
+    hideNodes: boolean;
+
+    viewMode: DiffViewMode;
+    matchAlgorithm: MatchAlgorithm;
 }
 
 const actions = {
-  setShowMatches:
-    (showMatches: boolean): Action<IParameterState> =>
-    ({ setState, getState }) => {
-      setState({
-        showMatches: showMatches
-      });
+    setShowMatches: (showMatches: boolean): Action<IParameterState> => ({
+                                                                            setState,
+                                                                            getState
+                                                                        }) => {
+        setState({
+            showMatches
+        });
     },
-  setShowUnified:
-    (showUnified: boolean): Action<IParameterState> =>
-    ({ setState, getState }) => {
-      setState({
-        showUnified: showUnified
-      });
+    setViewMode: (viewMode: DiffViewMode): Action<IParameterState> => ({
+                                                                           setState,
+                                                                           getState
+                                                                       }) => {
+        setState({
+            viewMode
+        });
     },
-  setHideNodes:
-    (hideNodes: boolean): Action<IParameterState> =>
-    ({ setState, getState }) => {
-      setState({
-        hideNodes: hideNodes
-      });
+    setHideNodes: (hideNodes: boolean): Action<IParameterState> => ({
+                                                                        setState,
+                                                                        getState
+                                                                    }) => {
+        setState({
+            hideNodes
+        });
     },
-  setTopDownOnly:
-    (topDownOnly: boolean): Action<IParameterState> =>
-    ({ setState, getState }) => {
-      setState({
-        topDownOnly: topDownOnly
-      });
+    setMatchAlgorithm: (matchAlgorithm: MatchAlgorithm): Action<IParameterState> => ({
+                                                                                         setState,
+                                                                                         getState
+                                                                                     }) => {
+        setState({
+            matchAlgorithm
+        });
     }
 };
 const Store = createStore<IParameterState, typeof actions>({
-  initialState: {
-    topDownOnly: false,
-    showMatches: true,
-    showUnified: true,
-    hideNodes: false
-  },
-  actions
+    initialState: {
+        showMatches: true,
+        hideNodes: false,
+        viewMode: DiffViewMode.UNIFIED,
+        matchAlgorithm: MatchAlgorithm.TOP_DOWN
+    },
+    actions
 });
 
 export const useParameterState = createHook(Store);

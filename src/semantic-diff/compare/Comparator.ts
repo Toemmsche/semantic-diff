@@ -94,7 +94,7 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
       items.push(cv);
       weights.push(wcv.weight);
     }
-    console.log(nodeA, nodeB, items);
+
     // default value of 0, if there is nothing to compare, they are sufficiently equal
     return this.weightedAverage(items, weights, 0);
   }

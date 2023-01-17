@@ -1,17 +1,14 @@
 /** @jsxImportSource @emotion/react */
 
 import React from 'react';
-import {
-    BaseEdge, EdgeLabelRenderer,
-    EdgeProps,
-    getBezierPath,
-    Position
-} from 'reactflow';
+import {EdgeLabelRenderer, EdgeProps, getBezierPath} from 'reactflow';
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {UnifiedColors} from "./UnifiedDiffPlanNode";
-import {PlanData, PlanNode} from "../../../model/PlanData";
+import {PlanNode} from "../../../model/PlanData";
 
 export interface ICustomUnifiedEdgeData {
+
+    parentPlanNode: PlanNode,
 
     childPlanNode: PlanNode
 }
@@ -39,10 +36,10 @@ export default function CustomUnifiedEdge (props: EdgeProps) {
     });
 
     const {
-        childPlanNode
+        childPlanNode,
+        parentPlanNode
     } = data;
 
-    const parentPlanNode = childPlanNode.getParent();
     const [childPlanData, parentPlanData] = [childPlanNode.data, parentPlanNode.data];
 
     let edgeOrigin;
@@ -62,7 +59,7 @@ export default function CustomUnifiedEdge (props: EdgeProps) {
             parentPlanNode.getMatch();
         const existsInOld = childPlanNode.getParent() ==
             parentPlanNode;
-
+        console.log("child", childPlanNode);
         if (existsInNew && existsInOld) {
             edgeOrigin = Origin.SHARED;
         } else if (existsInOld) {
