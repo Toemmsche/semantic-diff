@@ -1,7 +1,6 @@
 enum ComparisonType {
   ALL_OR_NOTHING,
-  LCS,
-
+  LCS
 }
 
 export default ComparisonType;

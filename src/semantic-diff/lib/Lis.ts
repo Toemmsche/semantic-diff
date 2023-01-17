@@ -85,5 +85,3 @@ export function getLis(arr: number[]): number[] {
   // sorting order
   return lis.reverse();
 }
-
-

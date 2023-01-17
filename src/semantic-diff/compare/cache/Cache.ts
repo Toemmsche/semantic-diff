@@ -4,10 +4,9 @@ import SizeExtractor from './extractor/SizeExtractor';
 import HashExtractor from './extractor/HashExtractor';
 import ContentHashExtractor from './extractor/ContentHashExtractor';
 import PropertyExtractor from './extractor/PropertyExtractor';
-import {Nullable} from "../../Types";
+import { Nullable } from '../../Types';
 
 export default class Cache<T> implements ICache<T> {
-
   private hashExtractor = new HashExtractor();
   private contentHashExtractor = new ContentHashExtractor();
   private sizeExtractor = new SizeExtractor();
@@ -25,8 +24,7 @@ export default class Cache<T> implements ICache<T> {
     return this.sizeExtractor.get(node);
   }
 
-  getProperties(node: TNode<T>) : Map<string, Nullable<string>> {
+  getProperties(node: TNode<T>): Map<string, Nullable<string>> {
     return this.propertyExtractor.get(node);
   }
-
 }

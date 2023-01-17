@@ -1,8 +1,10 @@
 import {
-    FormControlLabel, FormGroup, Slider, Stack, Switch
+    FormControlLabel, FormGroup, IconButton, Slider, Stack, Switch
 } from "@mui/material";
 import React from "react";
 import {useParameterState} from "../data/Store";
+import {useQueryPlanState} from "../data/QueryPlanResultStore";
+import {UploadFile} from "@mui/icons-material";
 
 export enum DiffViewMode {
     TWO_WAY = 30,
@@ -22,6 +24,7 @@ const marks = [
 ]
 export default function ViewConfig () {
 
+    const [qpr, qprActions] = useQueryPlanState();
     const [parameters, parameterActions] = useParameterState();
 
     function handleDiffViewModeChange (event: Event,
@@ -33,6 +36,18 @@ export default function ViewConfig () {
             parameterActions.setShowUnified(false);
         }
     }
+
+    async function loadCollection (event: any) {
+        event.preventDefault()
+        const reader = new FileReader()
+        reader.onload = (progressEvent) => {
+            const text: string = (progressEvent!!.target!!.result!!).toString()
+            console.log(text);
+            qprActions.setQueryPlanResults(text);
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+
 
     function handleHideNodeChange (event: React.ChangeEvent<HTMLInputElement>) {
         parameterActions.setHideNodes(event.target.checked);
@@ -75,6 +90,12 @@ export default function ViewConfig () {
                                          onChange={(event) => parameterActions.setTopDownOnly(
                                              event.target.checked)}/>}/>
                 </Stack>
+                <IconButton onClick={loadCollection}>Upload File
+                    <UploadFile></UploadFile>
+                    <input
+                        type="file"
+                        hidden
+                    /></IconButton>
             </Stack>
         </FormGroup>
     </Stack>)

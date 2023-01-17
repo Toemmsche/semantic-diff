@@ -14,9 +14,7 @@ export class SandwichMatcher<T> implements IMatcher<T> {
    * threshold is raised for this matching module only.
    */
   match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>) {
-    const newNodes = newTree
-        .nonPropertyNodes()
-        .filter((node) => !node.isMatched());
+    const newNodes = newTree.nonPropertyNodes().filter((node) => !node.isMatched());
     for (const newNode of newNodes) {
       const parentMatch = newNode.getParent().getMatch();
       let minCV = 1;
@@ -26,9 +24,11 @@ export class SandwichMatcher<T> implements IMatcher<T> {
       newNode.children.forEach((node) => {
         if (node.isMatched()) {
           const match = node.getMatch();
-          if (match.getParent().label === newNode.label &&
-              !match.getParent().isMatched() &&
-              match.getParent().getParent() === parentMatch) {
+          if (
+            match.getParent().label === newNode.label &&
+            !match.getParent().isMatched() &&
+            match.getParent().getParent() === parentMatch
+          ) {
             const CV = comparator.compare(newNode, match.getParent());
             if (CV < minCV) {
               minCVNode = match.getParent();
@@ -47,8 +47,10 @@ export class SandwichMatcher<T> implements IMatcher<T> {
       const rightSibling = newNode.getRightSibling();
 
       // Left or right sibling must either not exist, or be matched
-      if ((leftSibling != null && !leftSibling.isMatched()) ||
-          (rightSibling != null && !rightSibling.isMatched())) {
+      if (
+        (leftSibling != null && !leftSibling.isMatched()) ||
+        (rightSibling != null && !rightSibling.isMatched())
+      ) {
         continue;
       }
 
@@ -59,9 +61,10 @@ export class SandwichMatcher<T> implements IMatcher<T> {
 
       // Case 1: Node has both a right and a left sibling
       if (leftSibling != null && rightSibling != null) {
-        if (rightSiblingMatch!!.getLeftSibling() == null ||
-            rightSiblingMatch!!.getLeftSibling() !==
-            leftSiblingMatch!!.getRightSibling()) {
+        if (
+          rightSiblingMatch!!.getLeftSibling() == null ||
+          rightSiblingMatch!!.getLeftSibling() !== leftSiblingMatch!!.getRightSibling()
+        ) {
           continue;
         }
         potentialMatch = rightSiblingMatch!!.getLeftSibling();
@@ -103,8 +106,7 @@ export class SandwichMatcher<T> implements IMatcher<T> {
       potentialMatch = potentialMatch!!;
 
       // Potential match must be unmatched and have the same label
-      if (potentialMatch.label === newNode.label &&
-          !potentialMatch.isMatched()) {
+      if (potentialMatch.label === newNode.label && !potentialMatch.isMatched()) {
         newNode.matchTo(potentialMatch);
       }
     }

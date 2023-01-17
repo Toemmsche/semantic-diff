@@ -2,14 +2,12 @@ import ChangeType from './ChangeType';
 import TNode from '../tree/TNode';
 
 export class EditOperation<T> {
-
   constructor(
-      public type: ChangeType,
-      public oldPath ?: string,
-      public newPath ?: string,
-      public newContent ?: TNode<T>,
-  ) {
-  }
+    public type: ChangeType,
+    public oldPath?: string,
+    public newPath?: string,
+    public newContent?: TNode<T>
+  ) {}
 
   isDeletion(): Boolean {
     return this.type === ChangeType.DELETION;
@@ -28,10 +26,13 @@ export class EditOperation<T> {
   }
 
   toString(): string {
-    return this.type + ' ' +
-        (this.oldPath !== null ? this.oldPath + ' ' : '') +
-        (this.oldPath !== null && this.newPath !== null ? '-> ' : '') +
-        (this.newPath !== null ? this.newPath + ' ' : '') +
-        (this.newContent !== null ? this.newContent + ' ' : '');
+    return (
+      this.type +
+      ' ' +
+      (this.oldPath !== null ? this.oldPath + ' ' : '') +
+      (this.oldPath !== null && this.newPath !== null ? '-> ' : '') +
+      (this.newPath !== null ? this.newPath + ' ' : '') +
+      (this.newContent !== null ? this.newContent + ' ' : '')
+    );
   }
 }

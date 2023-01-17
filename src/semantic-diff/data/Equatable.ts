@@ -1,4 +1,3 @@
 export default interface Equatable {
-
-    equals(other: any) : boolean;
+  equals(other: any): boolean;
 }

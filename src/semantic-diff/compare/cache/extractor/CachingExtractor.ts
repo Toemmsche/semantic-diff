@@ -1,7 +1,6 @@
 import TNode from '../../../tree/TNode';
 
 export default abstract class CachingExtractor<D, T> {
-
   protected valueMap = new Map<TNode<T>, D>();
 
   public get(node: TNode<T>): D {

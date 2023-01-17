@@ -1,7 +1,7 @@
 export default class MalformedGrammarError extends Error {
-  constructor(message: string = "Malformed Grammar") {
+  constructor(message: string = 'Malformed Grammar') {
     super();
-    this.message =message;
-    this.name = "Malformed Grammar";
+    this.message = message;
+    this.name = 'Malformed Grammar';
   }
 }

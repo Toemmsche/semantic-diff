@@ -1,5 +1,5 @@
 export enum MatchMode {
   FAST = 'fast',
   BALANCED = 'balanced',
-  QUALITY = 'quality',
+  QUALITY = 'quality'
 }

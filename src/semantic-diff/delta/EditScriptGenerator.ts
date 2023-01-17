@@ -1,14 +1,12 @@
 import TNode from '../tree/TNode';
-import {EditScript} from './EditScript';
-import {getLis} from '../lib/Lis';
+import { EditScript } from './EditScript';
+import { getLis } from '../lib/Lis';
 import IEditScriptOptions from './IEditScriptOptions';
 
 export class EditScriptGenerator<T> {
-
   private editScript: EditScript<T> = new EditScript(undefined, undefined);
 
-  constructor(public options: IEditScriptOptions) {
-  }
+  constructor(public options: IEditScriptOptions) {}
 
   generateEditScript(oldTree: TNode<T>, newTree: TNode<T>) {
     // For edit script verification later on
@@ -24,8 +22,7 @@ export class EditScriptGenerator<T> {
         const match = newNode.getMatch();
 
         // Move if parents of matched nodes aren't matched
-        if (!newNode.isRoot() && newNode.getParent()
-            .getMatch() !== match.getParent()) {
+        if (!newNode.isRoot() && newNode.getParent().getMatch() !== match.getParent()) {
           this.move(match);
         }
 
@@ -76,8 +73,7 @@ export class EditScriptGenerator<T> {
     // To find the minimal number of moves, map each child to the index of
     // its matching partner and compute the longest increasing subsequence (LIS)
     // on the result. Every node that isn't part of the LIS must be moved.
-    const lis = getLis(nodes.map((node) =>
-        node.getMatch().getIndex()));
+    const lis = getLis(nodes.map((node) => node.getMatch().getIndex()));
 
     const inLis = new Set();
     for (const index of lis) {

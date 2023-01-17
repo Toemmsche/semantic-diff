@@ -1,5 +1,5 @@
 import TNode from '../../../tree/TNode';
-import {stringHash} from '../../../lib/StringHash';
+import { stringHash } from '../../../lib/StringHash';
 import CachingExtractor from './CachingExtractor';
 
 export default class ContentHashExtractor<T> extends CachingExtractor<number, T> {
@@ -10,11 +10,10 @@ export default class ContentHashExtractor<T> extends CachingExtractor<number, T>
   private contentHash(node: TNode<T>) {
     let content = node.label;
     // Attribute order is irrelevant
-    const sortedAttrList =
-        [...node.attributes.keys()]
-            // TODO
-            .filter((key) => key !== 'xmlns') // Ignore namespaces
-            .sort();
+    const sortedAttrList = [...node.attributes.keys()]
+      // TODO
+      .filter((key) => key !== 'xmlns') // Ignore namespaces
+      .sort();
     for (const key of sortedAttrList) {
       content += key + '=' + node.attributes.get(key);
     }

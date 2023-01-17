@@ -1,8 +1,4 @@
-import {
-    defaultDiffOptions,
-    Grammar,
-    GrammarBrowserSerDes
-} from "../../semantic-diff";
+import { defaultDiffOptions, Grammar, GrammarBrowserSerDes } from '../../semantic-diff';
 
 export const umbraPlan15: string = `
 <QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
@@ -35,7 +31,7 @@ export const umbraPlan15: string = `
                        estimated_cardinality="100" exact_cardinality="100"/>
         </Join>
     </Sort>
-</QueryPlan>`
+</QueryPlan>`;
 export const duckPlan15: string = `
 <QueryPlan dbms="DuckDB" dataset="tpchSf0.01" query_name="15.sql"
            query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
@@ -79,7 +75,7 @@ export const duckPlan15: string = `
             </Join>
         </Projection>
     </Sort>
-</QueryPlan>`
+</QueryPlan>`;
 export const hyperPlan15: string = `
 <QueryPlan dbms="Hyper" dataset="tpchSf0.01" query_name="15.sql"
            query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
@@ -111,8 +107,7 @@ export const hyperPlan15: string = `
                        estimated_cardinality="100" exact_cardinality="0"/>
         </Join>
     </Sort>
-</QueryPlan>`
-
+</QueryPlan>`;
 
 export const pln1 = `
 <QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
@@ -126,7 +121,7 @@ export const pln1 = `
 </GroupBy>
     </Sort>
 </QueryPlan>
-`
+`;
 
 export const pln2 = `
 <QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
@@ -142,7 +137,7 @@ export const pln2 = `
 </Join>
 
     </Sort>
-</QueryPlan>`
+</QueryPlan>`;
 
 export const batchPlans: string = `[
   {
@@ -120884,7 +120879,7 @@ export const batchPlans: string = `[
   }
 ]`;
 export const qpGrammar: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(
-    `
+  `
 <grammar>
     <leaves>
         <TableScan ordered="false">
@@ -120903,4 +120898,5 @@ export const qpGrammar: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).p
         <Map></Map>
         <Result></Result>
     </inners>
-</grammar>`);
+</grammar>`
+);

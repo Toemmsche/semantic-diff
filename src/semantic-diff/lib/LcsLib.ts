@@ -1,15 +1,14 @@
 import ICompareOptions from '../compare/ICompareOptions';
 
 export default class LcsLib {
-  
-  private fastDp: number[][]
+  private fastDp: number[][];
   constructor(private options: ICompareOptions) {
     // Initial 2D array of size (r + 1) * (r + 1)
     const dp = new Array(this.options.PATH_COMPARE_RANGE + 1);
     for (let i = 0; i < dp.length; i++) {
       dp[i] = new Array(dp.length);
     }
-    
+
     this.fastDp = dp;
   }
   /**
@@ -90,4 +89,3 @@ export default class LcsLib {
     return this.fastDp[seqA.length][seqB.length];
   }
 }
-

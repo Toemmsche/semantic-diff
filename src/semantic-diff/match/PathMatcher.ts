@@ -4,12 +4,10 @@ import IMatcher from './IMatcher';
 import IPathMatchOptions from './IPathMatchOptions';
 
 export class PathMatcher<T> implements IMatcher<T> {
-
   /**
    * Create a new PathMatcher instance.
    */
-  constructor(private options: IPathMatchOptions) {
-  }
+  constructor(private options: IPathMatchOptions) {}
 
   /**
    * Extend the matching with inner nodes matches that are found along the path
@@ -17,7 +15,6 @@ export class PathMatcher<T> implements IMatcher<T> {
    * in quality mode.
    */
   match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>) {
-
     // Store all candidates for an inner node
     let candidateMap = new Map<TNode<T>, Set<TNode<T>>>();
 
@@ -25,25 +22,22 @@ export class PathMatcher<T> implements IMatcher<T> {
     for (const [newNode, oldNode] of newTree.getMatchingMap()) {
       // copy paths, reverse them and remove first element, discard already
       // matched nodes
-      const newPath =
-          newNode
-              .path() // Reverse is in-place
-              .reverse()
-              .slice(1)
-              .filter((node) => !node.isMatched());
-      let oldPath =
-          oldNode
-              .path() // Reverse is in-place
-              .reverse()
-              .slice(1)
-              .filter((node) => !node.isMatched());
+      const newPath = newNode
+        .path() // Reverse is in-place
+        .reverse()
+        .slice(1)
+        .filter((node) => !node.isMatched());
+      let oldPath = oldNode
+        .path() // Reverse is in-place
+        .reverse()
+        .slice(1)
+        .filter((node) => !node.isMatched());
 
       newNodeLoop: for (const newNode of newPath) {
         for (const oldNode of oldPath) {
           // If a candidate has already been captured, we can skip
           // duplicate candidate pairs along the paths.
-          if (candidateMap.has(newNode) &&
-              candidateMap.get(newNode)!!.has(oldNode)) {
+          if (candidateMap.has(newNode) && candidateMap.get(newNode)!!.has(oldNode)) {
             // Nodes along the new path have can have old nodes from the
             // non-duplicate part of the old path as candidates.
             // Only the duplicate part is cut off.
@@ -67,12 +61,13 @@ export class PathMatcher<T> implements IMatcher<T> {
     // To avoid suboptimal matches, the candidate map is sorted ascending by
     // size of the candidate set. As a result, unique and therefore robust
     // matches are found first and not overwritten by more vague matches.
-    candidateMap = new Map([...candidateMap.entries()]
-        .sort((entryA, entryB) => entryA[1].size - entryB[1].size));
+    candidateMap = new Map(
+      [...candidateMap.entries()].sort((entryA, entryB) => entryA[1].size - entryB[1].size)
+    );
 
     // Sadly, we cannot use the persistBestMatches() function for this matching
     // module because of the unique order the candidates are dealt with.
-    const oldToNewMap = new Map<TNode<T>, { newNode: TNode<T>, compareValue: number }>();
+    const oldToNewMap = new Map<TNode<T>, { newNode: TNode<T>; compareValue: number }>();
     mapLoop: for (const [newNode, oldNodeSet] of candidateMap) {
       // Remember the minimum comparison value
       let minCV = 1;
@@ -93,9 +88,11 @@ export class PathMatcher<T> implements IMatcher<T> {
           oldToNewMap.delete(oldNode);
           continue mapLoop;
         }
-        if (cv <= this.options.COMPARISON_THRESHOLD && cv < minCV &&
-            (!oldToNewMap.has(oldNode) ||
-                cv < oldToNewMap.get(oldNode)!!.compareValue)) {
+        if (
+          cv <= this.options.COMPARISON_THRESHOLD &&
+          cv < minCV &&
+          (!oldToNewMap.has(oldNode) || cv < oldToNewMap.get(oldNode)!!.compareValue)
+        ) {
           minCV = cv;
           minCVNode = oldNode;
         }
@@ -103,7 +100,7 @@ export class PathMatcher<T> implements IMatcher<T> {
       if (minCVNode != null) {
         oldToNewMap.set(minCVNode, {
           newNode: newNode,
-          compareValue: minCV,
+          compareValue: minCV
         });
       }
     }

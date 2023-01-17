@@ -11,5 +11,3 @@ export function stringHash(str: string): number {
   const dv = new DataView(m32);
   return dv.getInt32(0);
 }
-
-

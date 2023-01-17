@@ -1,9 +1,8 @@
 import IGrammarDeserializationOptions from './IGrammarDeserializationOptions';
 import ISerializationOptions from './ISerializationOptions';
-import IJsonDeserializationOptions from "./IJsonDeserializationOptions";
+import IJsonDeserializationOptions from './IJsonDeserializationOptions';
 
-export default interface ISerDesOptions extends IGrammarDeserializationOptions,
+export default interface ISerDesOptions
+  extends IGrammarDeserializationOptions,
     ISerializationOptions,
-    IJsonDeserializationOptions {
-
-}
+    IJsonDeserializationOptions {}

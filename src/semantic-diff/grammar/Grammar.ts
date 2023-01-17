@@ -1,7 +1,7 @@
 import GrammarNode from './GrammarNode';
 import XmlSerializable from '../io/SerDes';
 
-export default class Grammar{
+export default class Grammar {
   private labelMap: Map<String, GrammarNode> = new Map();
 
   // Property nodes are inferred implicitly (everything that is NOT an inner

@@ -1,97 +1,89 @@
 import SerDes from '../SerDes';
-import TNode, {TNodeBuilder} from '../../tree/TNode';
+import TNode, { TNodeBuilder } from '../../tree/TNode';
 import xmldom from '@xmldom/xmldom';
 import vkbeautify from 'vkbeautify';
-import {getElementChildren, getTextContentWithoutChildren} from '../../Util';
+import { getElementChildren, getTextContentWithoutChildren } from '../../Util';
 import ISerDesOptions from '../ISerDesOptions';
 import Grammar from '../../grammar/Grammar';
-import XmlData from "../../data/XmlData";
+import XmlData from '../../data/XmlData';
 
 export default class TNodeXMLDomSerDes extends SerDes<TNode<XmlData>> {
+  public constructor(private grammar: Grammar, private options: ISerDesOptions) {
+    super();
+  }
 
-    public constructor(private grammar: Grammar, private options: ISerDesOptions) {
-        super();
+  public override buildString(node: TNode<XmlData>): string {
+    const ownerDocument = new xmldom.DOMImplementation().createDocument(null, null);
+    const xmlString = new xmldom.XMLSerializer().serializeToString(
+      this.buildXmlDom(ownerDocument, node)
+    );
+    if (this.options.PRETTY_XML) {
+      return vkbeautify.xml(xmlString);
+    }
+    return xmlString;
+  }
+
+  public buildXmlDom(ownerDocument: any, node: TNode<XmlData>): any {
+    const xmlElement = ownerDocument.createElement(node.label);
+    if (node.isRoot()) {
+      // TODO namespace
     }
 
-    public override buildString(node: TNode<XmlData>): string {
-        const ownerDocument = new xmldom.DOMImplementation().createDocument(
-            null,
-            null
-        );
-        const xmlString = new xmldom.XMLSerializer().serializeToString(this.buildXmlDom(
-            ownerDocument,
-            node
-        ));
-        if (this.options.PRETTY_XML) {
-            return vkbeautify.xml(xmlString);
-        }
-        return xmlString;
+    for (const [key, value] of node.attributes) {
+      xmlElement.setAttribute(key, value);
     }
 
-    public buildXmlDom(ownerDocument: any, node: TNode<XmlData>): any {
-        const xmlElement = ownerDocument.createElement(node.label);
-        if (node.isRoot()) {
-            // TODO namespace
-        }
-
-        for (const [key, value] of node.attributes) {
-            xmlElement.setAttribute(key, value);
-        }
-
-        for (const child of node) {
-            xmlElement.appendChild(this.buildXmlDom(ownerDocument, child));
-        }
-
-        if (node.text != null) {
-            xmlElement.appendChild(ownerDocument.createTextNode(node.text));
-        }
-
-        return xmlElement;
+    for (const child of node) {
+      xmlElement.appendChild(this.buildXmlDom(ownerDocument, child));
     }
 
-    public parseXmlDom(xmlElement: Element, includeChildren = true): TNode<XmlData> {
-        const tagName = xmlElement.localName;
-
-        // parse attributes
-        const attributes = new Map();
-        for (let i = 0; i < xmlElement.attributes.length; i++) {
-            const attrNode = xmlElement.attributes.item(i)!!;
-            attributes.set(attrNode.name, attrNode.value);
-        }
-
-        // children
-        const children = [];
-        for (const childElement of getElementChildren(xmlElement)) {
-            children.push(this.parseXmlDom(childElement, includeChildren));
-        }
-
-        //text
-        const text = getTextContentWithoutChildren(xmlElement);
-
-        // get associated grammar Node
-        const grammarNode = this.grammar.getGrammarNodeByLabel(tagName);
-
-        // TODO remove logging
-        // console.log(`Detected ${tagName} as ${grammarNode?.type}`);
-
-        const builder = new TNodeBuilder<XmlData>()
-            .data(new XmlData(tagName, text, attributes))
-            .children(children)
-
-        if (grammarNode) {
-            builder.grammarNode(grammarNode)
-        }
-
-        return builder.build();
+    if (node.text != null) {
+      xmlElement.appendChild(ownerDocument.createTextNode(node.text));
     }
 
-    public override parseFromString(xml: string, includeChildren: boolean = true): TNode<XmlData> {
-        const root = new xmldom
-            .DOMParser()
-            .parseFromString(xml, 'text/xml')
-            .childNodes
-            .item(0) as Element; // assume single root node as an element
-        return this.parseXmlDom(root);
+    return xmlElement;
+  }
+
+  public parseXmlDom(xmlElement: Element, includeChildren = true): TNode<XmlData> {
+    const tagName = xmlElement.localName;
+
+    // parse attributes
+    const attributes = new Map();
+    for (let i = 0; i < xmlElement.attributes.length; i++) {
+      const attrNode = xmlElement.attributes.item(i)!!;
+      attributes.set(attrNode.name, attrNode.value);
     }
 
+    // children
+    const children = [];
+    for (const childElement of getElementChildren(xmlElement)) {
+      children.push(this.parseXmlDom(childElement, includeChildren));
+    }
+
+    //text
+    const text = getTextContentWithoutChildren(xmlElement);
+
+    // get associated grammar Node
+    const grammarNode = this.grammar.getGrammarNodeByLabel(tagName);
+
+    // TODO remove logging
+    // console.log(`Detected ${tagName} as ${grammarNode?.type}`);
+
+    const builder = new TNodeBuilder<XmlData>()
+      .data(new XmlData(tagName, text, attributes))
+      .children(children);
+
+    if (grammarNode) {
+      builder.grammarNode(grammarNode);
+    }
+
+    return builder.build();
+  }
+
+  public override parseFromString(xml: string, includeChildren: boolean = true): TNode<XmlData> {
+    const root = new xmldom.DOMParser()
+      .parseFromString(xml, 'text/xml')
+      .childNodes.item(0) as Element; // assume single root node as an element
+    return this.parseXmlDom(root);
+  }
 }

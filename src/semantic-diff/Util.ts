@@ -1,10 +1,9 @@
 export const arraySum = (a: number, b: number) => a + b;
 
+export const arrayMin = (a: number, b: number) => (a < b ? a : b);
 
-export const arrayMin = (a: number, b: number) => a < b ? a : b;
-
-export function getElementChildren(xmlDom: Element) : Element[] {
-  const children : Element[] = [];
+export function getElementChildren(xmlDom: Element): Element[] {
+  const children: Element[] = [];
   for (let i = 0; i < xmlDom.childNodes.length; i++) {
     const childNode = xmlDom.childNodes.item(i);
     if (childNode.nodeType === childNode.ELEMENT_NODE) {
@@ -14,7 +13,7 @@ export function getElementChildren(xmlDom: Element) : Element[] {
   return children;
 }
 
-export function getTextContentWithoutChildren(xmlDom: Element) : string | undefined {
+export function getTextContentWithoutChildren(xmlDom: Element): string | undefined {
   let res = undefined;
   for (let i = 0; i < xmlDom.childNodes.length; i++) {
     const childNode = xmlDom.childNodes.item(i);
@@ -23,9 +22,8 @@ export function getTextContentWithoutChildren(xmlDom: Element) : string | undefi
       if (trimmedValue == null || trimmedValue == '') {
         continue;
       }
-      res = res == null ? trimmedValue : res + trimmedValue
+      res = res == null ? trimmedValue : res + trimmedValue;
     }
   }
   return res;
 }
-

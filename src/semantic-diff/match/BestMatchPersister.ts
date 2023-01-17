@@ -19,12 +19,14 @@ import TNode from '../tree/TNode';
  * @param {Function} thresholdFunction A boolean function to determine if a
  *     comparison value is sufficient for a match.
  */
-export function persistBestMatches<T>(oldNodes: TNode<T>[],
-                                   newNodes: TNode<T>[],
-                                   keyFunction: (node: TNode<T>) => any,
-                                   compareFunction: (node: TNode<T>, other: TNode<T>) => number,
-                                   matchHandler: (node: TNode<T>, match: TNode<T>) => void,
-                                   thresholdFunction: (cv: number) => boolean = (cv) => true) {
+export function persistBestMatches<T>(
+  oldNodes: TNode<T>[],
+  newNodes: TNode<T>[],
+  keyFunction: (node: TNode<T>) => any,
+  compareFunction: (node: TNode<T>, other: TNode<T>) => number,
+  matchHandler: (node: TNode<T>, match: TNode<T>) => void,
+  thresholdFunction: (cv: number) => boolean = (cv) => true
+) {
   const candidateMap = new Map<TNode<T>, TNode<T>[]>();
   for (const oldNode of oldNodes) {
     const key = keyFunction(oldNode);
@@ -34,7 +36,7 @@ export function persistBestMatches<T>(oldNodes: TNode<T>[],
     candidateMap.get(key)!!.push(oldNode);
   }
 
-  const oldToNewMap = new Map<TNode<T>, { newNode: TNode<T>, compareValue: number }>();
+  const oldToNewMap = new Map<TNode<T>, { newNode: TNode<T>; compareValue: number }>();
   newNodeLoop: for (const newNode of newNodes) {
     // existing matches cannot be altered
     if (newNode.isMatched()) {
@@ -58,10 +60,11 @@ export function persistBestMatches<T>(oldNodes: TNode<T>[],
         oldToNewMap.delete(oldNode);
         continue newNodeLoop;
       }
-      if (CV <= minCV &&
-          thresholdFunction(CV) &&
-          (!oldToNewMap.has(oldNode) ||
-              CV < oldToNewMap.get(oldNode)!!.compareValue)) {
+      if (
+        CV <= minCV &&
+        thresholdFunction(CV) &&
+        (!oldToNewMap.has(oldNode) || CV < oldToNewMap.get(oldNode)!!.compareValue)
+      ) {
         minCV = CV;
         minCVNode = oldNode;
       }
@@ -69,7 +72,7 @@ export function persistBestMatches<T>(oldNodes: TNode<T>[],
     if (minCVNode != null) {
       oldToNewMap.set(minCVNode, {
         newNode: newNode,
-        compareValue: minCV,
+        compareValue: minCV
       });
     }
   }
