@@ -1,144 +1,5 @@
 import { defaultDiffOptions, Grammar, GrammarBrowserSerDes } from '../../semantic-diff';
 
-export const umbraPlan15: string = `
-<QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
-           query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
-           runtime="3.9241699999999997" compilation_time="1.25195">
-    <Sort id="1" active="False" limit="None" estimated_cardinality="1" exact_cardinality="1">
-        <Join id="2" active="True" type="inner" method="indexnl" index_lookup_cost="2" estimated_cardinality="1"
-              exact_cardinality="1">
-            <Join id="3" active="True" type="inner" method="hash" index_lookup_cost="2" estimated_cardinality="1"
-                  exact_cardinality="1">
-                <GroupBy id="4" active="True" mode="regular" method="None" estimated_cardinality="1"
-                         exact_cardinality="1">
-                    <TempScan id="5" active="False" scanned_id="6" estimated_cardinality="99" exact_cardinality="100">
-                        <GroupBy id="6" active="True" mode="regular" method="None" estimated_cardinality="99"
-                                 exact_cardinality="100">
-                            <TableScan id="7" active="False" table_name="lineitem" table_size="60175" type="None"
-                                       estimated_cardinality="1821" exact_cardinality="2284"/>
-                        </GroupBy>
-                    </TempScan>
-                </GroupBy>
-                <TempScan id="8" active="False" scanned_id="6" estimated_cardinality="99" exact_cardinality="100">
-                    <GroupBy id="6" active="True" mode="regular" method="None" estimated_cardinality="99"
-                             exact_cardinality="100">
-                        <TableScan id="7" active="False" table_name="lineitem" table_size="60175" type="None"
-                                   estimated_cardinality="1821" exact_cardinality="2284"/>
-                    </GroupBy>
-                </TempScan>
-            </Join>
-            <TableScan id="9" active="False" table_name="supplier" table_size="100" type="None"
-                       estimated_cardinality="100" exact_cardinality="100"/>
-        </Join>
-    </Sort>
-</QueryPlan>`;
-export const duckPlan15: string = `
-<QueryPlan dbms="DuckDB" dataset="tpchSf0.01" query_name="15.sql"
-           query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
-           runtime="1.469">
-    <Sort active="False" limit="None" estimated_cardinality="0" exact_cardinality="1">
-        <Projection active="False" estimated_cardinality="0" exact_cardinality="1">
-            <Join active="True" type="None" method="hash" index_lookup_cost="2" estimated_cardinality="0"
-                  exact_cardinality="0">
-                <Join active="True" type="None" method="hash" index_lookup_cost="2" estimated_cardinality="0"
-                      exact_cardinality="100">
-                    <TableScan active="False" table_name="supplier" table_size="None" type="None"
-                               estimated_cardinality="0" exact_cardinality="100"/>
-                    <GroupBy active="True" mode="None" method="hash" estimated_cardinality="0" exact_cardinality="100">
-                        <Projection active="False" estimated_cardinality="0" exact_cardinality="2284">
-                            <TableScan active="False" table_name="lineitem" table_size="None" type="None"
-                                       estimated_cardinality="0" exact_cardinality="2284"/>
-                        </Projection>
-                    </GroupBy>
-                </Join>
-                <SimpleAggregate active="True" estimated_cardinality="0" exact_cardinality="1">
-                    <Projection active="False" estimated_cardinality="0" exact_cardinality="1">
-                        <Limit active="False" estimated_cardinality="0" exact_cardinality="1">
-                            <SimpleAggregate active="True" estimated_cardinality="0" exact_cardinality="1">
-                                <Projection active="False" estimated_cardinality="0" exact_cardinality="100">
-                                    <Projection active="False" estimated_cardinality="0" exact_cardinality="100">
-                                        <GroupBy active="True" mode="None" method="hash" estimated_cardinality="0"
-                                                 exact_cardinality="100">
-                                            <Projection active="False" estimated_cardinality="0"
-                                                        exact_cardinality="2284">
-                                                <TableScan active="False" table_name="lineitem" table_size="None"
-                                                           type="None" estimated_cardinality="0"
-                                                           exact_cardinality="2284"/>
-                                            </Projection>
-                                        </GroupBy>
-                                    </Projection>
-                                </Projection>
-                            </SimpleAggregate>
-                        </Limit>
-                    </Projection>
-                </SimpleAggregate>
-            </Join>
-        </Projection>
-    </Sort>
-</QueryPlan>`;
-export const hyperPlan15: string = `
-<QueryPlan dbms="Hyper" dataset="tpchSf0.01" query_name="15.sql"
-           query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
-           runtime="3.82733" compilation_time="3.3621540000000003">
-    <Sort id="2" active="False" limit="None" estimated_cardinality="1" exact_cardinality="1">
-        <Join id="3" active="True" type="None" method="indexnl" index_lookup_cost="2" estimated_cardinality="1"
-              exact_cardinality="1">
-            <Join id="4" active="True" type="None" method="hash" index_lookup_cost="2" estimated_cardinality="1"
-                  exact_cardinality="1">
-                <GroupBy id="5" active="True" mode="static" method="None" estimated_cardinality="1"
-                         exact_cardinality="1">
-                    <TempScan id="6" active="False" scanned_id="7" estimated_cardinality="106" exact_cardinality="100">
-                        <GroupBy id="7" active="True" mode="regular" method="None" estimated_cardinality="106"
-                                 exact_cardinality="0">
-                            <TableScan id="8" active="False" table_name="lineitem" table_size="None" type="None"
-                                       estimated_cardinality="2045.95" exact_cardinality="2284"/>
-                        </GroupBy>
-                    </TempScan>
-                </GroupBy>
-                <TempScan id="9" active="False" scanned_id="7" estimated_cardinality="106" exact_cardinality="100">
-                    <GroupBy id="7" active="True" mode="regular" method="None" estimated_cardinality="106"
-                             exact_cardinality="0">
-                        <TableScan id="8" active="False" table_name="lineitem" table_size="None" type="None"
-                                   estimated_cardinality="2045.95" exact_cardinality="2284"/>
-                    </GroupBy>
-                </TempScan>
-            </Join>
-            <TableScan id="10" active="False" table_name="supplier" table_size="None" type="None"
-                       estimated_cardinality="100" exact_cardinality="0"/>
-        </Join>
-    </Sort>
-</QueryPlan>`;
-
-export const pln1 = `
-<QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
-           query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
-           runtime="3.9241699999999997" compilation_time="1.25195">
-    <Sort id="1" active="False" limit="None" estimated_cardinality="1" exact_cardinality="1">
-       <GroupBy>
-       <Join>
-       <TableScan table_name="alpha"></TableScan>
-</Join>
-</GroupBy>
-    </Sort>
-</QueryPlan>
-`;
-
-export const pln2 = `
-<QueryPlan dbms="UmbraPrebuilt" dataset="tpchSf0.01" query_name="15.sql"
-           query_text="with revenue (supplier_no, total_revenue) as (&#10;        select&#10;                l_suppkey,&#10;                sum(l_extendedprice * (1 - l_discount))&#10;        from&#10;                lineitem&#10;        where&#10;                l_shipdate &gt;= date '1996-01-01'&#10;                and l_shipdate &lt; date '1996-01-01' + interval '3' month&#10;        group by&#10;                l_suppkey)&#10;select&#10;        s_suppkey,&#10;        s_name,&#10;        s_address,&#10;        s_phone,&#10;        total_revenue&#10;from&#10;        supplier,&#10;        revenue&#10;where&#10;        s_suppkey = supplier_no&#10;        and total_revenue = (&#10;                select&#10;                        max(total_revenue)&#10;                from&#10;                        revenue&#10;        )&#10;order by&#10;        s_suppkey;"
-           runtime="3.9241699999999997" compilation_time="1.25195">
-    <Sort id="1" active="False" limit="None" estimated_cardinality="1" exact_cardinality="1">
-    <Join>
-    <TableScan table_name="beta_new"></TableScan>
-       <GroupBy>
-       
-       <TableScan table_name="alpha"></TableScan>
-       </GroupBy>
-</Join>
-
-    </Sort>
-</QueryPlan>`;
-
 export const batchPlans: string = `[
   {
     "dbms": "duck",
@@ -198,7 +59,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        91.91199999999999
+        78.676
       ],
       "compilation": [],
       "execution": [],
@@ -217,7 +78,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"4\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"4\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5916591\\" /></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"4\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"4\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"5916591\\" /></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -1229,7 +1090,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        43.087
+        33.166000000000004
       ],
       "compilation": [],
       "execution": [],
@@ -1248,7 +1109,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<TopN active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"100\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"426\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"588\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"158960\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1987\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /><TableScan active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></Join></Join><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"3907\\" /></Select></Join><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"117422\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"158960\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /></Join><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /></Join><TableScan active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></GroupBy></Join></Select></TopN>"
+    "queryPlanXml": "<TopN exact_cardinality=\\"100\\"><Select exact_cardinality=\\"426\\"><Join method=\\"hash\\" exact_cardinality=\\"588\\"><Projection exact_cardinality=\\"117422\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"117422\\"><Projection exact_cardinality=\\"158960\\"><Join method=\\"hash\\" exact_cardinality=\\"158960\\"><Join method=\\"hash\\" exact_cardinality=\\"800000\\"><Join method=\\"hash\\" exact_cardinality=\\"800000\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /></Join><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /></Join><TableScan table_name=\\"region\\" exact_cardinality=\\"1\\" /></Join></Projection></GroupBy></Projection><Join method=\\"hash\\" exact_cardinality=\\"0\\"><Join method=\\"hash\\" exact_cardinality=\\"158960\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><Join method=\\"hash\\" exact_cardinality=\\"1987\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><Join method=\\"hash\\" exact_cardinality=\\"0\\"><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /><TableScan table_name=\\"region\\" exact_cardinality=\\"1\\" /></Join></Join></Join><Projection exact_cardinality=\\"747\\"><Select exact_cardinality=\\"0\\"><TableScan table_name=\\"part\\" exact_cardinality=\\"3907\\" /></Select></Projection></Join></Join></Select></TopN>"
   },
   {
     "dbms": "duck",
@@ -1320,7 +1181,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        41.9
+        36.564
       ],
       "compilation": [],
       "execution": [],
@@ -1339,7 +1200,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<TopN active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"11620\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"17915\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"3241776\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"147126\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"727305\\" /><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"30142\\" /></Join></Join></GroupBy></TopN>"
+    "queryPlanXml": "<TopN exact_cardinality=\\"10\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"11620\\"><Join method=\\"hash\\" exact_cardinality=\\"7966\\"><Join method=\\"hash\\" exact_cardinality=\\"147126\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"727305\\" /><TableScan table_name=\\"customer\\" exact_cardinality=\\"30142\\" /></Join><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"3241776\\" /></Join></GroupBy></TopN>"
   },
   {
     "dbms": "duck",
@@ -1371,7 +1232,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        88.643
+        72.255
       ],
       "compilation": [],
       "execution": [],
@@ -1390,7 +1251,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"44937\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"57218\\" /><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"3793296\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /></Select></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"5\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"5\\"><Join method=\\"hash\\" exact_cardinality=\\"44937\\"><Projection exact_cardinality=\\"3793296\\"><Select exact_cardinality=\\"3793296\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /></Select></Projection><TableScan table_name=\\"orders\\" exact_cardinality=\\"57218\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -1422,7 +1283,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        24.545
+        20.648
       ],
       "compilation": [],
       "execution": [],
@@ -1441,7 +1302,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"3110\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"173739\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"35041\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"227597\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"30183\\"><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /><TableScan active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></Join></Join></Join><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"5\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"5\\"><Join method=\\"hash\\" exact_cardinality=\\"2815\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><Join method=\\"hash\\" exact_cardinality=\\"166549\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /><Join method=\\"hash\\" exact_cardinality=\\"39051\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"227597\\" /><Join method=\\"hash\\" exact_cardinality=\\"30183\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /><Join method=\\"hash\\" exact_cardinality=\\"0\\"><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /><TableScan table_name=\\"region\\" exact_cardinality=\\"1\\" /></Join></Join></Join></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -1456,7 +1317,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        9.488999999999999
+        10.207
       ],
       "compilation": [],
       "execution": [],
@@ -1475,7 +1336,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"114160\\" /></SimpleAggregate>"
+    "queryPlanXml": "<SimpleAggregate exact_cardinality=\\"1\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"114160\\" /></SimpleAggregate>"
   },
   {
     "dbms": "duck",
@@ -1511,7 +1372,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        86.40299999999999
+        109.369
       ],
       "compilation": [],
       "execution": [],
@@ -1530,7 +1391,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"4\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"4\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1828450\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1816811\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1828450\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\"><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /></Join></Join></Join><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /></Join></Join></Select></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"4\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"4\\"><Select exact_cardinality=\\"0\\"><Join method=\\"hash\\" exact_cardinality=\\"1828450\\"><Join method=\\"hash\\" exact_cardinality=\\"10000\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /></Join><Join method=\\"hash\\" exact_cardinality=\\"1807021\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"1828450\\" /><Join method=\\"hash\\" exact_cardinality=\\"1500000\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"1500000\\" /><Join method=\\"hash\\" exact_cardinality=\\"150000\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /></Join></Join></Join></Join></Select></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -1550,7 +1411,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        19.259999999999998
+        20.802999999999997
       ],
       "compilation": [],
       "execution": [],
@@ -1569,7 +1430,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2603\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2401\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"659\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"12187\\"><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5974\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"457263\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"35847\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1451\\" /></Join></Join></Join><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /><TableScan active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></Join></Join><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"2\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"2\\"><Join method=\\"hash\\" exact_cardinality=\\"2603\\"><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /><Join method=\\"hash\\" exact_cardinality=\\"2401\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><Join method=\\"hash\\" exact_cardinality=\\"635\\"><Join method=\\"hash\\" exact_cardinality=\\"12178\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /><Join method=\\"hash\\" exact_cardinality=\\"9949\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"457263\\" /><Join method=\\"hash\\" exact_cardinality=\\"35854\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /><TableScan table_name=\\"part\\" exact_cardinality=\\"1451\\" /></Join></Join></Join><Join method=\\"hash\\" exact_cardinality=\\"0\\"><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /><TableScan table_name=\\"region\\" exact_cardinality=\\"1\\" /></Join></Join></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -2456,7 +2317,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        110.109
+        112.91199999999999
       ],
       "compilation": [],
       "execution": [],
@@ -2475,7 +2336,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"175\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"175\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"309888\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"297815\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"42656\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"42656\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10664\\"><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"200000\\" /></Select></Join><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /></Join></Join></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"175\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"175\\"><Join method=\\"hash\\" exact_cardinality=\\"308406\\"><Join method=\\"hash\\" exact_cardinality=\\"297705\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /><Join method=\\"hash\\" exact_cardinality=\\"42656\\"><Join method=\\"hash\\" exact_cardinality=\\"42656\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><Projection exact_cardinality=\\"10664\\"><Select exact_cardinality=\\"10664\\"><TableScan table_name=\\"part\\" exact_cardinality=\\"200000\\" /></Select></Projection></Join><Join method=\\"hash\\" exact_cardinality=\\"10000\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /></Join></Join></Join><TableScan table_name=\\"orders\\" exact_cardinality=\\"1500000\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -2687,7 +2548,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        157.242
+        143.65200000000002
       ],
       "compilation": [],
       "execution": [],
@@ -2706,7 +2567,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<TopN active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"20\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"37967\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"98505\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1478870\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"55577\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"57069\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\"><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"25\\" /></Join></Join></Join></GroupBy></TopN>"
+    "queryPlanXml": "<TopN exact_cardinality=\\"20\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"37967\\"><Join method=\\"hash\\" exact_cardinality=\\"98569\\"><Join method=\\"hash\\" exact_cardinality=\\"55577\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"57069\\" /><Join method=\\"hash\\" exact_cardinality=\\"150000\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"25\\" /></Join></Join><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"1478870\\" /></Join></GroupBy></TopN>"
   },
   {
     "dbms": "duck",
@@ -6910,7 +6771,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        15.244
+        17.024
       ],
       "compilation": [],
       "execution": [],
@@ -6929,7 +6790,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1048\\"><Join active=\\"True\\" method=\\"piecewise_merge\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"760\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"29818\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"31628\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"396\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></Join></GroupBy><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Limit active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"31628\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"396\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></Join></SimpleAggregate></Limit></SimpleAggregate></Join></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"1048\\"><Join method=\\"piecewise_merge\\" exact_cardinality=\\"760\\"><SimpleAggregate exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"1\\"><Limit exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"1\\"><SimpleAggregate exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"31680\\"><Join method=\\"hash\\" exact_cardinality=\\"31628\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><Join method=\\"hash\\" exact_cardinality=\\"396\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"1\\" /></Join></Join></Projection></SimpleAggregate></Projection></Limit></Projection></SimpleAggregate><GroupBy method=\\"hash\\" exact_cardinality=\\"29818\\"><Projection exact_cardinality=\\"31680\\"><Join method=\\"hash\\" exact_cardinality=\\"31628\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><Join method=\\"hash\\" exact_cardinality=\\"396\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"1\\" /></Join></Join></Projection></GroupBy></Join></Sort>"
   },
   {
     "dbms": "duck",
@@ -6951,7 +6812,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        36.451
+        43.149
       ],
       "compilation": [],
       "execution": [],
@@ -6970,7 +6831,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"23999\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\" /><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7968\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"885773\\" /></Select></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"2\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"2\\"><Join method=\\"hash\\" exact_cardinality=\\"23997\\"><Projection exact_cardinality=\\"30988\\"><Select exact_cardinality=\\"11939\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"885773\\" /></Select></Projection><TableScan table_name=\\"orders\\" exact_cardinality=\\"1500000\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -7150,7 +7011,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        88.566
+        105.489
       ],
       "compilation": [],
       "execution": [],
@@ -7169,7 +7030,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"42\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"42\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1515646\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1483918\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\" /></Select><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /></Join></GroupBy></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"42\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"42\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"150000\\"><Join method=\\"hash\\" exact_cardinality=\\"1515646\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /><Projection exact_cardinality=\\"1483918\\"><Select exact_cardinality=\\"1483918\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"1500000\\" /></Select></Projection></Join></GroupBy></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -7184,7 +7045,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        19.979
+        34.744
       ],
       "compilation": [],
       "execution": [],
@@ -7203,7 +7064,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"63914\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"75983\\" /><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"200000\\" /></Join></SimpleAggregate></Projection>"
+    "queryPlanXml": "<Projection exact_cardinality=\\"1\\"><SimpleAggregate exact_cardinality=\\"1\\"><Join method=\\"hash\\" exact_cardinality=\\"65783\\"><TableScan table_name=\\"part\\" exact_cardinality=\\"200000\\" /><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"75983\\" /></Join></SimpleAggregate></Projection>"
   },
   {
     "dbms": "duck",
@@ -7222,7 +7083,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        52.581999999999994
+        96.61699999999999
       ],
       "compilation": [],
       "execution": [],
@@ -7241,7 +7102,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"225954\\" /></GroupBy></Join><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Limit active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"225954\\" /></GroupBy></SimpleAggregate></Limit></SimpleAggregate></Join></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"1\\"><Join method=\\"hash\\" exact_cardinality=\\"0\\"><SimpleAggregate exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"1\\"><Limit exact_cardinality=\\"1\\"><SimpleAggregate exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"10000\\"><Projection exact_cardinality=\\"10000\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"10000\\"><Projection exact_cardinality=\\"225954\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"225954\\" /></Projection></GroupBy></Projection></Projection></SimpleAggregate></Limit></Projection></SimpleAggregate><Join method=\\"hash\\" exact_cardinality=\\"10000\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><GroupBy method=\\"hash\\" exact_cardinality=\\"10000\\"><Projection exact_cardinality=\\"225954\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"225954\\" /></Projection></GroupBy></Join></Join></Sort>"
   },
   {
     "dbms": "duck",
@@ -117137,7 +116998,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        63.24
+        70.90599999999999
       ],
       "compilation": [],
       "execution": [],
@@ -117156,7 +117017,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"18314\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"18314\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"118274\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"118324\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"118324\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"29581\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"200000\\"><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"200000\\" /><TableScan active=\\"False\\" table_name=\\"\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"8\\" /></Join></Select></Join><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /></Select></Join></Select></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"18314\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"18314\\"><Select exact_cardinality=\\"118274\\"><Join method=\\"hash\\" exact_cardinality=\\"118324\\"><Projection exact_cardinality=\\"4\\"><Select exact_cardinality=\\"0\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /></Select></Projection><Join method=\\"hash\\" exact_cardinality=\\"118324\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><Projection exact_cardinality=\\"29581\\"><Select exact_cardinality=\\"29581\\"><Join method=\\"hash\\" exact_cardinality=\\"200000\\"><TableScan table_name=\\"part\\" exact_cardinality=\\"200000\\" /><TableScan table_name=\\"\\" exact_cardinality=\\"8\\" /></Join></Select></Projection></Join></Join></Select></GroupBy></Sort>"
   },
   {
     "dbms": "duck",
@@ -117171,7 +117032,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        178.954
+        176.44899999999998
       ],
       "compilation": [],
       "execution": [],
@@ -117190,7 +117051,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Projection active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"388\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6088\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"204\\" /></Join><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"200000\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /></GroupBy></Join></Select></SimpleAggregate></Projection>"
+    "queryPlanXml": "<Projection exact_cardinality=\\"1\\"><SimpleAggregate exact_cardinality=\\"1\\"><Select exact_cardinality=\\"424\\"><Join method=\\"hash\\" exact_cardinality=\\"6088\\"><Projection exact_cardinality=\\"200000\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"200000\\"><Projection exact_cardinality=\\"6001215\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /></Projection></GroupBy></Projection><Join method=\\"hash\\" exact_cardinality=\\"1985\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /><TableScan table_name=\\"part\\" exact_cardinality=\\"204\\" /></Join></Join></Select></SimpleAggregate></Projection>"
   },
   {
     "dbms": "duck",
@@ -117658,7 +117519,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        247.409
+        216.254
       ],
       "compilation": [],
       "execution": [],
@@ -117677,7 +117538,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<TopN active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"57\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"57\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5985737\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\" /><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /></Join></Join><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /></GroupBy></Select></Join></GroupBy></TopN>"
+    "queryPlanXml": "<TopN exact_cardinality=\\"57\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"57\\"><Join method=\\"hash\\" exact_cardinality=\\"0\\"><Projection exact_cardinality=\\"57\\"><Select exact_cardinality=\\"0\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"1500000\\"><Projection exact_cardinality=\\"6001215\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /></Projection></GroupBy></Select></Projection><Join method=\\"hash\\" exact_cardinality=\\"5982809\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /><Join method=\\"hash\\" exact_cardinality=\\"1500000\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"1500000\\" /><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /></Join></Join></Join></GroupBy></TopN>"
   },
   {
     "dbms": "duck",
@@ -117692,7 +117553,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        67.45700000000001
+        69.539
       ],
       "compilation": [],
       "execution": [],
@@ -117711,7 +117572,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"214377\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"192727\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500048\\" /></Select><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"200000\\" /></Join></Select></SimpleAggregate>"
+    "queryPlanXml": "<SimpleAggregate exact_cardinality=\\"1\\"><Select exact_cardinality=\\"0\\"><Join method=\\"hash\\" exact_cardinality=\\"214377\\"><TableScan table_name=\\"part\\" exact_cardinality=\\"200000\\" /><Projection exact_cardinality=\\"214377\\"><Select exact_cardinality=\\"198729\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"1500048\\" /></Select></Projection></Join></Select></SimpleAggregate>"
   },
   {
     "dbms": "duck",
@@ -118467,7 +118328,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        91.884
+        86.41799999999999
       ],
       "compilation": [],
       "execution": [],
@@ -118486,7 +118347,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"186\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"412\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"5833\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"8508\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"800000\\" /><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"0\\"><TableScan active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"2127\\" /></Select></Join><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"543210\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"909455\\" /></GroupBy></Join></Select></Join></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"186\\"><Join method=\\"hash\\" exact_cardinality=\\"0\\"><Projection exact_cardinality=\\"5833\\"><Select exact_cardinality=\\"5792\\"><Join method=\\"hash\\" exact_cardinality=\\"8508\\"><Join method=\\"hash\\" exact_cardinality=\\"3992\\"><TableScan table_name=\\"partsupp\\" exact_cardinality=\\"800000\\" /><Projection exact_cardinality=\\"2127\\"><Select exact_cardinality=\\"0\\"><TableScan table_name=\\"part\\" exact_cardinality=\\"2127\\" /></Select></Projection></Join><Projection exact_cardinality=\\"543210\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"543210\\"><Projection exact_cardinality=\\"909455\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"909455\\" /></Projection></GroupBy></Projection></Join></Select></Projection><Join method=\\"hash\\" exact_cardinality=\\"412\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"1\\" /></Join></Join></Sort>"
   },
   {
     "dbms": "duck",
@@ -118898,7 +118759,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        175.583
+        151.774
       ],
       "compilation": [],
       "execution": [],
@@ -118917,7 +118778,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<TopN active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"100\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"411\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"272\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"72284\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"66200\\"><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"729413\\" /><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"145876\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"3793296\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /></Select><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"411\\"><TableScan active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"10000\\" /><TableScan active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\" /></Join></Join></Join><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /></Join><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"3793296\\"><TableScan active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6001215\\" /></Select></Join></GroupBy></TopN>"
+    "queryPlanXml": "<TopN exact_cardinality=\\"100\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"411\\"><Join method=\\"hash\\" exact_cardinality=\\"257\\"><Projection exact_cardinality=\\"3793296\\"><Select exact_cardinality=\\"3793296\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /></Select></Projection><Join method=\\"hash\\" exact_cardinality=\\"72222\\"><Join method=\\"hash\\" exact_cardinality=\\"66013\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"729413\\" /><Join method=\\"hash\\" exact_cardinality=\\"139801\\"><Projection exact_cardinality=\\"3793296\\"><Select exact_cardinality=\\"3793296\\"><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /></Select></Projection><Join method=\\"hash\\" exact_cardinality=\\"411\\"><TableScan table_name=\\"supplier\\" exact_cardinality=\\"10000\\" /><TableScan table_name=\\"nation\\" exact_cardinality=\\"1\\" /></Join></Join></Join><TableScan table_name=\\"lineitem\\" exact_cardinality=\\"6001215\\" /></Join></Join></GroupBy></TopN>"
   },
   {
     "dbms": "duck",
@@ -118964,7 +118825,7 @@ export const batchPlans: string = `[
         ]
       ],
       "total": [
-        38.32
+        34.45
       ],
       "compilation": [],
       "execution": [],
@@ -118983,7 +118844,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\"><GroupBy active=\\"True\\" method=\\"hash\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"6366\\"><Join active=\\"True\\" method=\\"piecewise_merge\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"18948\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"42015\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\"><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"150000\\" /><TableScan active=\\"False\\" table_name=\\"\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\" /></Join></Select><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Limit active=\\"False\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><SimpleAggregate active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><Select active=\\"True\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"38120\\"><Join active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"136308\\"><TableScan active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"136308\\" /><TableScan active=\\"False\\" table_name=\\"\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"7\\" /></Join></Select></SimpleAggregate></Limit></SimpleAggregate></Join><TableScan active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1500000\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort exact_cardinality=\\"7\\"><GroupBy method=\\"hash\\" exact_cardinality=\\"7\\"><Join method=\\"hash\\" exact_cardinality=\\"6366\\"><TableScan table_name=\\"orders\\" exact_cardinality=\\"1500000\\" /><Join method=\\"piecewise_merge\\" exact_cardinality=\\"18948\\"><Projection exact_cardinality=\\"42015\\"><Select exact_cardinality=\\"42015\\"><Join method=\\"hash\\" exact_cardinality=\\"150000\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"150000\\" /><TableScan table_name=\\"\\" exact_cardinality=\\"7\\" /></Join></Select></Projection><SimpleAggregate exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"1\\"><Limit exact_cardinality=\\"1\\"><SimpleAggregate exact_cardinality=\\"1\\"><Projection exact_cardinality=\\"38120\\"><Projection exact_cardinality=\\"38120\\"><Select exact_cardinality=\\"38120\\"><Join method=\\"hash\\" exact_cardinality=\\"136308\\"><TableScan table_name=\\"customer\\" exact_cardinality=\\"136308\\" /><TableScan table_name=\\"\\" exact_cardinality=\\"7\\" /></Join></Select></Projection></Projection></SimpleAggregate></Limit></Projection></SimpleAggregate></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -118994,13 +118855,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        23.017
+        31.7304
       ],
       "compilation": [
-        2.65335
+        6.2991019999999995
       ],
       "execution": [
-        20.2347
+        25.1127
       ],
       "cycles": [],
       "instructions": [],
@@ -119017,7 +118878,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5899190.0\\" exact_cardinality=\\"5916591\\" /></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><TableScan id=\\"4\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5899190.0\\" exact_cardinality=\\"5916591\\" /></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119028,13 +118889,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        8.47508
+        12.0494
       ],
       "compilation": [
-        3.87201
+        7.025771
       ],
       "execution": [
-        4.46185
+        4.9013800000000005
       ],
       "cycles": [],
       "instructions": [],
@@ -119051,7 +118912,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" limit=\\"100\\" estimated_cardinality=\\"1.45382\\" exact_cardinality=\\"100\\"><Join id=\\"3\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1.45382\\" exact_cardinality=\\"460\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><Join id=\\"7\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"7.26908\\" exact_cardinality=\\"460\\"><Join id=\\"8\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"43.6937\\" exact_cardinality=\\"460\\"><Join id=\\"9\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"800\\" exact_cardinality=\\"460\\"><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"800\\" exact_cardinality=\\"747\\" /><GroupBy id=\\"11\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"26618.3\\" exact_cardinality=\\"3168\\"><Join id=\\"12\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"26618.3\\" exact_cardinality=\\"4267\\"><Join id=\\"13\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"2000\\" exact_cardinality=\\"1987\\"><Join id=\\"14\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"16\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><TableScan id=\\"17\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"1987\\" /></Join><EarlyProbe id=\\"18\\" active=\\"False\\" source=\\"9\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"4267\\"><TableScan id=\\"19\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"158960\\" /></EarlyProbe></Join></GroupBy></Join><TableScan id=\\"20\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"21\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"0\\" /></Join></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" limit=\\"100\\" estimated_cardinality=\\"1.45382\\" exact_cardinality=\\"100\\"><Join id=\\"3\\" method=\\"hash\\" estimated_cardinality=\\"1.45382\\" exact_cardinality=\\"460\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"5\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"6\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><Join id=\\"7\\" method=\\"indexnl\\" estimated_cardinality=\\"7.26908\\" exact_cardinality=\\"460\\"><Join id=\\"8\\" method=\\"indexnl\\" estimated_cardinality=\\"43.6937\\" exact_cardinality=\\"460\\"><Join id=\\"9\\" method=\\"hash\\" estimated_cardinality=\\"800\\" exact_cardinality=\\"460\\"><TableScan id=\\"10\\" table_name=\\"part\\" estimated_cardinality=\\"800\\" exact_cardinality=\\"747\\" /><GroupBy id=\\"11\\" mode=\\"regular\\" estimated_cardinality=\\"26618.3\\" exact_cardinality=\\"3168\\"><Join id=\\"12\\" method=\\"hash\\" estimated_cardinality=\\"26618.3\\" exact_cardinality=\\"4267\\"><Join id=\\"13\\" method=\\"hash\\" estimated_cardinality=\\"2000\\" exact_cardinality=\\"1987\\"><Join id=\\"14\\" method=\\"hash\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"15\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"16\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><TableScan id=\\"17\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"1987\\" /></Join><EarlyProbe id=\\"18\\" source=\\"9\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"4267\\"><TableScan id=\\"19\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"158960\\" /></EarlyProbe></Join></GroupBy></Join><TableScan id=\\"20\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"21\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"0\\" /></Join></Join></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119062,13 +118923,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        28.6706
+        33.522200000000005
       ],
       "compilation": [
-        1.813629
+        3.410906
       ],
       "execution": [
-        26.744500000000002
+        29.9925
       ],
       "cycles": [],
       "instructions": [],
@@ -119085,7 +118946,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" limit=\\"10\\" estimated_cardinality=\\"10\\" exact_cardinality=\\"10\\"><GroupJoin id=\\"3\\" active=\\"True\\" type=\\"inner\\" estimated_cardinality=\\"69934.5\\" exact_cardinality=\\"11620\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"69934.5\\" exact_cardinality=\\"147126\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"29550\\" exact_cardinality=\\"30142\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"739500\\" exact_cardinality=\\"147126\\" /></Join><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"3210650.0\\" exact_cardinality=\\"3241776\\" /></GroupJoin></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" limit=\\"10\\" estimated_cardinality=\\"10\\" exact_cardinality=\\"10\\"><GroupJoin id=\\"3\\" type=\\"inner\\" estimated_cardinality=\\"69934.5\\" exact_cardinality=\\"11620\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"69934.5\\" exact_cardinality=\\"147126\\"><TableScan id=\\"5\\" table_name=\\"customer\\" estimated_cardinality=\\"29550\\" exact_cardinality=\\"30142\\" /><TableScan id=\\"6\\" table_name=\\"orders\\" estimated_cardinality=\\"739500\\" exact_cardinality=\\"147126\\" /></Join><TableScan id=\\"7\\" table_name=\\"lineitem\\" estimated_cardinality=\\"3210650.0\\" exact_cardinality=\\"3241776\\" /></GroupJoin></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119096,13 +118957,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        14.3082
+        16.2141
       ],
       "compilation": [
-        1.5536880000000002
+        2.867793
       ],
       "execution": [
-        12.607
+        13.181099999999999
       ],
       "cycles": [],
       "instructions": [],
@@ -119119,7 +118980,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"45186.9\\" exact_cardinality=\\"52523\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"51000\\" exact_cardinality=\\"57218\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5998770.0\\" exact_cardinality=\\"3793296\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"45186.9\\" exact_cardinality=\\"52523\\"><TableScan id=\\"5\\" table_name=\\"orders\\" estimated_cardinality=\\"51000\\" exact_cardinality=\\"57218\\" /><TableScan id=\\"6\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5998770.0\\" exact_cardinality=\\"3793296\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119130,13 +118991,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        20.758399999999998
+        18.7014
       ],
       "compilation": [
-        2.608313
+        2.875178
       ],
       "execution": [
-        18.063
+        15.736400000000001
       ],
       "cycles": [],
       "instructions": [],
@@ -119153,7 +119014,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"23067.7\\" exact_cardinality=\\"7243\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /><Join id=\\"6\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"65177.7\\" exact_cardinality=\\"184082\\"><Join id=\\"7\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"30000\\" exact_cardinality=\\"46008\\"><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"30000\\" exact_cardinality=\\"30183\\"><Join id=\\"9\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><TableScan id=\\"12\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"238500\\" exact_cardinality=\\"227597\\" /></Join><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"0\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"23067.7\\" exact_cardinality=\\"7243\\"><TableScan id=\\"5\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /><Join id=\\"6\\" method=\\"indexnl\\" estimated_cardinality=\\"65177.7\\" exact_cardinality=\\"184082\\"><Join id=\\"7\\" method=\\"hash\\" estimated_cardinality=\\"30000\\" exact_cardinality=\\"46008\\"><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"30000\\" exact_cardinality=\\"30183\\"><Join id=\\"9\\" method=\\"hash\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"10\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"11\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><TableScan id=\\"12\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"13\\" table_name=\\"orders\\" estimated_cardinality=\\"238500\\" exact_cardinality=\\"227597\\" /></Join><TableScan id=\\"14\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"0\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119164,13 +119025,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        3.47668
+        4.83567
       ],
       "compilation": [
-        0.950411
+        1.5455310000000002
       ],
       "execution": [
-        2.42952
+        3.18338
       ],
       "cycles": [],
       "instructions": [],
@@ -119187,7 +119048,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<GroupBy id=\\"2\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"3\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"84017\\" exact_cardinality=\\"114160\\" /></GroupBy>"
+    "queryPlanXml": "<GroupBy id=\\"2\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"3\\" table_name=\\"lineitem\\" estimated_cardinality=\\"84017\\" exact_cardinality=\\"114160\\" /></GroupBy>"
   },
   {
     "dbms": "hyper",
@@ -119198,13 +119059,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        18.6136
+        21.7024
       ],
       "compilation": [
-        2.464228
+        5.554616
       ],
       "execution": [
-        16.0465
+        16.0612
       ],
       "cycles": [],
       "instructions": [],
@@ -119221,7 +119082,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"62500\\" exact_cardinality=\\"4\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"62500\\" exact_cardinality=\\"4\\"><Map id=\\"4\\" active=\\"False\\" estimated_cardinality=\\"254849\\" exact_cardinality=\\"5924\\"><Join id=\\"5\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"254849\\" exact_cardinality=\\"5924\\"><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /><Join id=\\"7\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"396624\\" exact_cardinality=\\"145703\\"><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"469698\\" exact_cardinality=\\"145703\\"><Join id=\\"9\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"7471.07\\" exact_cardinality=\\"798\\"><Join id=\\"10\\" active=\\"True\\" method=\\"bnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"18.6777\\" exact_cardinality=\\"2\\"><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><TableScan id=\\"12\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /></Join><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"1776360.0\\" exact_cardinality=\\"1828450\\" /></Join><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"0\\" /></Join></Join></Map></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"62500\\" exact_cardinality=\\"4\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"62500\\" exact_cardinality=\\"4\\"><Join id=\\"5\\" method=\\"hash\\" estimated_cardinality=\\"254849\\" exact_cardinality=\\"5924\\"><TableScan id=\\"6\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /><Join id=\\"7\\" method=\\"indexnl\\" estimated_cardinality=\\"396624\\" exact_cardinality=\\"145703\\"><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"469698\\" exact_cardinality=\\"145703\\"><Join id=\\"9\\" method=\\"hash\\" estimated_cardinality=\\"7471.07\\" exact_cardinality=\\"798\\"><Join id=\\"10\\" method=\\"bnl\\" estimated_cardinality=\\"18.6777\\" exact_cardinality=\\"2\\"><TableScan id=\\"11\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><TableScan id=\\"12\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /></Join><TableScan id=\\"13\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><TableScan id=\\"14\\" table_name=\\"lineitem\\" estimated_cardinality=\\"1776360.0\\" exact_cardinality=\\"1828450\\" /></Join><TableScan id=\\"15\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"0\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119232,13 +119093,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        12.0954
+        12.8209
       ],
       "compilation": [
-        2.7406680000000003
+        2.505943
       ],
       "execution": [
-        9.22778
+        10.213899999999999
       ],
       "cycles": [],
       "instructions": [],
@@ -119255,7 +119116,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"46.9675\\" exact_cardinality=\\"2\\"><Map id=\\"3\\" active=\\"False\\" estimated_cardinality=\\"46.9675\\" exact_cardinality=\\"2\\"><GroupBy id=\\"4\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"46.9675\\" exact_cardinality=\\"2\\"><Map id=\\"5\\" active=\\"False\\" estimated_cardinality=\\"52.1861\\" exact_cardinality=\\"2603\\"><Join id=\\"6\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"52.1861\\" exact_cardinality=\\"2603\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"52.1861\\" exact_cardinality=\\"2603\\"><Join id=\\"9\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><Join id=\\"12\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"260.93\\" exact_cardinality=\\"2603\\"><Join id=\\"13\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"543.548\\" exact_cardinality=\\"13389\\"><Join id=\\"14\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1535.79\\" exact_cardinality=\\"13389\\"><Join id=\\"15\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"9718.74\\" exact_cardinality=\\"43693\\"><TableScan id=\\"16\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"1600\\" exact_cardinality=\\"1451\\" /><TableScan id=\\"17\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"43693\\" /></Join><TableScan id=\\"18\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"436500\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"19\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"20\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"0\\" /></Join></Join></Join></Map></GroupBy></Map></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"46.9675\\" exact_cardinality=\\"2\\"><GroupBy id=\\"4\\" mode=\\"regular\\" estimated_cardinality=\\"46.9675\\" exact_cardinality=\\"2\\"><Join id=\\"6\\" method=\\"hash\\" estimated_cardinality=\\"52.1861\\" exact_cardinality=\\"2603\\"><TableScan id=\\"7\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"52.1861\\" exact_cardinality=\\"2603\\"><Join id=\\"9\\" method=\\"hash\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><TableScan id=\\"10\\" table_name=\\"region\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"11\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"5\\" /></Join><Join id=\\"12\\" method=\\"indexnl\\" estimated_cardinality=\\"260.93\\" exact_cardinality=\\"2603\\"><Join id=\\"13\\" method=\\"indexnl\\" estimated_cardinality=\\"543.548\\" exact_cardinality=\\"13389\\"><Join id=\\"14\\" method=\\"indexnl\\" estimated_cardinality=\\"1535.79\\" exact_cardinality=\\"13389\\"><Join id=\\"15\\" method=\\"hash\\" estimated_cardinality=\\"9718.74\\" exact_cardinality=\\"43693\\"><TableScan id=\\"16\\" table_name=\\"part\\" estimated_cardinality=\\"1600\\" exact_cardinality=\\"1451\\" /><TableScan id=\\"17\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"43693\\" /></Join><TableScan id=\\"18\\" table_name=\\"orders\\" estimated_cardinality=\\"436500\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"19\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"20\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"0\\" /></Join></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119266,13 +119127,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        42.2575
+        43.2945
       ],
       "compilation": [
-        2.868891
+        6.115122
       ],
       "execution": [
-        39.2572
+        37.062400000000004
       ],
       "cycles": [],
       "instructions": [],
@@ -119289,7 +119150,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"794.666\\" exact_cardinality=\\"175\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"794.666\\" exact_cardinality=\\"175\\"><Map id=\\"4\\" active=\\"False\\" estimated_cardinality=\\"882.962\\" exact_cardinality=\\"319404\\"><Join id=\\"5\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"882.962\\" exact_cardinality=\\"319404\\"><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"7\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"882.962\\" exact_cardinality=\\"319404\\"><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1625.97\\" exact_cardinality=\\"319404\\"><Join id=\\"9\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"2730.86\\" exact_cardinality=\\"42656\\"><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /><Join id=\\"11\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"16414.9\\" exact_cardinality=\\"42656\\"><TableScan id=\\"12\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10664\\" /><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></Join><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"0\\" /></Join></Join></Map></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"794.666\\" exact_cardinality=\\"175\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"794.666\\" exact_cardinality=\\"175\\"><Join id=\\"5\\" method=\\"hash\\" estimated_cardinality=\\"882.962\\" exact_cardinality=\\"319404\\"><TableScan id=\\"6\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"7\\" method=\\"indexnl\\" estimated_cardinality=\\"882.962\\" exact_cardinality=\\"319404\\"><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"1625.97\\" exact_cardinality=\\"319404\\"><Join id=\\"9\\" method=\\"hash\\" estimated_cardinality=\\"2730.86\\" exact_cardinality=\\"42656\\"><TableScan id=\\"10\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /><Join id=\\"11\\" method=\\"hash\\" estimated_cardinality=\\"16414.9\\" exact_cardinality=\\"42656\\"><TableScan id=\\"12\\" table_name=\\"part\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10664\\" /><TableScan id=\\"13\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join><TableScan id=\\"14\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></Join><TableScan id=\\"15\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"0\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119300,13 +119161,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        35.38440000000001
+        31.3764
       ],
       "compilation": [
-        2.554145
+        2.5966489999999998
       ],
       "execution": [
-        32.6925
+        28.6348
       ],
       "cycles": [],
       "instructions": [],
@@ -119323,7 +119184,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" limit=\\"20\\" estimated_cardinality=\\"20\\" exact_cardinality=\\"20\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"37967\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"114705\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"6\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"114705\\"><Join id=\\"7\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"114705\\"><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"57069\\" /><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"1482300.0\\" exact_cardinality=\\"1478870\\" /></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"0\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" limit=\\"20\\" estimated_cardinality=\\"20\\" exact_cardinality=\\"20\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"37967\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"114705\\"><TableScan id=\\"5\\" table_name=\\"nation\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"6\\" method=\\"indexnl\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"114705\\"><Join id=\\"7\\" method=\\"hash\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"114705\\"><TableScan id=\\"8\\" table_name=\\"orders\\" estimated_cardinality=\\"67500\\" exact_cardinality=\\"57069\\" /><TableScan id=\\"9\\" table_name=\\"lineitem\\" estimated_cardinality=\\"1482300.0\\" exact_cardinality=\\"1478870\\" /></Join><TableScan id=\\"10\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"0\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119334,13 +119195,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        7.17045
+        6.69357
       ],
       "compilation": [
-        2.6499610000000002
+        2.092345
       ],
       "execution": [
-        4.43318
+        4.4375100000000005
       ],
       "cycles": [],
       "instructions": [],
@@ -119357,7 +119218,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"2661.83\\" exact_cardinality=\\"1048\\"><Join id=\\"3\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"2661.83\\" exact_cardinality=\\"1048\\"><Map id=\\"4\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"5\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"6\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5323.66\\" exact_cardinality=\\"31680\\"><Join id=\\"7\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"396\\"><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"396\\" /></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"31680\\" /></Join></GroupBy></Map><GroupBy id=\\"11\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"5323.66\\" exact_cardinality=\\"29818\\"><Join id=\\"12\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5323.66\\" exact_cardinality=\\"31680\\"><Join id=\\"13\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"396\\"><EarlyProbe id=\\"14\\" active=\\"False\\" source=\\"3\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /></EarlyProbe><TableScan id=\\"16\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"396\\" /></Join><TableScan id=\\"17\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"31680\\" /></Join></GroupBy></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"2661.83\\" exact_cardinality=\\"1048\\"><Join id=\\"3\\" method=\\"hash\\" estimated_cardinality=\\"2661.83\\" exact_cardinality=\\"1048\\"><GroupBy id=\\"5\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"6\\" method=\\"hash\\" estimated_cardinality=\\"5323.66\\" exact_cardinality=\\"31680\\"><Join id=\\"7\\" method=\\"hash\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"396\\"><TableScan id=\\"8\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"9\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"396\\" /></Join><TableScan id=\\"10\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"31680\\" /></Join></GroupBy><GroupBy id=\\"11\\" mode=\\"regular\\" estimated_cardinality=\\"5323.66\\" exact_cardinality=\\"29818\\"><Join id=\\"12\\" method=\\"hash\\" estimated_cardinality=\\"5323.66\\" exact_cardinality=\\"31680\\"><Join id=\\"13\\" method=\\"hash\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"396\\"><EarlyProbe id=\\"14\\" source=\\"3\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"1\\"><TableScan id=\\"15\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /></EarlyProbe><TableScan id=\\"16\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"396\\" /></Join><TableScan id=\\"17\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"31680\\" /></Join></GroupBy></Join></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119368,13 +119229,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        7.1986
+        7.7643699999999995
       ],
       "compilation": [
-        2.357353
+        2.95035
       ],
       "execution": [
-        4.69815
+        4.6970600000000005
       ],
       "cycles": [],
       "instructions": [],
@@ -119391,7 +119252,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"7\\" exact_cardinality=\\"2\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"7\\" exact_cardinality=\\"2\\"><Join id=\\"4\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"215978\\" exact_cardinality=\\"30988\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"215978\\" exact_cardinality=\\"30988\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"0\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"7\\" exact_cardinality=\\"2\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"7\\" exact_cardinality=\\"2\\"><Join id=\\"4\\" method=\\"indexnl\\" estimated_cardinality=\\"215978\\" exact_cardinality=\\"30988\\"><TableScan id=\\"5\\" table_name=\\"lineitem\\" estimated_cardinality=\\"215978\\" exact_cardinality=\\"30988\\" /><TableScan id=\\"6\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"0\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119402,13 +119263,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        87.42179999999999
+        76.369
       ],
       "compilation": [
-        2.3026639999999996
+        1.65883
       ],
       "execution": [
-        85.03869999999999
+        74.6151
       ],
       "cycles": [],
       "instructions": [],
@@ -119425,7 +119286,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"135000\\" exact_cardinality=\\"42\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"135000\\" exact_cardinality=\\"42\\"><GroupJoin id=\\"4\\" active=\\"True\\" type=\\"outer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"1480500.0\\" exact_cardinality=\\"1483918\\" /></GroupJoin></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"135000\\" exact_cardinality=\\"42\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"135000\\" exact_cardinality=\\"42\\"><GroupJoin id=\\"4\\" type=\\"outer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\"><TableScan id=\\"5\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /><TableScan id=\\"6\\" table_name=\\"orders\\" estimated_cardinality=\\"1480500.0\\" exact_cardinality=\\"1483918\\" /></GroupJoin></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119436,13 +119297,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        7.816180000000001
+        6.32218
       ],
       "compilation": [
-        1.630503
+        1.6026699999999998
       ],
       "execution": [
-        6.081729999999999
+        4.61926
       ],
       "cycles": [],
       "instructions": [],
@@ -119459,7 +119320,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Map id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"4\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"78015.8\\" exact_cardinality=\\"75983\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"78015.8\\" exact_cardinality=\\"75983\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"200000\\" exact_cardinality=\\"0\\" /></Join></GroupBy></Map>"
+    "queryPlanXml": "<Map id=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"3\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"4\\" method=\\"indexnl\\" estimated_cardinality=\\"78015.8\\" exact_cardinality=\\"75983\\"><TableScan id=\\"5\\" table_name=\\"lineitem\\" estimated_cardinality=\\"78015.8\\" exact_cardinality=\\"75983\\" /><TableScan id=\\"6\\" table_name=\\"part\\" estimated_cardinality=\\"200000\\" exact_cardinality=\\"0\\" /></Join></GroupBy></Map>"
   },
   {
     "dbms": "hyper",
@@ -119470,13 +119331,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        7.13771
+        9.27326
       ],
       "compilation": [
-        1.68383
+        2.9828419999999998
       ],
       "execution": [
-        5.379530000000001
+        6.18092
       ],
       "cycles": [],
       "instructions": [],
@@ -119493,7 +119354,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"5\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TempScan id=\\"6\\" active=\\"False\\" scanned_id=\\"7\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"7\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"0\\"><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"216044\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></GroupBy><TempScan id=\\"9\\" active=\\"False\\" scanned_id=\\"7\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"7\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"0\\"><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"216044\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"0\\" /></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" method=\\"indexnl\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"5\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TempScan id=\\"6\\" scanned_id=\\"7\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"7\\" mode=\\"regular\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"0\\"><TableScan id=\\"8\\" table_name=\\"lineitem\\" estimated_cardinality=\\"216044\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></GroupBy><TempScan id=\\"9\\" scanned_id=\\"7\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"7\\" mode=\\"regular\\" estimated_cardinality=\\"28255\\" exact_cardinality=\\"0\\"><TableScan id=\\"8\\" table_name=\\"lineitem\\" estimated_cardinality=\\"216044\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></Join><TableScan id=\\"10\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"0\\" /></Join></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119504,13 +119365,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        36.9538
+        34.391600000000004
       ],
       "compilation": [
-        3.012571
+        5.495025
       ],
       "execution": [
-        33.829100000000004
+        28.7829
       ],
       "cycles": [],
       "instructions": [],
@@ -119527,7 +119388,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"30400\\" exact_cardinality=\\"18314\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"30400\\" exact_cardinality=\\"18314\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"49893\\" exact_cardinality=\\"118274\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10\\" exact_cardinality=\\"4\\" /><Join id=\\"6\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"49901.3\\" exact_cardinality=\\"118324\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"30400\\" exact_cardinality=\\"29581\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"30400\\" exact_cardinality=\\"18314\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"30400\\" exact_cardinality=\\"18314\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"49893\\" exact_cardinality=\\"118274\\"><TableScan id=\\"5\\" table_name=\\"supplier\\" estimated_cardinality=\\"10\\" exact_cardinality=\\"4\\" /><Join id=\\"6\\" method=\\"hash\\" estimated_cardinality=\\"49901.3\\" exact_cardinality=\\"118324\\"><TableScan id=\\"7\\" table_name=\\"part\\" estimated_cardinality=\\"30400\\" exact_cardinality=\\"29581\\" /><TableScan id=\\"8\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119538,13 +119399,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        25.489600000000003
+        31.8123
       ],
       "compilation": [
-        2.641102
+        3.7774129999999997
       ],
       "execution": [
-        22.7436
+        27.834899999999998
       ],
       "cycles": [],
       "instructions": [],
@@ -119561,7 +119422,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Map id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1822.26\\" exact_cardinality=\\"587\\"><Join id=\\"5\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"204\\"><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"204\\" /><Map id=\\"7\\" active=\\"False\\" estimated_cardinality=\\"987982\\" exact_cardinality=\\"4975\\"><GroupBy id=\\"8\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"987982\\" exact_cardinality=\\"4975\\"><EarlyProbe id=\\"9\\" active=\\"False\\" source=\\"5\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"149261\\"><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></EarlyProbe></GroupBy></Map></Join><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></Join></GroupBy></Map>"
+    "queryPlanXml": "<Map id=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"3\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"1822.26\\" exact_cardinality=\\"587\\"><Join id=\\"5\\" method=\\"hash\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"204\\"><TableScan id=\\"6\\" table_name=\\"part\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"204\\" /><GroupBy id=\\"8\\" mode=\\"regular\\" estimated_cardinality=\\"987982\\" exact_cardinality=\\"4975\\"><EarlyProbe id=\\"9\\" source=\\"5\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"149261\\"><TableScan id=\\"10\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></EarlyProbe></GroupBy></Join><TableScan id=\\"11\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></Join></GroupBy></Map>"
   },
   {
     "dbms": "hyper",
@@ -119572,13 +119433,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        149.229
+        146.35
       ],
       "compilation": [
-        2.221107
+        4.887969
       ],
       "execution": [
-        146.917
+        141.308
       ],
       "cycles": [],
       "instructions": [],
@@ -119595,7 +119456,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"57\\"><GroupJoin id=\\"3\\" active=\\"True\\" type=\\"inner\\" estimated_cardinality=\\"379.452\\" exact_cardinality=\\"57\\"><Join id=\\"4\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"379.452\\" exact_cardinality=\\"57\\"><Join id=\\"5\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"790.441\\" exact_cardinality=\\"57\\"><Select id=\\"6\\" active=\\"True\\" estimated_cardinality=\\"790.649\\" exact_cardinality=\\"57\\"><GroupBy id=\\"7\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"2762240.0\\" exact_cardinality=\\"1500000\\"><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></GroupBy></Select><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"57\\" /></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></GroupJoin></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"57\\"><GroupJoin id=\\"3\\" type=\\"inner\\" estimated_cardinality=\\"379.452\\" exact_cardinality=\\"57\\"><Join id=\\"4\\" method=\\"indexnl\\" estimated_cardinality=\\"379.452\\" exact_cardinality=\\"57\\"><Join id=\\"5\\" method=\\"hash\\" estimated_cardinality=\\"790.441\\" exact_cardinality=\\"57\\"><Select id=\\"6\\" estimated_cardinality=\\"790.649\\" exact_cardinality=\\"57\\"><GroupBy id=\\"7\\" mode=\\"regular\\" estimated_cardinality=\\"2762240.0\\" exact_cardinality=\\"1500000\\"><TableScan id=\\"8\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></GroupBy></Select><TableScan id=\\"9\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"57\\" /></Join><TableScan id=\\"10\\" table_name=\\"customer\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"11\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"6001215\\" /></GroupJoin></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119606,13 +119467,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        10.3292
+        10.102599999999999
       ],
       "compilation": [
-        1.941725
+        2.0545419999999996
       ],
       "execution": [
-        8.297809999999998
+        7.928019999999999
       ],
       "cycles": [],
       "instructions": [],
@@ -119629,7 +119490,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<GroupBy id=\\"2\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"100671\\" exact_cardinality=\\"121\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"198040\\" exact_cardinality=\\"214377\\" /><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"200000\\" exact_cardinality=\\"0\\" /></Join></GroupBy>"
+    "queryPlanXml": "<GroupBy id=\\"2\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" method=\\"indexnl\\" estimated_cardinality=\\"100671\\" exact_cardinality=\\"121\\"><TableScan id=\\"4\\" table_name=\\"lineitem\\" estimated_cardinality=\\"198040\\" exact_cardinality=\\"214377\\" /><TableScan id=\\"5\\" table_name=\\"part\\" estimated_cardinality=\\"200000\\" exact_cardinality=\\"0\\" /></Join></GroupBy>"
   },
   {
     "dbms": "hyper",
@@ -119640,13 +119501,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        10.1725
+        9.381540000000001
       ],
       "compilation": [
-        2.585942
+        2.745703
       ],
       "execution": [
-        7.48128
+        6.50376
       ],
       "cycles": [],
       "instructions": [],
@@ -119663,7 +119524,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"25.2954\\" exact_cardinality=\\"186\\"><Join id=\\"3\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"25.2954\\" exact_cardinality=\\"186\\"><Join id=\\"4\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"412\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"412\\" /></Join><Join id=\\"7\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"3926.68\\" exact_cardinality=\\"398\\"><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5235.57\\" exact_cardinality=\\"554\\"><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"part\\" estimated_cardinality=\\"3200\\" exact_cardinality=\\"2127\\" /><EarlyProbe id=\\"10\\" active=\\"False\\" source=\\"3\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"554\\"><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"8508\\" /></EarlyProbe></Join><Map id=\\"12\\" active=\\"False\\" estimated_cardinality=\\"954193\\" exact_cardinality=\\"9480\\"><GroupBy id=\\"13\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"954193\\" exact_cardinality=\\"9480\\"><EarlyProbe id=\\"14\\" active=\\"False\\" source=\\"7\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"15750\\"><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"954193\\" exact_cardinality=\\"909455\\" /></EarlyProbe></GroupBy></Map></Join></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"25.2954\\" exact_cardinality=\\"186\\"><Join id=\\"3\\" method=\\"hash\\" estimated_cardinality=\\"25.2954\\" exact_cardinality=\\"186\\"><Join id=\\"4\\" method=\\"hash\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"412\\"><TableScan id=\\"5\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"6\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"412\\" /></Join><Join id=\\"7\\" method=\\"hash\\" estimated_cardinality=\\"3926.68\\" exact_cardinality=\\"398\\"><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"5235.57\\" exact_cardinality=\\"554\\"><TableScan id=\\"9\\" table_name=\\"part\\" estimated_cardinality=\\"3200\\" exact_cardinality=\\"2127\\" /><EarlyProbe id=\\"10\\" source=\\"3\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"554\\"><TableScan id=\\"11\\" table_name=\\"partsupp\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"8508\\" /></EarlyProbe></Join><GroupBy id=\\"13\\" mode=\\"regular\\" estimated_cardinality=\\"954193\\" exact_cardinality=\\"9480\\"><EarlyProbe id=\\"14\\" source=\\"7\\" estimated_cardinality=\\"0\\" exact_cardinality=\\"15750\\"><TableScan id=\\"15\\" table_name=\\"lineitem\\" estimated_cardinality=\\"954193\\" exact_cardinality=\\"909455\\" /></EarlyProbe></GroupBy></Join></Join></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119674,13 +119535,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        33.286
+        29.485
       ],
       "compilation": [
-        2.3689669999999996
+        2.4187329999999996
       ],
       "execution": [
-        30.7594
+        26.8997
       ],
       "cycles": [],
       "instructions": [],
@@ -119697,7 +119558,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"100\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"411\\"><Join id=\\"4\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"2329.16\\" exact_cardinality=\\"4141\\"><Join id=\\"5\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"2628.53\\" exact_cardinality=\\"6923\\"><Join id=\\"6\\" active=\\"True\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"23058.3\\" exact_cardinality=\\"75871\\"><Join id=\\"7\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"84923.3\\" exact_cardinality=\\"156739\\"><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"411\\"><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"411\\" /></Join><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5998770.0\\" exact_cardinality=\\"3793296\\" /></Join><TableScan id=\\"12\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"750000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5998770.0\\" exact_cardinality=\\"3793296\\" /></Join><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"0\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"100\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"411\\"><Join id=\\"4\\" method=\\"indexnl\\" estimated_cardinality=\\"2329.16\\" exact_cardinality=\\"4141\\"><Join id=\\"5\\" method=\\"hash\\" estimated_cardinality=\\"2628.53\\" exact_cardinality=\\"6923\\"><Join id=\\"6\\" method=\\"indexnl\\" estimated_cardinality=\\"23058.3\\" exact_cardinality=\\"75871\\"><Join id=\\"7\\" method=\\"hash\\" estimated_cardinality=\\"84923.3\\" exact_cardinality=\\"156739\\"><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"400\\" exact_cardinality=\\"411\\"><TableScan id=\\"9\\" table_name=\\"nation\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\" /><TableScan id=\\"10\\" table_name=\\"supplier\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"411\\" /></Join><TableScan id=\\"11\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5998770.0\\" exact_cardinality=\\"3793296\\" /></Join><TableScan id=\\"12\\" table_name=\\"orders\\" estimated_cardinality=\\"750000\\" exact_cardinality=\\"0\\" /></Join><TableScan id=\\"13\\" table_name=\\"lineitem\\" estimated_cardinality=\\"5998770.0\\" exact_cardinality=\\"3793296\\" /></Join><TableScan id=\\"14\\" table_name=\\"lineitem\\" estimated_cardinality=\\"6001220.0\\" exact_cardinality=\\"0\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "hyper",
@@ -119708,13 +119569,13 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        13.2302
+        10.7864
       ],
       "compilation": [
-        2.987251
+        3.0060389999999995
       ],
       "execution": [
-        10.055100000000001
+        7.65978
       ],
       "cycles": [],
       "instructions": [],
@@ -119731,7 +119592,7 @@ export const batchPlans: string = `[
       "scale": [],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"292.021\\" exact_cardinality=\\"7\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"292.021\\" exact_cardinality=\\"7\\"><Map id=\\"4\\" active=\\"False\\" estimated_cardinality=\\"324.468\\" exact_cardinality=\\"6384\\"><Join id=\\"5\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"324.468\\" exact_cardinality=\\"6384\\"><GroupBy id=\\"6\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"36000\\" exact_cardinality=\\"38120\\" /></GroupBy><Join id=\\"8\\" active=\\"True\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"324.496\\" exact_cardinality=\\"14086\\"><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"customer\\" estimated_cardinality=\\"39450\\" exact_cardinality=\\"42015\\" /><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000\\" /></Join></Join></Map></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"2\\" estimated_cardinality=\\"292.021\\" exact_cardinality=\\"7\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"292.021\\" exact_cardinality=\\"7\\"><Join id=\\"5\\" method=\\"hash\\" estimated_cardinality=\\"324.468\\" exact_cardinality=\\"6384\\"><GroupBy id=\\"6\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"7\\" table_name=\\"customer\\" estimated_cardinality=\\"36000\\" exact_cardinality=\\"38120\\" /></GroupBy><Join id=\\"8\\" method=\\"hash\\" estimated_cardinality=\\"324.496\\" exact_cardinality=\\"14086\\"><TableScan id=\\"9\\" table_name=\\"customer\\" estimated_cardinality=\\"39450\\" exact_cardinality=\\"42015\\" /><TableScan id=\\"10\\" table_name=\\"orders\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -119742,48 +119603,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        28.06801
+        19.660735000000003
       ],
       "compilation": [
-        1.04501
+        0.9967349999999999
       ],
       "execution": [
-        27.023
+        18.664
       ],
       "cycles": [
-        68.2535
+        55.134
       ],
       "instructions": [
-        117.203
+        109.97
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0521636
+        0.0282376
       ],
       "dtlb_misses": [],
       "loads": [
-        50.4984
+        45.3257
       ],
       "stores": [],
       "task": [
-        20.9894
+        22.8865
       ],
       "ipc": [
-        1.71717
+        1.99459
       ],
       "cpus": [
-        4.66128
+        7.35893
       ],
       "ghz": [
-        3.25182
+        2.40902
       ],
       "scale": [
         6001216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><TableScan id=\\"3\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"5942609\\" exact_cardinality=\\"5916591\\" /></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"4\\" exact_cardinality=\\"4\\"><TableScan id=\\"3\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"5895724\\" exact_cardinality=\\"5916591\\" /></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -119794,48 +119655,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        8.48139
+        38.07997
       ],
       "compilation": [
-        2.45497
+        2.15557
       ],
       "execution": [
-        6.02642
+        35.924400000000006
       ],
       "cycles": [
-        45.2822
+        69.6101
       ],
       "instructions": [
-        18.4998
+        50.3445
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0590412
+        0.188635
       ],
       "dtlb_misses": [],
       "loads": [
-        9.95367
+        29.539
       ],
       "stores": [],
       "task": [
-        15.7285
+        23.1018
       ],
       "ipc": [
-        0.408545
+        0.723236
       ],
       "cpus": [
-        4.75021
+        1.17042
       ],
       "ghz": [
-        2.87898
+        3.01319
       ],
       "scale": [
         1820051.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"100\\"><Join id=\\"2\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"225\\" exact_cardinality=\\"460\\"><TableScan id=\\"3\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><Join id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1125\\" exact_cardinality=\\"460\\"><Join id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1125\\" exact_cardinality=\\"460\\"><GroupBy id=\\"6\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"562\\" exact_cardinality=\\"460\\"><Join id=\\"7\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"625\\" exact_cardinality=\\"642\\"><Join id=\\"8\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"2000\\" exact_cardinality=\\"1987\\"><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><Join id=\\"11\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"3124\\" exact_cardinality=\\"2988\\"><TableScan id=\\"12\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"781\\" exact_cardinality=\\"747\\" /><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join></GroupBy><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"100\\"><Join id=\\"2\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"281\\" exact_cardinality=\\"460\\"><TableScan id=\\"3\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><Join id=\\"4\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"1405\\" exact_cardinality=\\"460\\"><Join id=\\"5\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"1405\\" exact_cardinality=\\"460\\"><GroupBy id=\\"6\\" mode=\\"regular\\" estimated_cardinality=\\"703\\" exact_cardinality=\\"460\\"><Join id=\\"7\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"781\\" exact_cardinality=\\"642\\"><Join id=\\"8\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"2000\\" exact_cardinality=\\"1987\\"><TableScan id=\\"9\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><TableScan id=\\"10\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><Join id=\\"11\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"3904\\" exact_cardinality=\\"2988\\"><TableScan id=\\"12\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"976\\" exact_cardinality=\\"747\\" /><TableScan id=\\"13\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join></GroupBy><TableScan id=\\"14\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join><TableScan id=\\"15\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join></Join></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -119846,48 +119707,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        23.60729
+        20.281730000000003
       ],
       "compilation": [
-        1.73219
+        1.53383
       ],
       "execution": [
-        21.8751
+        18.7479
       ],
       "cycles": [
-        55.5063
+        52.4265
       ],
       "instructions": [
-        30.021
+        30.7958
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0691846
+        0.0779685
       ],
       "dtlb_misses": [],
       "loads": [
-        17.236
+        17.981
       ],
       "stores": [],
       "task": [
-        14.8224
+        14.3225
       ],
       "ipc": [
-        0.540857
+        0.58741
       ],
       "cpus": [
-        5.1844
+        5.84513
       ],
       "ghz": [
-        3.74475
+        3.66044
       ],
       "scale": [
         7651216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" limit=\\"10\\" estimated_cardinality=\\"10\\" exact_cardinality=\\"10\\"><GroupJoin id=\\"2\\" active=\\"True\\" type=\\"inner\\" method=\\"hybrid\\" estimated_cardinality=\\"124024\\" exact_cardinality=\\"11620\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"144097\\" exact_cardinality=\\"147126\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"30175\\" exact_cardinality=\\"30142\\" /><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"716308\\" exact_cardinality=\\"727305\\" /></Join><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3334659\\" exact_cardinality=\\"3241776\\" /></GroupJoin></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" limit=\\"10\\" estimated_cardinality=\\"10\\" exact_cardinality=\\"10\\"><GroupJoin id=\\"2\\" type=\\"inner\\" method=\\"hybrid\\" estimated_cardinality=\\"123463\\" exact_cardinality=\\"11620\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"145865\\" exact_cardinality=\\"147126\\"><TableScan id=\\"4\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"30175\\" exact_cardinality=\\"30142\\" /><TableScan id=\\"5\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"725097\\" exact_cardinality=\\"727305\\" /></Join><TableScan id=\\"6\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3129539\\" exact_cardinality=\\"3241776\\" /></GroupJoin></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -119898,48 +119759,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        28.640897
+        26.517839999999996
       ],
       "compilation": [
-        0.9914970000000001
+        1.01674
       ],
       "execution": [
-        27.6494
+        25.501099999999997
       ],
       "cycles": [
-        73.3329
+        59.4594
       ],
       "instructions": [
-        22.3874
+        22.5455
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0816692
+        0.0825217
       ],
       "dtlb_misses": [],
       "loads": [
-        11.711
+        11.6084
       ],
       "stores": [],
       "task": [
-        21.7021
+        25.1401
       ],
       "ipc": [
-        0.305285
+        0.379175
       ],
       "cpus": [
-        5.88772
+        7.39503
       ],
       "ghz": [
-        3.37908
+        2.36512
       ],
       "scale": [
         7501216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"3\\" active=\\"True\\" type=\\"leftsemi\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"43871\\" exact_cardinality=\\"52523\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"49804\\" exact_cardinality=\\"57218\\" /><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3686293\\" exact_cardinality=\\"3686293\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"3\\" type=\\"leftsemi\\" method=\\"indexnl\\" estimated_cardinality=\\"53179\\" exact_cardinality=\\"52523\\"><TableScan id=\\"4\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"60058\\" exact_cardinality=\\"57218\\" /><TableScan id=\\"5\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3780062\\" exact_cardinality=\\"3780062\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -119950,48 +119811,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        38.00583
+        32.6332
       ],
       "compilation": [
-        1.85433
+        2.1929
       ],
       "execution": [
-        36.151500000000006
+        30.4403
       ],
       "cycles": [
-        95.6539
+        105.406
       ],
       "instructions": [
-        44.933
+        28.6712
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.08926
+        0.0919565
       ],
       "dtlb_misses": [],
       "loads": [
-        25.7039
+        13.8853
       ],
       "stores": [],
       "task": [
-        24.2359
+        26.1053
       ],
       "ipc": [
-        0.469746
+        0.272006
       ],
       "cpus": [
-        5.13609
+        6.57022
       ],
       "ghz": [
-        3.94679
+        4.03773
       ],
       "scale": [
         7661241.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"181677\\" exact_cardinality=\\"7243\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /><Join id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"181677\\" exact_cardinality=\\"184082\\"><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"45410\\" exact_cardinality=\\"46008\\"><Join id=\\"7\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"30000\\" exact_cardinality=\\"30183\\"><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"227050\\" exact_cardinality=\\"227597\\" /></Join><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"164096\\" exact_cardinality=\\"7243\\"><TableScan id=\\"4\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /><Join id=\\"5\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"164096\\" exact_cardinality=\\"184082\\"><Join id=\\"6\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"41016\\" exact_cardinality=\\"46008\\"><Join id=\\"7\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"30000\\" exact_cardinality=\\"30183\\"><TableScan id=\\"8\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><TableScan id=\\"9\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"10\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"205078\\" exact_cardinality=\\"227597\\" /></Join><TableScan id=\\"11\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120002,48 +119863,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        11.315529999999999
+        10.669350000000001
       ],
       "compilation": [
-        0.68513
+        1.00373
       ],
       "execution": [
-        10.6304
+        9.66562
       ],
       "cycles": [
-        24.8313
+        21.97
       ],
       "instructions": [
-        18.3549
+        19.1837
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0423929
+        0.0441299
       ],
       "dtlb_misses": [],
       "loads": [
-        5.96787
+        5.97447
       ],
       "stores": [],
       "task": [
-        8.06689
+        10.7854
       ],
       "ipc": [
-        0.739185
+        0.873177
       ],
       "cpus": [
-        4.55401
+        6.69648
       ],
       "ghz": [
-        3.07818
+        2.03701
       ],
       "scale": [
         6001216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<GroupBy id=\\"1\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"2\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"140653\\" exact_cardinality=\\"114160\\" /></GroupBy>"
+    "queryPlanXml": "<GroupBy id=\\"1\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"2\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"169956\\" exact_cardinality=\\"114160\\" /></GroupBy>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120054,48 +119915,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        18.34712
+        16.26884
       ],
       "compilation": [
-        2.31512
+        2.58804
       ],
       "execution": [
-        16.032
+        13.6808
       ],
       "cycles": [
-        37.3381
+        29.7148
       ],
       "instructions": [
-        35.149
+        34.9641
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0964844
+        0.095637
       ],
       "dtlb_misses": [],
       "loads": [
-        13.7356
+        14.6983
       ],
       "stores": [],
       "task": [
-        11.0321
+        11.4839
       ],
       "ipc": [
-        0.941369
+        1.17666
       ],
       "cpus": [
-        5.27193
+        6.43096
       ],
       "ghz": [
-        3.38449
+        2.58752
       ],
       "scale": [
         7661220.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"4\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"4\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"11815\\" exact_cardinality=\\"5924\\"><Join id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"120000\\" exact_cardinality=\\"121324\\"><Join id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"12000\\" exact_cardinality=\\"12008\\"><Unknown active=\\"False\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\" /></Unknown><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join><Join id=\\"10\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"147686\\" exact_cardinality=\\"145703\\"><Join id=\\"11\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"800\\" exact_cardinality=\\"798\\"><Unknown active=\\"False\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\" /></Unknown><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"1846076\\" exact_cardinality=\\"1828450.0\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"4\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"4\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"11402\\" exact_cardinality=\\"5924\\"><Join id=\\"4\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"120000\\" exact_cardinality=\\"121324\\"><Join id=\\"5\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"12000\\" exact_cardinality=\\"12008\\"><Unknown estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><TableScan id=\\"7\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\" /></Unknown><TableScan id=\\"8\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"9\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join><Join id=\\"10\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"142529\\" exact_cardinality=\\"145703\\"><Join id=\\"11\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"800\\" exact_cardinality=\\"798\\"><Unknown estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><TableScan id=\\"13\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\" /></Unknown><TableScan id=\\"14\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><TableScan id=\\"15\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"1781610.0\\" exact_cardinality=\\"1828450.0\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120106,48 +119967,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        70.9858
+        18.134569999999997
       ],
       "compilation": [
-        19.0264
+        1.8259699999999999
       ],
       "execution": [
-        51.9594
+        16.3086
       ],
       "cycles": [
-        41.6686
+        31.2787
       ],
       "instructions": [
-        61.5441
+        41.2702
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.127508
+        0.0904868
       ],
       "dtlb_misses": [],
       "loads": [
-        24.6641
+        18.16
       ],
       "stores": [],
       "task": [
-        12.4152
+        11.819
       ],
       "ipc": [
-        1.47699
+        1.31944
       ],
       "cpus": [
-        1.87838
+        5.69713
       ],
       "ghz": [
-        3.35624
+        2.64648
       ],
       "scale": [
         7861266.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"2\\"><Map id=\\"2\\" active=\\"False\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"2\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"2\\"><Map id=\\"4\\" active=\\"False\\" estimated_cardinality=\\"1790\\" exact_cardinality=\\"2603\\"><Join id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1790\\" exact_cardinality=\\"2603\\"><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"7\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1790\\" exact_cardinality=\\"2603\\"><Join id=\\"8\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1790\\" exact_cardinality=\\"2603\\"><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><Join id=\\"10\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"8952\\" exact_cardinality=\\"13389\\"><Join id=\\"11\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"8952\\" exact_cardinality=\\"13389\\"><Join id=\\"12\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"29286\\" exact_cardinality=\\"43693\\"><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"976\\" exact_cardinality=\\"1451\\" /><TableScan id=\\"14\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join><TableScan id=\\"15\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"458496\\" exact_cardinality=\\"458496\\" /></Join><TableScan id=\\"16\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join></Join><TableScan id=\\"17\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join></Join></Map></GroupBy></Map></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"2\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"2\\"><Join id=\\"5\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"1813\\" exact_cardinality=\\"2603\\"><TableScan id=\\"6\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"7\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"1813\\" exact_cardinality=\\"2603\\"><Join id=\\"8\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"1813\\" exact_cardinality=\\"2603\\"><TableScan id=\\"9\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"5\\" exact_cardinality=\\"5\\" /><Join id=\\"10\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"9066\\" exact_cardinality=\\"13389\\"><Join id=\\"11\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"9066\\" exact_cardinality=\\"13389\\"><Join id=\\"12\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"29286\\" exact_cardinality=\\"43693\\"><TableScan id=\\"13\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"976\\" exact_cardinality=\\"1451\\" /><TableScan id=\\"14\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join><TableScan id=\\"15\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"464355\\" exact_cardinality=\\"464355\\" /></Join><TableScan id=\\"16\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join></Join><TableScan id=\\"17\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120158,48 +120019,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        171.88083
+        42.95939
       ],
       "compilation": [
-        2.59083
+        2.28289
       ],
       "execution": [
-        169.29
+        40.6765
       ],
       "cycles": [
-        112.146
+        110.563
       ],
       "instructions": [
-        74.2623
+        69.5108
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.262508
+        0.205059
       ],
       "dtlb_misses": [],
       "loads": [
-        34.4275
+        35.2561
       ],
       "stores": [],
       "task": [
-        33.7622
+        29.1636
       ],
       "ipc": [
-        0.662195
+        0.628701
       ],
       "cpus": [
-        1.69743
+        6.10225
       ],
       "ghz": [
-        3.32164
+        3.79112
       ],
       "scale": [
         8511241.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"1194\\" exact_cardinality=\\"175\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"1194\\" exact_cardinality=\\"175\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"380927\\" exact_cardinality=\\"319404\\"><Join id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"380927\\" exact_cardinality=\\"319404\\"><Join id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"50780\\" exact_cardinality=\\"42656\\"><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><Join id=\\"9\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"50780\\" exact_cardinality=\\"42656\\"><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"12695\\" exact_cardinality=\\"10664\\" /><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join><TableScan id=\\"12\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join><TableScan id=\\"13\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"1194\\" exact_cardinality=\\"175\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"1194\\" exact_cardinality=\\"175\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"298861\\" exact_cardinality=\\"319404\\"><Join id=\\"4\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"298861\\" exact_cardinality=\\"319404\\"><Join id=\\"5\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"39840\\" exact_cardinality=\\"42656\\"><Join id=\\"6\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\"><TableScan id=\\"7\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><TableScan id=\\"8\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join><Join id=\\"9\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"39840\\" exact_cardinality=\\"42656\\"><TableScan id=\\"10\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"9960\\" exact_cardinality=\\"10664\\" /><TableScan id=\\"11\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join><TableScan id=\\"12\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join><TableScan id=\\"13\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120210,48 +120071,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        99.86489999999999
+        67.25495000000001
       ],
       "compilation": [
-        2.005
+        1.8935499999999998
       ],
       "execution": [
-        97.8599
+        65.3614
       ],
       "cycles": [
-        119.962
+        155.993
       ],
       "instructions": [
-        58.8133
+        45.5862
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.239016
+        0.275961
       ],
       "dtlb_misses": [],
       "loads": [
-        38.2567
+        27.6613
       ],
       "stores": [],
       "task": [
-        35.895
+        44.8332
       ],
       "ipc": [
-        0.490266
+        0.292233
       ],
       "cpus": [
-        2.80648
+        5.2482
       ],
       "ghz": [
-        3.34203
+        3.47941
       ],
       "scale": [
         7651241.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" limit=\\"20\\" estimated_cardinality=\\"20\\" exact_cardinality=\\"20\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"42855\\" exact_cardinality=\\"37967\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"47617\\" exact_cardinality=\\"114705\\"><Join id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"46875\\" exact_cardinality=\\"57069\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"46875\\" exact_cardinality=\\"57069\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"46875\\" exact_cardinality=\\"57069\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join></Join><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"1523745\\" exact_cardinality=\\"1523745\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" limit=\\"20\\" estimated_cardinality=\\"20\\" exact_cardinality=\\"20\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"48768\\" exact_cardinality=\\"37967\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"54187\\" exact_cardinality=\\"114705\\"><Join id=\\"4\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"52734\\" exact_cardinality=\\"57069\\"><TableScan id=\\"5\\" table_name=\\"nation\\" table_size=\\"25\\" estimated_cardinality=\\"25\\" exact_cardinality=\\"25\\" /><Join id=\\"6\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"52734\\" exact_cardinality=\\"57069\\"><TableScan id=\\"7\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"52734\\" exact_cardinality=\\"57069\\" /><TableScan id=\\"8\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join></Join><TableScan id=\\"9\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"1541327\\" exact_cardinality=\\"1541327\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120262,48 +120123,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        6.88932
+        10.01361
       ],
       "compilation": [
-        2.0474799999999997
+        2.03783
       ],
       "execution": [
-        4.84184
+        7.97578
       ],
       "cycles": [
-        56.7781
+        63.1191
       ],
       "instructions": [
-        67.1853
+        74.5411
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.204489
+        0.250296
       ],
       "dtlb_misses": [],
       "loads": [
-        28.0553
+        38.3914
       ],
       "stores": [],
       "task": [
-        24.7789
+        23.951
       ],
       "ipc": [
-        1.1833
+        1.18096
       ],
       "cpus": [
-        4.14532
+        2.43241
       ],
       "ghz": [
-        2.29139
+        2.63534
       ],
       "scale": [
         810001.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"8992\\" exact_cardinality=\\"1048\\"><Join id=\\"2\\" active=\\"True\\" type=\\"inner\\" method=\\"bnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"8992\\" exact_cardinality=\\"1048\\"><GroupBy id=\\"3\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TempScan id=\\"4\\" active=\\"False\\" scanned_id=\\"5\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Temp id=\\"5\\" active=\\"False\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"468\\" exact_cardinality=\\"396\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Temp></TempScan></GroupBy><GroupBy id=\\"9\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"33696\\" exact_cardinality=\\"29818\\"><TempScan id=\\"10\\" active=\\"False\\" scanned_id=\\"5\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Temp id=\\"5\\" active=\\"False\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"468\\" exact_cardinality=\\"396\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Temp></TempScan></GroupBy></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"8919\\" exact_cardinality=\\"1048\\"><Join id=\\"2\\" type=\\"inner\\" method=\\"bnl\\" estimated_cardinality=\\"8919\\" exact_cardinality=\\"1048\\"><GroupBy id=\\"3\\" mode=\\"regular\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TempScan id=\\"4\\" scanned_id=\\"5\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Temp id=\\"5\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Join id=\\"6\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><TableScan id=\\"7\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"468\\" exact_cardinality=\\"396\\" /><TableScan id=\\"8\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Temp></TempScan></GroupBy><GroupBy id=\\"9\\" mode=\\"regular\\" estimated_cardinality=\\"33696\\" exact_cardinality=\\"29818\\"><TempScan id=\\"10\\" scanned_id=\\"5\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Temp id=\\"5\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><Join id=\\"6\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"37440\\" exact_cardinality=\\"31680\\"><TableScan id=\\"7\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"468\\" exact_cardinality=\\"396\\" /><TableScan id=\\"8\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Temp></TempScan></GroupBy></Join></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120314,48 +120175,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        20.06243
+        19.906010000000002
       ],
       "compilation": [
-        1.9863300000000002
+        1.4279099999999998
       ],
       "execution": [
-        18.0761
+        18.4781
       ],
       "cycles": [
-        40.1247
+        22.2766
       ],
       "instructions": [
-        30.2456
+        26.7028
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.110174
+        0.0918501
       ],
       "dtlb_misses": [],
       "loads": [
-        10.914
+        10.3539
       ],
       "stores": [],
       "task": [
-        12.989
+        15.7062
       ],
       "ipc": [
-        0.753789
+        1.19869
       ],
       "cpus": [
-        5.39019
+        6.37594
       ],
       "ghz": [
-        3.08912
+        1.41833
       ],
       "scale": [
         7501216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"35163\\" exact_cardinality=\\"30988\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"35163\\" exact_cardinality=\\"30988\\" /><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"2\\" exact_cardinality=\\"2\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"23442\\" exact_cardinality=\\"30988\\"><TableScan id=\\"4\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"23442\\" exact_cardinality=\\"30988\\" /><TableScan id=\\"5\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120366,48 +120227,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        46.07648
+        36.31075
       ],
       "compilation": [
-        1.20828
+        1.0886500000000001
       ],
       "execution": [
-        44.868199999999995
+        35.2221
       ],
       "cycles": [
-        462.31
+        363.432
       ],
       "instructions": [
-        342.703
+        338.778
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        1.42392
+        1.43318
       ],
       "dtlb_misses": [],
       "loads": [
-        190.104
+        190.926
       ],
       "stores": [],
       "task": [
-        124.235
+        143.295
       ],
       "ipc": [
-        0.741284
+        0.932165
       ],
       "cpus": [
-        4.56866
+        6.71273
       ],
       "ghz": [
-        3.72126
+        2.53625
       ],
       "scale": [
         1650001.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"13\\" exact_cardinality=\\"42\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"13\\" exact_cardinality=\\"42\\"><GroupJoin id=\\"3\\" active=\\"True\\" type=\\"outer\\" method=\\"eagerright\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1486816\\" exact_cardinality=\\"1483918\\" /></GroupJoin></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"13\\" exact_cardinality=\\"42\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"13\\" exact_cardinality=\\"42\\"><GroupJoin id=\\"3\\" type=\\"outer\\" method=\\"eagerright\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\"><TableScan id=\\"4\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /><TableScan id=\\"5\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1488281\\" exact_cardinality=\\"1483918\\" /></GroupJoin></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120418,48 +120279,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        13.60447
+        11.957169999999998
       ],
       "compilation": [
-        1.89727
+        1.3818700000000002
       ],
       "execution": [
-        11.707199999999998
+        10.575299999999999
       ],
       "cycles": [
-        33.978
+        17.6902
       ],
       "instructions": [
-        15.7682
+        16.5711
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0623062
+        0.0379311
       ],
       "dtlb_misses": [],
       "loads": [
-        7.59708
+        7.15555
       ],
       "stores": [],
       "task": [
-        10.2697
+        8.29544
       ],
       "ipc": [
-        0.464071
+        0.936739
       ],
       "cpus": [
-        5.43978
+        4.86434
       ],
       "ghz": [
-        3.30857
+        2.13251
       ],
       "scale": [
         6201216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Map id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"111350\\" exact_cardinality=\\"75983\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"111350\\" exact_cardinality=\\"75983\\" /><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"200000\\" exact_cardinality=\\"200000\\" /></Join></GroupBy></Map>"
+    "queryPlanXml": "<Map id=\\"1\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"2\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"64466\\" exact_cardinality=\\"75983\\"><TableScan id=\\"4\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"64466\\" exact_cardinality=\\"75983\\" /><TableScan id=\\"5\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"200000\\" exact_cardinality=\\"200000\\" /></Join></GroupBy></Map>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120470,48 +120331,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        12.893920000000001
+        12.881139999999998
       ],
       "compilation": [
-        1.4980200000000001
+        1.71994
       ],
       "execution": [
-        11.395900000000001
+        11.1612
       ],
       "cycles": [
-        26.1453
+        27.2435
       ],
       "instructions": [
-        19.224
+        19.5087
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0398608
+        0.0394877
       ],
       "dtlb_misses": [],
       "loads": [
-        7.30532
+        7.39422
       ],
       "stores": [],
       "task": [
-        11.9836
+        10.5093
       ],
       "ipc": [
-        0.735277
+        0.716086
       ],
       "cpus": [
-        6.32126
+        5.66012
       ],
       "ghz": [
-        2.18175
+        2.59233
       ],
       "scale": [
         6011216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"2\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"4\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TempScan id=\\"5\\" active=\\"False\\" scanned_id=\\"6\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"6\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"216840\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></GroupBy><TempScan id=\\"8\\" active=\\"False\\" scanned_id=\\"6\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"6\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"216840\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></Join><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"2\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"4\\" mode=\\"regular\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TempScan id=\\"5\\" scanned_id=\\"6\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"6\\" mode=\\"regular\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><TableScan id=\\"7\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"210980\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></GroupBy><TempScan id=\\"8\\" scanned_id=\\"6\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><GroupBy id=\\"6\\" mode=\\"regular\\" estimated_cardinality=\\"8639\\" exact_cardinality=\\"10000\\"><TableScan id=\\"7\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"210980\\" exact_cardinality=\\"225954\\" /></GroupBy></TempScan></Join><TableScan id=\\"9\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"10000\\" exact_cardinality=\\"10000\\" /></Join></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120522,48 +120383,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        80.41635
+        55.80175
       ],
       "compilation": [
-        1.85125
+        1.6690500000000001
       ],
       "execution": [
-        78.5651
+        54.1327
       ],
       "cycles": [
-        677.856
+        837.221
       ],
       "instructions": [
-        503.984
+        462.208
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        1.30786
+        0.777332
       ],
       "dtlb_misses": [],
       "loads": [
-        196.293
+        177.791
       ],
       "stores": [],
       "task": [
-        264.144
+        233.538
       ],
       "ipc": [
-        0.743497
+        0.552074
       ],
       "cpus": [
-        3.39573
+        4.35732
       ],
       "ghz": [
-        2.56624
+        3.58494
       ],
       "scale": [
         1010001.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"28076\\" exact_cardinality=\\"18314\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"28076\\" exact_cardinality=\\"18314\\"><Join id=\\"3\\" active=\\"True\\" type=\\"rightanti\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"129596\\" exact_cardinality=\\"118274\\"><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"7\\" exact_cardinality=\\"4\\" /><Join id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"129684\\" exact_cardinality=\\"118324\\"><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"32421\\" exact_cardinality=\\"29581\\" /><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"28076\\" exact_cardinality=\\"18314\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"28076\\" exact_cardinality=\\"18314\\"><Join id=\\"3\\" type=\\"rightanti\\" method=\\"hash\\" estimated_cardinality=\\"133502\\" exact_cardinality=\\"118274\\"><TableScan id=\\"4\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"7\\" exact_cardinality=\\"4\\" /><Join id=\\"5\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"133592\\" exact_cardinality=\\"118324\\"><TableScan id=\\"6\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"33398\\" exact_cardinality=\\"29581\\" /><TableScan id=\\"7\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120574,48 +120435,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        35.93607
+        13.98984
       ],
       "compilation": [
-        1.93997
+        1.36924
       ],
       "execution": [
-        33.9961
+        12.6206
       ],
       "cycles": [
-        33.4288
+        17.1054
       ],
       "instructions": [
-        52.4415
+        42.7566
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0209374
+        0.0293464
       ],
       "dtlb_misses": [],
       "loads": [
-        13.8304
+        16.0106
       ],
       "stores": [],
       "task": [
-        8.98262
+        4.86492
       ],
       "ipc": [
-        1.56875
+        2.4996
       ],
       "cpus": [
-        3.22419
+        4.70374
       ],
       "ghz": [
-        3.7215
+        3.51607
       ],
       "scale": [
         12202431.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Map id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"6330\\" exact_cardinality=\\"587\\"><GroupJoin id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"hybrid\\" estimated_cardinality=\\"390\\" exact_cardinality=\\"204\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"390\\" exact_cardinality=\\"204\\" /><TableScan id=\\"6\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></GroupJoin><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join></GroupBy></Map>"
+    "queryPlanXml": "<Map id=\\"1\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><GroupBy id=\\"2\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"3172\\" exact_cardinality=\\"587\\"><GroupJoin id=\\"4\\" type=\\"inner\\" method=\\"hybrid\\" estimated_cardinality=\\"195\\" exact_cardinality=\\"204\\"><TableScan id=\\"5\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"195\\" exact_cardinality=\\"204\\" /><TableScan id=\\"6\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></GroupJoin><TableScan id=\\"7\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join></GroupBy></Map>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120626,48 +120487,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        117.56509
+        57.909490000000005
       ],
       "compilation": [
-        1.57309
+        1.3553899999999999
       ],
       "execution": [
-        115.992
+        56.554100000000005
       ],
       "cycles": [
-        68.4567
+        55.6788
       ],
       "instructions": [
-        37.6023
+        38.4241
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.252789
+        0.289908
       ],
       "dtlb_misses": [],
       "loads": [
-        21.7306
+        23.6963
       ],
       "stores": [],
       "task": [
-        18.7852
+        25.7806
       ],
       "ipc": [
-        0.549286
+        0.690103
       ],
       "cpus": [
-        2.21105
+        6.22356
       ],
       "ghz": [
-        3.64418
+        2.15972
       ],
       "scale": [
         13652431.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"57\\"><GroupJoin id=\\"2\\" active=\\"True\\" type=\\"inner\\" method=\\"index\\" estimated_cardinality=\\"38229\\" exact_cardinality=\\"57\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"40717\\" exact_cardinality=\\"57\\"><Join id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"40717\\" exact_cardinality=\\"57\\"><Select id=\\"5\\" active=\\"True\\" estimated_cardinality=\\"40717\\" exact_cardinality=\\"57\\"><GroupBy id=\\"6\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"1429867\\" exact_cardinality=\\"1500000.0\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></GroupBy></Select><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></GroupJoin></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"57\\"><GroupJoin id=\\"2\\" type=\\"inner\\" method=\\"index\\" estimated_cardinality=\\"38742\\" exact_cardinality=\\"57\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"41263\\" exact_cardinality=\\"57\\"><Join id=\\"4\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"41263\\" exact_cardinality=\\"57\\"><Select id=\\"5\\" estimated_cardinality=\\"41263\\" exact_cardinality=\\"57\\"><GroupBy id=\\"6\\" mode=\\"regular\\" estimated_cardinality=\\"1429867\\" exact_cardinality=\\"1500000.0\\"><TableScan id=\\"7\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></GroupBy></Select><TableScan id=\\"8\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join><TableScan id=\\"9\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"150000\\" exact_cardinality=\\"150000\\" /></Join><TableScan id=\\"10\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></GroupJoin></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120678,48 +120539,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        24.22595
+        24.539070000000002
       ],
       "compilation": [
-        1.66635
+        1.61457
       ],
       "execution": [
-        22.5596
+        22.924500000000002
       ],
       "cycles": [
-        71.3025
+        74.2284
       ],
       "instructions": [
-        48.448
+        49.1359
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.043901
+        0.0431342
       ],
       "dtlb_misses": [],
       "loads": [
-        12.8837
+        12.731
       ],
       "stores": [],
       "task": [
-        25.5093
+        24.4022
       ],
       "ipc": [
-        0.679471
+        0.661956
       ],
       "cpus": [
-        7.01202
+        6.60092
       ],
       "ghz": [
-        2.79516
+        3.04188
       ],
       "scale": [
         6201216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<GroupBy id=\\"1\\" active=\\"True\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"2\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"339\\" exact_cardinality=\\"121\\"><TableScan id=\\"3\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"976\\" exact_cardinality=\\"485\\" /><TableScan id=\\"4\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"134792\\" exact_cardinality=\\"128371\\" /></Join></GroupBy>"
+    "queryPlanXml": "<GroupBy id=\\"1\\" mode=\\"static\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><Join id=\\"2\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"259\\" exact_cardinality=\\"121\\"><TableScan id=\\"3\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"781\\" exact_cardinality=\\"485\\" /><TableScan id=\\"4\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"128932\\" exact_cardinality=\\"128371\\" /></Join></GroupBy>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120730,48 +120591,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        12.961950000000002
+        12.55741
       ],
       "compilation": [
-        2.7245500000000002
+        1.62991
       ],
       "execution": [
-        10.237400000000001
+        10.9275
       ],
       "cycles": [
-        17.6009
+        32.901
       ],
       "instructions": [
-        22.0509
+        17.5369
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.0347194
+        0.035021
       ],
       "dtlb_misses": [],
       "loads": [
-        6.95422
+        8.12245
       ],
       "stores": [],
       "task": [
-        8.52553
+        10.5321
       ],
       "ipc": [
-        1.25282
+        0.53302
       ],
       "cpus": [
-        5.83881
+        6.75747
       ],
       "ghz": [
-        2.0645
+        3.12389
       ],
       "scale": [
         7011216.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"29\\" exact_cardinality=\\"186\\"><Join id=\\"2\\" active=\\"True\\" type=\\"leftsemi\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"29\\" exact_cardinality=\\"186\\"><TableScan id=\\"3\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"419\\" exact_cardinality=\\"412\\" /><Select id=\\"4\\" active=\\"True\\" estimated_cardinality=\\"712\\" exact_cardinality=\\"286\\"><GroupJoin id=\\"5\\" active=\\"True\\" type=\\"inner\\" method=\\"hybrid\\" estimated_cardinality=\\"739\\" exact_cardinality=\\"286\\"><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"1067\\" exact_cardinality=\\"403\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"2929\\" exact_cardinality=\\"2127\\" /><EarlyProbe id=\\"8\\" active=\\"False\\" source=\\"2\\" estimated_cardinality=\\"72829\\" exact_cardinality=\\"35760\\"><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></EarlyProbe></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"943550\\" exact_cardinality=\\"909455\\" /></GroupJoin></Select></Join></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"19\\" exact_cardinality=\\"186\\"><Join id=\\"2\\" type=\\"leftsemi\\" method=\\"hash\\" estimated_cardinality=\\"19\\" exact_cardinality=\\"186\\"><TableScan id=\\"3\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"419\\" exact_cardinality=\\"412\\" /><Select id=\\"4\\" estimated_cardinality=\\"461\\" exact_cardinality=\\"286\\"><GroupJoin id=\\"5\\" type=\\"inner\\" method=\\"hybrid\\" estimated_cardinality=\\"479\\" exact_cardinality=\\"286\\"><EarlyProbe id=\\"6\\" source=\\"2\\" estimated_cardinality=\\"711\\" exact_cardinality=\\"403\\"><Join id=\\"7\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"7812\\" exact_cardinality=\\"8508\\"><TableScan id=\\"8\\" table_name=\\"part\\" table_size=\\"200000\\" estimated_cardinality=\\"1953\\" exact_cardinality=\\"2127\\" /><TableScan id=\\"9\\" table_name=\\"partsupp\\" table_size=\\"800000\\" estimated_cardinality=\\"800000\\" exact_cardinality=\\"800000\\" /></Join></EarlyProbe><TableScan id=\\"10\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"896665\\" exact_cardinality=\\"909455\\" /></GroupJoin></Select></Join></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120782,48 +120643,48 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        46.51036
+        46.451530000000005
       ],
       "compilation": [
-        1.79996
+        2.14513
       ],
       "execution": [
-        44.7104
+        44.306400000000004
       ],
       "cycles": [
-        43.1178
+        39.0601
       ],
       "instructions": [
-        53.3576
+        24.2669
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.204543
+        0.21139
       ],
       "dtlb_misses": [],
       "loads": [
-        22.2827
+        12.7074
       ],
       "stores": [],
       "task": [
-        15.1717
+        14.8876
       ],
       "ipc": [
-        1.23748
+        0.621272
       ],
       "cpus": [
-        6.62161
+        6.55686
       ],
       "ghz": [
-        2.84199
+        2.62367
       ],
       "scale": [
         19513646.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"100\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"380\\" exact_cardinality=\\"411\\"><Join id=\\"3\\" active=\\"True\\" type=\\"leftsemi\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"4985\\" exact_cardinality=\\"4141\\"><Join id=\\"4\\" active=\\"True\\" type=\\"inner\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"5061\\" exact_cardinality=\\"6923\\"><Join id=\\"5\\" active=\\"True\\" type=\\"leftanti\\" method=\\"indexnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"10642\\" exact_cardinality=\\"13859\\"><Join id=\\"6\\" active=\\"True\\" type=\\"inner\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"140079\\" exact_cardinality=\\"156739\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"380\\" exact_cardinality=\\"411\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3686293\\" exact_cardinality=\\"3793296\\" /></Join><TableScan id=\\"9\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3686293\\" exact_cardinality=\\"3686293\\" /></Join><TableScan id=\\"10\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"713378\\" exact_cardinality=\\"713378\\" /></Join><TableScan id=\\"11\\" active=\\"False\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" limit=\\"100\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"100\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"380\\" exact_cardinality=\\"411\\"><Join id=\\"3\\" type=\\"leftsemi\\" method=\\"indexnl\\" estimated_cardinality=\\"4876\\" exact_cardinality=\\"4141\\"><Join id=\\"4\\" type=\\"inner\\" method=\\"indexnl\\" estimated_cardinality=\\"4951\\" exact_cardinality=\\"6923\\"><Join id=\\"5\\" type=\\"leftanti\\" method=\\"indexnl\\" estimated_cardinality=\\"10221\\" exact_cardinality=\\"13859\\"><Join id=\\"6\\" type=\\"inner\\" method=\\"hash\\" estimated_cardinality=\\"143642\\" exact_cardinality=\\"156739\\"><TableScan id=\\"7\\" table_name=\\"supplier\\" table_size=\\"10000\\" estimated_cardinality=\\"380\\" exact_cardinality=\\"411\\" /><TableScan id=\\"8\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3780062\\" exact_cardinality=\\"3793296\\" /></Join><TableScan id=\\"9\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"3780062\\" exact_cardinality=\\"3780062\\" /></Join><TableScan id=\\"10\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"726562\\" exact_cardinality=\\"726562\\" /></Join><TableScan id=\\"11\\" table_name=\\"lineitem\\" table_size=\\"6001215\\" estimated_cardinality=\\"6001215\\" exact_cardinality=\\"6001215\\" /></Join></GroupBy></Sort>"
   },
   {
     "dbms": "umbra_prebuilt",
@@ -120834,50 +120695,53 @@ export const batchPlans: string = `[
     "benchmarkResult": {
       "result": [],
       "total": [
-        10.73339
+        10.03413
       ],
       "compilation": [
-        2.03597
+        2.07165
       ],
       "execution": [
-        8.697420000000001
+        7.962479999999999
       ],
       "cycles": [
-        70.0958
+        69.9383
       ],
       "instructions": [
-        70.223
+        70.1093
       ],
       "l1d_misses": [],
       "llc_misses": [],
       "branch_misses": [
-        0.600486
+        0.604618
       ],
       "dtlb_misses": [],
       "loads": [
-        56.9988
+        51.2928
       ],
       "stores": [],
       "task": [
-        23.1948
+        28.1158
       ],
       "ipc": [
-        1.00181
+        1.00245
       ],
       "cpus": [
-        4.80035
+        6.35587
       ],
       "ghz": [
-        3.02205
+        2.48751
       ],
       "scale": [
         1800001.0
       ],
       "error": ""
     },
-    "queryPlanXml": "<Sort id=\\"1\\" active=\\"False\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"7\\"><GroupBy id=\\"2\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"7\\"><Join id=\\"3\\" active=\\"True\\" type=\\"inner\\" method=\\"bnl\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"7576\\" exact_cardinality=\\"6384\\"><GroupBy id=\\"4\\" active=\\"True\\" mode=\\"regular\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"5\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"35302\\" exact_cardinality=\\"38120\\" /></GroupBy><Join id=\\"6\\" active=\\"True\\" type=\\"leftanti\\" method=\\"hash\\" index_lookup_cost=\\"2\\" estimated_cardinality=\\"13174\\" exact_cardinality=\\"14086\\"><TableScan id=\\"7\\" active=\\"False\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"38818\\" exact_cardinality=\\"42015\\" /><TableScan id=\\"8\\" active=\\"False\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join></Join></GroupBy></Sort>"
+    "queryPlanXml": "<Sort id=\\"1\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"7\\"><GroupBy id=\\"2\\" mode=\\"regular\\" estimated_cardinality=\\"100\\" exact_cardinality=\\"7\\"><Join id=\\"3\\" type=\\"inner\\" method=\\"bnl\\" estimated_cardinality=\\"8004\\" exact_cardinality=\\"6384\\"><GroupBy id=\\"4\\" mode=\\"regular\\" estimated_cardinality=\\"1\\" exact_cardinality=\\"1\\"><TableScan id=\\"5\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"37060\\" exact_cardinality=\\"38120\\" /></GroupBy><Join id=\\"6\\" type=\\"leftanti\\" method=\\"hash\\" estimated_cardinality=\\"13919\\" exact_cardinality=\\"14086\\"><TableScan id=\\"7\\" table_name=\\"customer\\" table_size=\\"150000\\" estimated_cardinality=\\"41015\\" exact_cardinality=\\"42015\\" /><TableScan id=\\"8\\" table_name=\\"orders\\" table_size=\\"1500000.0\\" estimated_cardinality=\\"1500000.0\\" exact_cardinality=\\"1500000.0\\" /></Join></Join></GroupBy></Sort>"
   }
 ]`;
+
+
+
 export const qpGrammar: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(
   `
 <grammar>
