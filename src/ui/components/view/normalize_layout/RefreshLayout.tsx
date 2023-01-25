@@ -2,16 +2,17 @@
 
 // internal helper component that manages layouting/
 import {Node, useReactFlow, useStore} from "reactflow";
-import DynamicLayouter, {defaultTreeLayoutOptions} from "./DynamicLayouter";
 import React from "react";
 import {Fab} from "@mui/material";
 import {Autorenew} from "@mui/icons-material";
+import {defaultTreeLayoutOptions} from "./ITreeLayoutOptions";
+import DagreLayouter from "./DagreLayouter";
 
 export interface INodeLayouterProps {
     nodeSetter: (nodes: Node[]) => void;
 }
 
-export default function NodeLayouter (props: INodeLayouterProps) {
+export default function RefreshLayout (props: INodeLayouterProps) {
     const reactFlowInstance = useReactFlow();
     const nodeHasDimension = (node: Node) => (node.width != null && node.height != null)
 
@@ -20,11 +21,11 @@ export default function NodeLayouter (props: INodeLayouterProps) {
         const internalNodes = reactFlowInstance.getNodes();
         const internalEdges = reactFlowInstance.getEdges();
         if (internalNodes.length > 0 && internalNodes.every(nodeHasDimension)) {
-            const layoutedNodes = DynamicLayouter.treeLayout(internalNodes,
+
+            const layoutedNodes = new DagreLayouter().treeLayout(internalNodes,
                                                              internalEdges,
                                                              {
-                                                                 ...defaultTreeLayoutOptions,
-                                                                 withActualDimensions: true
+                                                                 ...defaultTreeLayoutOptions
                                                              });
             props.nodeSetter(layoutedNodes);
         }

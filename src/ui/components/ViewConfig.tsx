@@ -1,6 +1,6 @@
 import {FormControlLabel, FormGroup, Slider, Stack, Switch} from "@mui/material";
 import React from "react";
-import {DiffViewMode, MatchAlgorithm, useParameterState} from "../data/Store";
+import {DiffViewMode, LayoutAlgorithm, MatchAlgorithm, useParameterState} from "../data/Store";
 
 const viewModeSliderMarks = [{
     value: DiffViewMode.UNIFIED,
@@ -24,6 +24,16 @@ const matchAlgorithmSliderMarks = [{
     label: "semantic diff"
 }]
 
+const layoutAlgorithmSliderMarks = [{
+    value: LayoutAlgorithm.DAGRE,
+    label: "dagre",
+},{
+    value: LayoutAlgorithm.D3_HIERARCHY,
+    label: "d3-hierarchy"
+},{
+    value: LayoutAlgorithm.ELK_JS,
+    label: "elk.js",
+}]
 
 export default function ViewConfig() {
 
@@ -59,6 +69,16 @@ export default function ViewConfig() {
                     onChange={(_, newValue) => parameterActions.setMatchAlgorithm(newValue as number)}
                     step={null}
                     marks={matchAlgorithmSliderMarks}
+                />
+                <Slider
+                    sx={{
+                        marginLeft: 8
+                    }}
+                    orientation="vertical"
+                    defaultValue={parameters.layoutAlgorithm}
+                    onChange={(_, newValue) => parameterActions.setLayoutAlgorithm(newValue as number)}
+                    step={null}
+                    marks={layoutAlgorithmSliderMarks}
                 />
                 <Stack
                     marginLeft={15}

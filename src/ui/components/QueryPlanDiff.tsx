@@ -80,8 +80,7 @@ export default function QueryPlanDiff() {
                 .forEach(pn => pn.data.origin = Origin.SHARED);
 
             GraphView = <UnifiedTreeView
-                unifiedTree={unifiedTree}
-                hideNodes={parameters.hideNodes}/>
+                unifiedTree={unifiedTree}/>
         } else {
             GraphView = <TwoWayDiffView firstPlan={firstPlan}
                                         secondPlan={secondPlan}/>

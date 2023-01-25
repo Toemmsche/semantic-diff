@@ -59,7 +59,6 @@ export default function CustomUnifiedEdge (props: EdgeProps) {
             parentPlanNode.getMatch();
         const existsInOld = childPlanNode.getParent() ==
             parentPlanNode;
-        console.log("child", childPlanNode);
         if (existsInNew && existsInOld) {
             edgeOrigin = Origin.SHARED;
         } else if (existsInOld) {

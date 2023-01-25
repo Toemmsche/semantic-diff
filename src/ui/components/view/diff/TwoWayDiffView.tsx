@@ -1,12 +1,14 @@
 import React, {useEffect, useMemo} from 'react';
 import ReactFlow, {ReactFlowProvider, useEdgesState, useNodesState} from 'reactflow';
 import 'reactflow/dist/style.css';
-import PlanNormalizer from "../PlanNormalizer";
+import DefaultNormalizer from "../normalize_layout/DefaultNormalizer";
 import CustomEdge from "../../edges/CustomEdge";
 import TwoWayDiffPlanNode from "./TwoWayDiffPlanNode";
-import NodeLayouter from "../NodeLayouter";
+import RefreshLayout from "../normalize_layout/RefreshLayout";
 import {PlanNode} from "../../../model/PlanData";
-import DynamicLayouter, {defaultTreeLayoutOptions} from "../DynamicLayouter";
+import DagreLayouter from "../normalize_layout/DagreLayouter";
+import {defaultNormalizeOptions} from "../normalize_layout/INormalizeOptions";
+import {defaultTreeLayoutOptions} from "../normalize_layout/ITreeLayoutOptions";
 
 
 export interface ITwoWayDiffViewProps {
@@ -38,29 +40,31 @@ export function TwoWayDiffFlow(props: ITwoWayDiffViewProps) {
 
     useEffect(() => {
         // first plan
-        let [normalizedFirstNodes, normalizedFirstEdges] = PlanNormalizer.normalize(firstPlan, 1, {
+        let [normalizedFirstNodes, normalizedFirstEdges] = new DefaultNormalizer().normalize(firstPlan, 1, {
+            ...defaultNormalizeOptions,
             computeData: (planNode: PlanNode) => {
                 return {
                     firstPlanData: planNode.data,
                     secondPlanData: planNode.isMatched() ? planNode.getMatch().data : null,
 
                 }
-            }
+            },
         });
         // second plan
-        let [normalizedSecondNodes, normalizedSecondEdges] = PlanNormalizer.normalize(secondPlan, 2, {
+        let [normalizedSecondNodes, normalizedSecondEdges] = new DefaultNormalizer().normalize(secondPlan, 2, {
+            ...defaultNormalizeOptions,
             computeData: (planNode: PlanNode) => {
                 return {
                     firstPlanData: planNode.isMatched() ? planNode.getMatch().data : null,
                     secondPlanData: planNode.data
                 }
-            }
+            },
         });
 
         const allNodes = normalizedFirstNodes.concat(normalizedSecondNodes);
         const allEdges = normalizedFirstEdges.concat(normalizedSecondEdges);
 
-        const layoutedNodes = DynamicLayouter.treeLayout(allNodes, edges, defaultTreeLayoutOptions);
+        const layoutedNodes = new DagreLayouter().treeLayout(allNodes, edges, defaultTreeLayoutOptions);
 
         setNodes(layoutedNodes);
         setEdges(allEdges);
@@ -104,21 +108,19 @@ export function TwoWayDiffFlow(props: ITwoWayDiffViewProps) {
 
     console.log("refresh");
 
-    return (
-        <>
-            <NodeLayouter nodeSetter={setNodes}></NodeLayouter>
-            <ReactFlow
-                style={{flexGrow: 1}}
-                zoomOnScroll={false}
-                nodes={nodes}
-                edges={edges}
-                fitView
-                // @ts-ignore
-                nodeTypes={nodeTypes}
-                // @ts-ignore
-                edgeTypes={edgeTypes}
-            >
-            </ReactFlow>
-        </>
-    );
+    return (<>
+        <RefreshLayout nodeSetter={setNodes}></RefreshLayout>
+        <ReactFlow
+            style={{flexGrow: 1}}
+            zoomOnScroll={false}
+            nodes={nodes}
+            edges={edges}
+            fitView
+            // @ts-ignore
+            nodeTypes={nodeTypes}
+            // @ts-ignore
+            edgeTypes={edgeTypes}
+        >
+        </ReactFlow>
+    </>);
 }

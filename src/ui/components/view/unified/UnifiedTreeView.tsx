@@ -1,20 +1,22 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import ReactFlow, {Edge, ReactFlowProvider, useEdgesState} from 'reactflow';
+import ReactFlow, {ReactFlowProvider, useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import {PlanNode} from "../../../model/PlanData";
-import NodeLayouter from "../NodeLayouter";
-import StaticNormalizerAndLayouter from "../StaticNormalizerAndLayouter";
+import RefreshLayout from "../normalize_layout/RefreshLayout";
 import useAnimatedNodes from "../../useAnimatedNodes";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
-import {defaultTreeLayoutOptions} from "../DynamicLayouter";
+import DagreLayouter from "../normalize_layout/DagreLayouter";
 import Legend from "../../Legend";
 import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './CustomUnifiedEdge';
+import {useParameterState} from "../../../data/Store";
+import DefaultNormalizer from "../normalize_layout/DefaultNormalizer";
+import {defaultTreeLayoutOptions} from "../normalize_layout/ITreeLayoutOptions";
+import {NODE_HEIGHT, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
+import D3HierarchyLayouter from "../normalize_layout/D3HierarchyLayouter";
 
 
 export interface IUnifiedTreeViewProps {
-    unifiedTree: PlanNode,
-
-    hideNodes: boolean
+    unifiedTree: PlanNode
 }
 
 export default function UnifiedTreeView(props: IUnifiedTreeViewProps) {
@@ -24,8 +26,14 @@ export default function UnifiedTreeView(props: IUnifiedTreeViewProps) {
 export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
     const {
         unifiedTree,
-        hideNodes
     } = props;
+
+    const [parameters] = useParameterState();
+
+    const {
+        hideNodes,
+        layoutAlgorithm
+    } = parameters;
 
     const nodeTypes = useMemo(() => ({
         customNode: UnifiedDiffPlanNode
@@ -54,7 +62,8 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
     useEffect(() => {
         console.log("Unifiedtree", unifiedTree)
 
-        const [allNodes, allEdges] = StaticNormalizerAndLayouter.dagreTreeLayout(unifiedTree, 0, (planNode) => expandedNodes.some(pn => pn === planNode), {
+        const [normalizedNodes, normalizedEdges] = new DefaultNormalizer().normalize(unifiedTree, 0, {
+            filter: (planNode: PlanNode) => expandedNodes.some(pn => pn === planNode),
             computeData: (planNode: PlanNode) => {
                 return {
                     hide: () => {
@@ -75,17 +84,27 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
                     childPlanNode: childPlanNode,
                     parentPlanNode: parentPlanNode
                 } as ICustomUnifiedEdgeData
-            }, ...defaultTreeLayoutOptions
+            },
         });
 
-        setNodes(allNodes);
-        setEdges(allEdges);
+        console.log(normalizedNodes)
 
-        console.log(`Rendered ${allNodes.length} nodes and ${allEdges.length} edges`);
+        // Adjust length and width
+        normalizedNodes.forEach(n => {
+            n.width = NODE_WIDTH;
+            n.height = NODE_HEIGHT;
+        });
+
+        const layoutedNodes = new D3HierarchyLayouter().treeLayout(normalizedNodes, normalizedEdges, defaultTreeLayoutOptions);
+
+        setNodes(layoutedNodes);
+        setEdges(normalizedEdges);
+
+        console.log(`Rendered ${layoutedNodes.length} nodes and ${normalizedEdges.length} edges`);
     }, [props, expandedNodes])
 
     return (<>
-        <NodeLayouter nodeSetter={setNodes}></NodeLayouter>
+        <RefreshLayout nodeSetter={setNodes}></RefreshLayout>
         <ReactFlow
             zoomOnScroll={false}
             nodes={nodes}
