@@ -1,14 +1,14 @@
 import React, {useEffect, useMemo} from 'react';
 import ReactFlow, {ReactFlowProvider, useEdgesState, useNodesState} from 'reactflow';
 import 'reactflow/dist/style.css';
-import DefaultNormalizer from "../normalize_layout/DefaultNormalizer";
+import DefaultNormalizer from "../normalize/DefaultNormalizer";
 import CustomEdge from "../../edges/CustomEdge";
 import TwoWayDiffPlanNode from "./TwoWayDiffPlanNode";
-import RefreshLayout from "../normalize_layout/RefreshLayout";
+import RefreshLayout from "../layout/RefreshLayout";
 import {PlanNode} from "../../../model/PlanData";
-import DagreLayouter from "../normalize_layout/DagreLayouter";
-import {defaultNormalizeOptions} from "../normalize_layout/INormalizeOptions";
-import {defaultTreeLayoutOptions} from "../normalize_layout/ITreeLayoutOptions";
+import DagreLayouter from "../layout/DagreLayouter";
+import {defaultNormalizeOptions} from "../normalize/INormalizeOptions";
+import {defaultTreeLayoutOptions} from "../layout/ITreeLayoutOptions";
 
 
 export interface ITwoWayDiffViewProps {

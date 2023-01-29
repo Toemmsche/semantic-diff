@@ -1,24 +1,21 @@
 import {Action, createHook, createStore} from 'react-sweet-state';
 
 export enum DiffViewMode {
-    TWO_WAY = 30, UNIFIED = 70,
+    TWO_WAY, UNIFIED,
 
 }
 
 export enum MatchAlgorithm {
-    TOP_DOWN = 20, BOTTOM_UP = 40, SIMPLE = 60, SEMANTIC_DIFF = 80
+    TOP_DOWN, BOTTOM_UP, SIMPLE, SEMANTIC_DIFF
 }
 
 export enum LayoutAlgorithm {
-    DAGRE = 30,
-    D3_HIERARCHY=50,
-    ELK_JS=70
+    DAGRE, D3_HIERARCHY, ELK_JS
 }
 
 export interface IParameterState {
     showMatches: boolean;
     hideNodes: boolean;
-
     viewMode: DiffViewMode;
     matchAlgorithm: MatchAlgorithm;
     layoutAlgorithm: LayoutAlgorithm;
@@ -58,9 +55,9 @@ const actions = {
         });
     },
     setLayoutAlgorithm: (layoutAlgorithm: LayoutAlgorithm): Action<IParameterState> => ({
-                                                                                         setState,
-                                                                                         getState
-                                                                                     }) => {
+                                                                                            setState,
+                                                                                            getState
+                                                                                        }) => {
         setState({
             layoutAlgorithm
         });

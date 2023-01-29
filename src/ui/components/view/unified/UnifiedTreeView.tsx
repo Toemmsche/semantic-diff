@@ -2,17 +2,17 @@ import React, {useEffect, useMemo, useState} from 'react';
 import ReactFlow, {ReactFlowProvider, useEdgesState} from 'reactflow';
 import 'reactflow/dist/style.css';
 import {PlanNode} from "../../../model/PlanData";
-import RefreshLayout from "../normalize_layout/RefreshLayout";
+import RefreshLayout from "../layout/RefreshLayout";
 import useAnimatedNodes from "../../useAnimatedNodes";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
-import DagreLayouter from "../normalize_layout/DagreLayouter";
+import DagreLayouter from "../layout/DagreLayouter";
 import Legend from "../../Legend";
 import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './CustomUnifiedEdge';
 import {useParameterState} from "../../../data/Store";
-import DefaultNormalizer from "../normalize_layout/DefaultNormalizer";
-import {defaultTreeLayoutOptions} from "../normalize_layout/ITreeLayoutOptions";
+import DefaultNormalizer from "../normalize/DefaultNormalizer";
+import {defaultTreeLayoutOptions} from "../layout/ITreeLayoutOptions";
 import {NODE_HEIGHT, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
-import D3HierarchyLayouter from "../normalize_layout/D3HierarchyLayouter";
+import D3HierarchyLayouter from "../layout/D3HierarchyLayouter";
 
 
 export interface IUnifiedTreeViewProps {

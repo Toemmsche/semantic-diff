@@ -1,6 +1,7 @@
 import {FormControlLabel, FormGroup, Slider, Stack, Switch} from "@mui/material";
 import React from "react";
 import {DiffViewMode, LayoutAlgorithm, MatchAlgorithm, useParameterState} from "../data/Store";
+import DiscreteSliderPicker from "./view/DiscreteSlider";
 
 const viewModeSliderMarks = [{
     value: DiffViewMode.UNIFIED,
@@ -19,7 +20,7 @@ const matchAlgorithmSliderMarks = [{
 }, {
     value: MatchAlgorithm.SIMPLE,
     label: "top down & bottom up"
-} ,{
+}, {
     value: MatchAlgorithm.SEMANTIC_DIFF,
     label: "semantic diff"
 }]
@@ -27,10 +28,10 @@ const matchAlgorithmSliderMarks = [{
 const layoutAlgorithmSliderMarks = [{
     value: LayoutAlgorithm.DAGRE,
     label: "dagre",
-},{
+}, {
     value: LayoutAlgorithm.D3_HIERARCHY,
     label: "d3-hierarchy"
-},{
+}, {
     value: LayoutAlgorithm.ELK_JS,
     label: "elk.js",
 }]
@@ -53,33 +54,27 @@ export default function ViewConfig() {
                    marginLeft="auto">
         <FormGroup>
             <Stack direction="row">
-                <Slider
+                <DiscreteSliderPicker<DiffViewMode>
                     orientation="vertical"
-                    defaultValue={parameters.viewMode}
-                    onChange={(_, newValue) => parameterActions.setViewMode(newValue as number)}
-                    step={null}
-                    marks={viewModeSliderMarks}
-                />
-                <Slider
-                    sx={{
-                    marginLeft: 8
-                        }}
-                    orientation="vertical"
-                    defaultValue={parameters.matchAlgorithm}
-                    onChange={(_, newValue) => parameterActions.setMatchAlgorithm(newValue as number)}
-                    step={null}
-                    marks={matchAlgorithmSliderMarks}
-                />
-                <Slider
+                    defaultValue={DiffViewMode.UNIFIED}
+                    labeledValues={viewModeSliderMarks}
+                    onChange={(newValue) => parameterActions.setViewMode(newValue)}/>
+                <DiscreteSliderPicker<MatchAlgorithm>
                     sx={{
                         marginLeft: 8
                     }}
                     orientation="vertical"
-                    defaultValue={parameters.layoutAlgorithm}
-                    onChange={(_, newValue) => parameterActions.setLayoutAlgorithm(newValue as number)}
-                    step={null}
-                    marks={layoutAlgorithmSliderMarks}
-                />
+                    defaultValue={MatchAlgorithm.TOP_DOWN}
+                    labeledValues={matchAlgorithmSliderMarks}
+                    onChange={(newValue) => parameterActions.setMatchAlgorithm(newValue)}/>
+                <DiscreteSliderPicker<LayoutAlgorithm>
+                    sx={{
+                        marginLeft: 8
+                    }}
+                    orientation="vertical"
+                    defaultValue={LayoutAlgorithm.DAGRE}
+                    labeledValues={layoutAlgorithmSliderMarks}
+                    onChange={(newValue) => parameterActions.setLayoutAlgorithm(newValue)}/>
                 <Stack
                     marginLeft={15}
                     direction="column"
