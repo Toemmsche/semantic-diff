@@ -7,6 +7,7 @@ import {Nullable} from "../../semantic-diff/Types";
 import {DBMS} from "../model/meta/DBMS";
 import {max, scaleLinear as d3ScaleLinear} from "d3";
 import {Edit, Subject} from "@mui/icons-material";
+import Editor from "@monaco-editor/react";
 
 export interface IQueryPlanResultDiffProps {
 }
@@ -147,13 +148,15 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
                         anchorEl={textAnchorEl}
                         open={textAnchorEl != null}
                         onClose={() => setTextAnchorEl(null)}>
-                        <Paper style={{
-                            maxHeight: 300,
-                            overflow: 'auto'
-                        }}
-                               elevation={6}>
-                            {baseLineQprForSelectedQuery?.queryText}
-                        </Paper>
+                        <Editor
+                            height="80vh"
+                            width="100vh"
+                            defaultLanguage="sql"
+                            defaultValue={baseLineQprForSelectedQuery?.queryText}
+                            options={{
+                                readOnly: true
+                            }}
+                        />
                     </Popover>
                 </>}
             </Stack>
