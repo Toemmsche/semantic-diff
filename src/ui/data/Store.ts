@@ -1,4 +1,5 @@
 import {Action, createHook, createStore} from 'react-sweet-state';
+import {IQueryPlanResultsState} from "./QueryPlanResultStore";
 
 export enum DiffViewMode {
     TWO_WAY, UNIFIED,
@@ -50,6 +51,7 @@ const actions = {
                                                                                          setState,
                                                                                          getState
                                                                                      }) => {
+        console.log("changed match", matchAlgorithm)
         setState({
             matchAlgorithm
         });
@@ -75,3 +77,10 @@ const Store = createStore<IParameterState, typeof actions>({
 });
 
 export const useParameterState = createHook(Store);
+
+export const useDiffViewMode = createHook(Store, {
+    selector: (state: IParameterState) => state.viewMode
+});
+export const useMatchAlgorithm = createHook(Store, {
+    selector: (state: IParameterState) => state.matchAlgorithm
+});

@@ -2,11 +2,11 @@ import {Edge, Node} from "reactflow";
 import dagre from "dagre";
 import React from "react";
 import {PlanData} from "../../../model/PlanData";
-import ITreeLayouter from "./ITreeLayouter";
+import IBlockingLayouter from "./IBlockingLayouter";
 import {LayoutDirection, TreeLayoutOptions} from "./ITreeLayoutOptions";
 
 
-export default class DagreLayouter implements ITreeLayouter {
+export default class DagreLayouter implements IBlockingLayouter {
 
     /**
      * Creates a tree layout from the given nodes and edges, which should represent a single rooted tree graph

@@ -9,7 +9,7 @@ import UnifiedTreeGenerator, {Origin} from "../../semantic-diff/delta/UnifiedTre
 import {PlanData} from "../model/PlanData";
 import {Stack} from "@mui/material";
 import {useQueryPlanState} from "../data/QueryPlanResultStore";
-import {DiffViewMode, MatchAlgorithm, useParameterState} from "../data/Store";
+import {DiffViewMode, MatchAlgorithm, useDiffViewMode, useMatchAlgorithm, useParameterState} from "../data/Store";
 import {ReactFlowProvider} from "reactflow";
 import {MatchPipeline} from "../../semantic-diff/match/MatchPipeline";
 import {Comparator} from "../../semantic-diff/compare/Comparator";
@@ -22,7 +22,8 @@ import FloatingBar from "./FloatingBar";
 export default function QueryPlanDiff() {
 
     const [state, actions] = useQueryPlanState();
-    const [parameters, parameterActions] = useParameterState();
+    const [viewMode] = useDiffViewMode();
+    const [matchAlgorithm] = useMatchAlgorithm();
 
     // TODO allow nullable
     let GraphView, ChartView;
@@ -41,10 +42,12 @@ export default function QueryPlanDiff() {
             node.data.origin = Origin.NEW;
         }
 
+        console.log("df")
+
 
         // We match in both cases
         let matchPipeline;
-        switch (parameters.matchAlgorithm) {
+        switch (matchAlgorithm) {
             case MatchAlgorithm.TOP_DOWN:
                 matchPipeline = MatchPipeline.topDownOnly(defaultDiffOptions);
                 break;
@@ -58,7 +61,7 @@ export default function QueryPlanDiff() {
                 matchPipeline = MatchPipeline.fromMode(defaultDiffOptions);
                 break;
             default:
-                throw new Error("Unknown matching algorithm " + parameters.matchAlgorithm);
+                throw new Error("Unknown matching algorithm " + matchAlgorithm);
         }
         matchPipeline.execute(firstPlan, secondPlan, new Comparator(defaultDiffOptions))
 
@@ -71,7 +74,7 @@ export default function QueryPlanDiff() {
         }
 
 
-        if (parameters.viewMode === DiffViewMode.UNIFIED) {
+        if (viewMode === DiffViewMode.UNIFIED) {
             const unifiedTree = new UnifiedTreeGenerator<PlanData>(defaultDiffOptions).generate(firstPlan, secondPlan);
 
             // tag matched nodes

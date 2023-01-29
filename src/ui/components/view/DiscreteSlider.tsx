@@ -37,8 +37,8 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
         step={step}
         defaultValue={defaultPos}
         onChange={(_, newOffset) => {
-            console.log("offset", newOffset)
-            props.onChange(props.labeledValues[newOffset as number / step].value)
+            const newValue = props.labeledValues[newOffset as number / step].value;
+            props.onChange(newValue);
         }}
     ></Slider>
 }

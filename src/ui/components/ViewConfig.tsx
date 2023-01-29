@@ -39,8 +39,6 @@ const layoutAlgorithmSliderMarks = [{
 export default function ViewConfig() {
 
     const [parameters, parameterActions] = useParameterState();
-
-
     function handleHideNodeChange(event: React.ChangeEvent<HTMLInputElement>) {
         parameterActions.setHideNodes(event.target.checked);
     }
@@ -58,7 +56,7 @@ export default function ViewConfig() {
                     orientation="vertical"
                     defaultValue={DiffViewMode.UNIFIED}
                     labeledValues={viewModeSliderMarks}
-                    onChange={(newValue) => parameterActions.setViewMode(newValue)}/>
+                    onChange={parameterActions.setViewMode}/>
                 <DiscreteSliderPicker<MatchAlgorithm>
                     sx={{
                         marginLeft: 8
@@ -66,7 +64,7 @@ export default function ViewConfig() {
                     orientation="vertical"
                     defaultValue={MatchAlgorithm.TOP_DOWN}
                     labeledValues={matchAlgorithmSliderMarks}
-                    onChange={(newValue) => parameterActions.setMatchAlgorithm(newValue)}/>
+                    onChange={parameterActions.setMatchAlgorithm}/>
                 <DiscreteSliderPicker<LayoutAlgorithm>
                     sx={{
                         marginLeft: 8
@@ -74,7 +72,7 @@ export default function ViewConfig() {
                     orientation="vertical"
                     defaultValue={LayoutAlgorithm.DAGRE}
                     labeledValues={layoutAlgorithmSliderMarks}
-                    onChange={(newValue) => parameterActions.setLayoutAlgorithm(newValue)}/>
+                    onChange={parameterActions.setLayoutAlgorithm}/>
                 <Stack
                     marginLeft={15}
                     direction="column"

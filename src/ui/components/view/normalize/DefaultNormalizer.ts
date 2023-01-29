@@ -34,13 +34,8 @@ export default class DefaultNormalizer implements INormalizer {
         const nodeSet = new Set();
 
         function recNormalize(planNode: PlanNode) {
-            console.log(planNode, options.filter(planNode))
             if (nodeSet.has(planNode) || !options.filter(planNode)) return;
-
             nodeSet.add(planNode);
-
-
-
             const nodeId = `${planIndex}-${planNode.data.operatorId}`;
 
             // transform node

@@ -5,14 +5,15 @@ import {PlanNode} from "../../../model/PlanData";
 import RefreshLayout from "../layout/RefreshLayout";
 import useAnimatedNodes from "../../useAnimatedNodes";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
-import DagreLayouter from "../layout/DagreLayouter";
 import Legend from "../../Legend";
 import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './CustomUnifiedEdge';
-import {useParameterState} from "../../../data/Store";
+import {LayoutAlgorithm, useParameterState} from "../../../data/Store";
 import DefaultNormalizer from "../normalize/DefaultNormalizer";
 import {defaultTreeLayoutOptions} from "../layout/ITreeLayoutOptions";
 import {NODE_HEIGHT, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
 import D3HierarchyLayouter from "../layout/D3HierarchyLayouter";
+import DagreLayouter from "../layout/DagreLayouter";
+import ElkJsLayouter from "../layout/ElkJsLayouter";
 
 
 export interface IUnifiedTreeViewProps {
@@ -87,21 +88,40 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
             },
         });
 
-        console.log(normalizedNodes)
-
         // Adjust length and width
         normalizedNodes.forEach(n => {
             n.width = NODE_WIDTH;
             n.height = NODE_HEIGHT;
         });
 
-        const layoutedNodes = new D3HierarchyLayouter().treeLayout(normalizedNodes, normalizedEdges, defaultTreeLayoutOptions);
+        let layouter;
+        switch (parameters.layoutAlgorithm) {
+            case LayoutAlgorithm.DAGRE:
+                layouter = new DagreLayouter();
+                break;
+            case LayoutAlgorithm.D3_HIERARCHY:
+                layouter = new D3HierarchyLayouter();
+                break;
+            case LayoutAlgorithm.ELK_JS:
+                layouter = new ElkJsLayouter();
+                break;
+        }
 
-        setNodes(layoutedNodes);
-        setEdges(normalizedEdges);
-
-        console.log(`Rendered ${layoutedNodes.length} nodes and ${normalizedEdges.length} edges`);
-    }, [props, expandedNodes])
+        const layoutedNodes = layouter.treeLayout(normalizedNodes, normalizedEdges, defaultTreeLayoutOptions);
+        if (layoutedNodes instanceof Promise) {
+            // async layouter
+            layoutedNodes.then(ln => {
+                setNodes(ln);
+                setEdges(normalizedEdges);
+                console.log(`Rendered ${ln.length} nodes and ${normalizedEdges.length} edges`);
+            });
+        } else {
+            // blocking layouter
+            setNodes(layoutedNodes);
+            setEdges(normalizedEdges);
+            console.log(`Rendered ${layoutedNodes.length} nodes and ${normalizedEdges.length} edges`);
+        }
+    }, [props, expandedNodes, parameters.matchAlgorithm])
 
     return (<>
         <RefreshLayout nodeSetter={setNodes}></RefreshLayout>
