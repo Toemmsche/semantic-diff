@@ -42,9 +42,6 @@ export default function QueryPlanDiff() {
             node.data.origin = Origin.NEW;
         }
 
-        console.log("df")
-
-
         // We match in both cases
         let matchPipeline;
         switch (matchAlgorithm) {

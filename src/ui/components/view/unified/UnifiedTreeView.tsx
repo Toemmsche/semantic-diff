@@ -121,7 +121,7 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
             setEdges(normalizedEdges);
             console.log(`Rendered ${layoutedNodes.length} nodes and ${normalizedEdges.length} edges`);
         }
-    }, [props, expandedNodes, parameters.matchAlgorithm])
+    }, [props, expandedNodes, parameters.layoutAlgorithm])
 
     return (<>
         <RefreshLayout nodeSetter={setNodes}></RefreshLayout>

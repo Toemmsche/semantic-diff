@@ -51,7 +51,6 @@ const actions = {
                                                                                          setState,
                                                                                          getState
                                                                                      }) => {
-        console.log("changed match", matchAlgorithm)
         setState({
             matchAlgorithm
         });
