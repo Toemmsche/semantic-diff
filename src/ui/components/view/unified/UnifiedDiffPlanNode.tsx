@@ -22,9 +22,11 @@ export enum UnifiedColors {
 export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
     const [parameters, parameterActions] = useParameterState();
 
+    const [hoverActive, setHoverActive] = useState(false);
+
     const {
         hide,
-      planNode,
+        planNode,
         expand,
     } = props.data;
 
@@ -77,17 +79,25 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
                  width={NODE_WIDTH}
                  height={NODE_HEIGHT}
                  borderRadius={NODE_BORDER_RADIUS}
+                 sx={{
+                     borderStyle: planNode.isLeaf() ? "dotted" : "none"
+                 }}
                  padding={NODE_PADDING}
                  display="flex"
                  flexDirection="column"
                  alignItems="center"
-                 justifyContent="center">
-        <Handle type="target" position={Position.Top}/>
+                 justifyContent="center"
+                 onMouseEnter={() => setHoverActive(true)}
+                 onMouseLeave={() => setHoverActive(false)}>
+        <Handle type="target" position={Position.Top} style={{opacity: "0"}}/>
         <Stack
-            width="100%" direction="row" alignItems="center"
-            justifyContent="space-between">
+            width="100%"
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+        >
             <Component data={metaPlanData}/>
-            {parameters.hideNodes && (hasExpanded ? <IconButton
+            {hoverActive && parameters.collapsible && !planNode.isLeaf() && (hasExpanded ? <IconButton
                 onClick={() => {
                     setHasExpanded(false);
                     hide();
@@ -100,16 +110,18 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
                 }}>
                 <ExpandMore/>
             </IconButton>)}
-            <IconButton
-                onClick={(event) => setDetailsAnchorEl(event.currentTarget)}>
-                <Menu/>
-            </IconButton>
-            <Popover anchorEl={detailsAnchorEl} open={detailsAnchorEl != null}
-                     onClose={() => setDetailsAnchorEl(null)}>
-                {Details}
-            </Popover>
+            {hoverActive && <>
+                <IconButton
+                    onClick={(event) => setDetailsAnchorEl(event.currentTarget)}>
+                    <Menu/>
+                </IconButton>
+                <Popover anchorEl={detailsAnchorEl} open={detailsAnchorEl != null}
+                         onClose={() => setDetailsAnchorEl(null)}>
+                    {Details}
+                </Popover>
+            </>}
         </Stack>
-        <Handle type="source" position={Position.Bottom}/>
+        <Handle type="source" position={Position.Bottom} style={{opacity: "0"}}/>
     </Box>);
 
 }

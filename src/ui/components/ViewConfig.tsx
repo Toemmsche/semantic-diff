@@ -1,6 +1,6 @@
-import {FormControlLabel, FormGroup, Slider, Stack, Switch} from "@mui/material";
+import {FormControlLabel, FormGroup, Stack, Switch} from "@mui/material";
 import React from "react";
-import {DiffViewMode, LayoutAlgorithm, MatchAlgorithm, useParameterState} from "../data/Store";
+import {DiffViewMode, EdgeType, LayoutAlgorithm, MatchAlgorithm, useParameterState} from "../data/Store";
 import DiscreteSliderPicker from "./view/DiscreteSlider";
 
 const viewModeSliderMarks = [{
@@ -34,13 +34,28 @@ const layoutAlgorithmSliderMarks = [{
 }, {
     value: LayoutAlgorithm.ELK_JS,
     label: "elk.js",
-}]
+}];
+
+const edgeTypeSliderMarks = [{
+    value: EdgeType.BEZIER,
+    label: "Bezier",
+}, {
+    value: EdgeType.STRAIGHT,
+    label: "straight",
+}, {
+    value: EdgeType.SMOOTH_STEP,
+    label: "smooth step",
+}, {
+    value: EdgeType.SIMPLE_BEZIER,
+    label: "simple bezier",
+}];
 
 export default function ViewConfig() {
 
     const [parameters, parameterActions] = useParameterState();
+
     function handleHideNodeChange(event: React.ChangeEvent<HTMLInputElement>) {
-        parameterActions.setHideNodes(event.target.checked);
+        parameterActions.setcollapsible(event.target.checked);
     }
 
     function handleShowMatchesChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -54,33 +69,32 @@ export default function ViewConfig() {
             <Stack direction="row">
                 <DiscreteSliderPicker<DiffViewMode>
                     orientation="vertical"
-                    defaultValue={DiffViewMode.UNIFIED}
+                    defaultValue={parameters.viewMode}
                     labeledValues={viewModeSliderMarks}
                     onChange={parameterActions.setViewMode}/>
                 <DiscreteSliderPicker<MatchAlgorithm>
-                    sx={{
-                        marginLeft: 8
-                    }}
                     orientation="vertical"
-                    defaultValue={MatchAlgorithm.TOP_DOWN}
+                    defaultValue={parameters.matchAlgorithm}
                     labeledValues={matchAlgorithmSliderMarks}
                     onChange={parameterActions.setMatchAlgorithm}/>
                 <DiscreteSliderPicker<LayoutAlgorithm>
-                    sx={{
-                        marginLeft: 8
-                    }}
                     orientation="vertical"
-                    defaultValue={LayoutAlgorithm.DAGRE}
+                    defaultValue={parameters.layoutAlgorithm}
                     labeledValues={layoutAlgorithmSliderMarks}
                     onChange={parameterActions.setLayoutAlgorithm}/>
+                <DiscreteSliderPicker<EdgeType>
+                    orientation="vertical"
+                    defaultValue={parameters.edgeType}
+                    labeledValues={edgeTypeSliderMarks}
+                    onChange={parameterActions.setEdgeType}/>
                 <Stack
                     marginLeft={15}
                     direction="column"
                     spacing={0}
                 >
                     <FormControlLabel
-                        label="Hide Nodes"
-                        control={<Switch defaultChecked={parameters.hideNodes}
+                        label="Expand & Collapse"
+                        control={<Switch defaultChecked={parameters.collapsible}
                                          onChange={handleHideNodeChange}/>}/>
                     <FormControlLabel
                         label="Show Matches"

@@ -1,9 +1,9 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import ReactFlow, {ReactFlowProvider, useEdgesState} from 'reactflow';
+import ReactFlow, {ReactFlowInstance, ReactFlowProvider, useEdgesState, useReactFlow} from 'reactflow';
 import 'reactflow/dist/style.css';
 import {PlanNode} from "../../../model/PlanData";
-import RefreshLayout from "../layout/RefreshLayout";
-import useAnimatedNodes from "../../useAnimatedNodes";
+import RefreshLayout, {fitLater} from "../layout/RefreshLayout";
+import useAnimatedNodes, {animationOptions} from "../../useAnimatedNodes";
 import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
 import Legend from "../../Legend";
 import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './CustomUnifiedEdge';
@@ -32,7 +32,7 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
     const [parameters] = useParameterState();
 
     const {
-        hideNodes,
+        collapsible,
         layoutAlgorithm
     } = parameters;
 
@@ -51,14 +51,16 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
     const [nodes, setNodes] = useAnimatedNodes([])
     const [edges, setEdges] = useEdgesState([]);
 
+    const reactFlowInstance = useReactFlow();
+
 
     useEffect(() => {
-        if (hideNodes) {
+        if (collapsible) {
             setExpandedNodes([unifiedTree]);
         } else {
             setExpandedNodes(unifiedTree.toPreOrderUnique());
         }
-    }, [props])
+    }, [props, parameters.collapsible])
 
     useEffect(() => {
         console.log("Unifiedtree", unifiedTree)
@@ -114,14 +116,17 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
                 setNodes(ln);
                 setEdges(normalizedEdges);
                 console.log(`Rendered ${ln.length} nodes and ${normalizedEdges.length} edges`);
+                fitLater(reactFlowInstance);
             });
         } else {
             // blocking layouter
             setNodes(layoutedNodes);
             setEdges(normalizedEdges);
             console.log(`Rendered ${layoutedNodes.length} nodes and ${normalizedEdges.length} edges`);
+            fitLater(reactFlowInstance);
         }
-    }, [props, expandedNodes, parameters.layoutAlgorithm])
+
+    }, [props, expandedNodes, parameters.layoutAlgorithm, parameters.collapsible])
 
     return (<>
         <RefreshLayout nodeSetter={setNodes}></RefreshLayout>

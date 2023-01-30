@@ -4,7 +4,7 @@ import s from './QueryPlanDiff.module.scss';
 import TwoWayDiffView from "./view/diff/TwoWayDiffView";
 import UnifiedTreeView from "./view/unified/UnifiedTreeView";
 import {defaultDiffOptions, PlanNodeBrowserSerDes} from "../../semantic-diff";
-import {qpGrammar} from "../data/plans";
+import {QP_GRAMMAR} from "../model/meta/QpGrammar";
 import UnifiedTreeGenerator, {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
 import {PlanData} from "../model/PlanData";
 import {Stack} from "@mui/material";
@@ -30,7 +30,7 @@ export default function QueryPlanDiff() {
     if (state.resultSelection) {
         const [firstPlanResult, secondPlanResult] = state.resultSelection
 
-        const planSerdes = new PlanNodeBrowserSerDes(qpGrammar, defaultDiffOptions);
+        const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
         const firstPlan = planSerdes.parseFromString(firstPlanResult.queryPlanXml);
         const secondPlan = planSerdes.parseFromString(secondPlanResult.queryPlanXml);
 

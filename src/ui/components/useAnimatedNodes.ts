@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Node, useReactFlow } from 'reactflow';
 import { timer } from 'd3-timer';
 
-const defaultOptions = { duration: 500 };
+export const animationOptions = { duration: 300 };
 
 export default function useAnimatedNodes(
   defaultNodes: Node[],
-  options = defaultOptions
+  options = animationOptions
 ): [Node[], (nds: Node[]) => void] {
   const [targetNodes, setTargetNodes] = useState(defaultNodes);
   const [nodes, setNodes] = useState(defaultNodes);

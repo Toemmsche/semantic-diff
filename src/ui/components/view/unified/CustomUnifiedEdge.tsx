@@ -1,10 +1,13 @@
 /** @jsxImportSource @emotion/react */
 
 import React from 'react';
-import {EdgeLabelRenderer, EdgeProps, getBezierPath} from 'reactflow';
+import {
+    EdgeLabelRenderer, EdgeProps, getBezierPath, getSimpleBezierPath, getSmoothStepPath, getStraightPath
+} from 'reactflow';
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {UnifiedColors} from "./UnifiedDiffPlanNode";
 import {PlanNode} from "../../../model/PlanData";
+import {EdgeType, useParameterState} from "../../../data/Store";
 
 export interface ICustomUnifiedEdgeData {
 
@@ -13,7 +16,7 @@ export interface ICustomUnifiedEdgeData {
     childPlanNode: PlanNode
 }
 
-export default function CustomUnifiedEdge (props: EdgeProps) {
+export default function CustomUnifiedEdge(props: EdgeProps) {
     const {
         id,
         sourceX,
@@ -26,39 +29,68 @@ export default function CustomUnifiedEdge (props: EdgeProps) {
         data,
         markerEnd
     } = props;
-    const [edgePath, labelX, labelY] = getBezierPath({
-        sourceX,
-        sourceY,
-        sourcePosition,
-        targetX,
-        targetY,
-        targetPosition,
-    });
 
     const {
         childPlanNode,
         parentPlanNode
     } = data;
 
-    const [childPlanData, parentPlanData] = [childPlanNode.data, parentPlanNode.data];
+    const [parameters] = useParameterState();
+
+    const [childPlanData] = [childPlanNode.data, parentPlanNode.data];
+
+    let edgePath, labelX, labelY;
+    switch (parameters.edgeType) {
+        case EdgeType.BEZIER:
+            [edgePath, labelX, labelY] = getBezierPath({
+                sourceX,
+                sourceY,
+                sourcePosition,
+                targetX,
+                targetY,
+                targetPosition,
+            });
+            break;
+        case EdgeType.STRAIGHT:
+            [edgePath, labelX, labelY] = getStraightPath({
+                sourceX,
+                sourceY,
+                targetX,
+                targetY,
+            });
+            break;
+        case EdgeType.SMOOTH_STEP:
+            [edgePath, labelX, labelY] = getSmoothStepPath({
+                sourceX,
+                sourceY,
+                sourcePosition,
+                targetX,
+                targetY,
+                targetPosition,
+            });
+            break;
+        case EdgeType.SIMPLE_BEZIER:
+            [edgePath, labelX, labelY] = getSimpleBezierPath({
+                sourceX,
+                sourceY,
+                sourcePosition,
+                targetX,
+                targetY,
+                targetPosition,
+            });
+            break;
+    }
+
 
     let edgeOrigin;
-    if (parentPlanNode.unifiedOrigin ===
-        Origin.NEW ||
-        childPlanNode.unifiedOrigin ===
-        Origin.NEW) {
+    if (parentPlanNode.unifiedOrigin === Origin.NEW || childPlanNode.unifiedOrigin === Origin.NEW) {
         edgeOrigin = Origin.NEW;
-    } else if (parentPlanNode.unifiedOrigin ===
-        Origin.OLD ||
-        childPlanNode.unifiedOrigin ===
-        Origin.OLD) {
+    } else if (parentPlanNode.unifiedOrigin === Origin.OLD || childPlanNode.unifiedOrigin === Origin.OLD) {
         edgeOrigin = Origin.OLD;
     } else {
         const existsInNew = childPlanNode.getMatch()
-                .getParent() ===
-            parentPlanNode.getMatch();
-        const existsInOld = childPlanNode.getParent() ==
-            parentPlanNode;
+            .getParent() === parentPlanNode.getMatch();
+        const existsInOld = childPlanNode.getParent() == parentPlanNode;
         if (existsInNew && existsInOld) {
             edgeOrigin = Origin.SHARED;
         } else if (existsInOld) {
@@ -87,8 +119,7 @@ export default function CustomUnifiedEdge (props: EdgeProps) {
             d={edgePath}
             markerEnd={markerEnd}
             css={{
-                strokeWidth: Math.log(card) +
-                             1, // for some reason, we have to set this in here
+                strokeWidth: Math.log(card) + 1, // for some reason, we have to set this in here
                 stroke: pathStroke
             }}
         />

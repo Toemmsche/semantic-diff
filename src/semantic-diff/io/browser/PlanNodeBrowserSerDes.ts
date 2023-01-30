@@ -13,6 +13,8 @@ import { QueryPlanResultCollection } from '../../../ui/data/QueryPlanResult';
 import BenchmarkResult from '../../../ui/data/BenchmarkResult';
 import { median } from 'd3';
 import { Result } from '../../../ui/model/Result';
+import GroupBy from "../../../ui/model/GroupBy";
+import Sort from "../../../ui/model/Sort";
 
 export default class PlanNodeBrowserSerDes
   extends TNodeBrowserSerDes
@@ -30,6 +32,10 @@ export default class PlanNodeBrowserSerDes
         return new TNodeBuilder<Join>().data(new Join(tagName, text, attributes));
       case TempScan.LABEL:
         return new TNodeBuilder<TempScan>().data(new TempScan(tagName, text, attributes));
+      case GroupBy.LABEL:
+        return new TNodeBuilder<GroupBy>().data(new GroupBy(tagName, text, attributes));
+      case Sort.LABEL:
+        return new TNodeBuilder<Sort>().data(new Sort(tagName, text, attributes));
       default:
         return new TNodeBuilder<PlanData>().data(new PlanData(tagName, text, attributes));
     }

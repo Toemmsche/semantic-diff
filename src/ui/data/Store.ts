@@ -1,5 +1,4 @@
 import {Action, createHook, createStore} from 'react-sweet-state';
-import {IQueryPlanResultsState} from "./QueryPlanResultStore";
 
 export enum DiffViewMode {
     TWO_WAY, UNIFIED,
@@ -14,12 +13,19 @@ export enum LayoutAlgorithm {
     DAGRE, D3_HIERARCHY, ELK_JS
 }
 
+export enum EdgeType {
+    BEZIER, STRAIGHT, SMOOTH_STEP, SIMPLE_BEZIER
+}
+
+
 export interface IParameterState {
     showMatches: boolean;
-    hideNodes: boolean;
+    collapsible: boolean;
     viewMode: DiffViewMode;
     matchAlgorithm: MatchAlgorithm;
     layoutAlgorithm: LayoutAlgorithm;
+
+    edgeType: EdgeType;
 }
 
 const actions = {
@@ -39,12 +45,12 @@ const actions = {
             viewMode
         });
     },
-    setHideNodes: (hideNodes: boolean): Action<IParameterState> => ({
-                                                                        setState,
-                                                                        getState
-                                                                    }) => {
+    setcollapsible: (collapsible: boolean): Action<IParameterState> => ({
+                                                                            setState,
+                                                                            getState
+                                                                        }) => {
         setState({
-            hideNodes
+            collapsible
         });
     },
     setMatchAlgorithm: (matchAlgorithm: MatchAlgorithm): Action<IParameterState> => ({
@@ -62,15 +68,24 @@ const actions = {
         setState({
             layoutAlgorithm
         });
+    },
+    setEdgeType: (edgeType: EdgeType): Action<IParameterState> => ({
+                                                                       setState,
+                                                                       getState
+                                                                   }) => {
+        setState({
+            edgeType
+        });
     }
 };
 const Store = createStore<IParameterState, typeof actions>({
     initialState: {
         showMatches: true,
-        hideNodes: false,
+        collapsible: false,
         viewMode: DiffViewMode.UNIFIED,
         matchAlgorithm: MatchAlgorithm.TOP_DOWN,
-        layoutAlgorithm: LayoutAlgorithm.DAGRE
+        layoutAlgorithm: LayoutAlgorithm.DAGRE,
+        edgeType: EdgeType.BEZIER
     },
     actions
 });

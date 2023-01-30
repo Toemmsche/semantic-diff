@@ -5,4 +5,6 @@ export default interface ICompareOptions {
   EPSILON_PENALTY: number;
   PATH_COMPARE_RANGE: number;
   WEIGHT_BOOST_MULTIPLIER: number;
+
+  USE_CONTENT_HASH_FOR_PATH_COMPARISON: boolean
 }

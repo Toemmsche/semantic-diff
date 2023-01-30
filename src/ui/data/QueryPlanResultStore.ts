@@ -1,5 +1,6 @@
 import { Action, createHook, createStore } from 'react-sweet-state';
-import { batchPlans, qpGrammar } from './plans';
+import { batchPlans} from './plans';
+import {QP_GRAMMAR} from '../model/meta/QpGrammar';
 import QueryPlanResult, { QueryPlanResultCollection } from './QueryPlanResult';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { Nullable } from '../../semantic-diff/Types';
@@ -15,7 +16,7 @@ const actions = {
     (text: string): Action<IQueryPlanResultsState> =>
     ({ setState, getState }) => {
       const queryPlanResults = new PlanNodeBrowserSerDes(
-        qpGrammar,
+        QP_GRAMMAR,
         defaultDiffOptions
       ).queryPlanResultCollectionFromJson(text);
 
@@ -37,7 +38,7 @@ const actions = {
 const Store = createStore<IQueryPlanResultsState, typeof actions>({
   initialState: {
     queryPlanResults: new PlanNodeBrowserSerDes(
-      qpGrammar,
+      QP_GRAMMAR,
       defaultDiffOptions
     ).queryPlanResultCollectionFromJson(batchPlans),
     resultSelection: null
