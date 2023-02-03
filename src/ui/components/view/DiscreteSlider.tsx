@@ -1,5 +1,7 @@
-import React, {useState} from "react"
-import {Box, Slider} from "@mui/material";
+import React, {useEffect, useRef, useState} from "react"
+import {Box, Fade, Slider, SliderMarkLabel} from "@mui/material";
+import anime from 'animejs/lib/anime.es.js';
+import {Animation} from "animejs";
 
 export interface ILabeledValue<T> {
     value: T
@@ -15,6 +17,15 @@ export interface IDiscreteSliderPickerProps<T> {
 }
 
 
+export function ExpandingSliderMark(props: any) {
+    // very hacky
+    const active = props.children != ""
+    if (active) {
+        return <Fade in={active}><SliderMarkLabel {...props}></SliderMarkLabel></Fade>
+    }
+    return <></>
+}
+
 export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProps<T>) {
     const [hoverActive, setHoverActive] = useState(false);
 
@@ -28,7 +39,9 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
 
     const defaultPos = props.labeledValues.findIndex((lv) => lv.value === props.defaultValue) * step;
     return <Box
-        onMouseEnter={() => setHoverActive(true)}
+        onMouseEnter={() => {
+            setHoverActive(true)
+        }}
         onMouseLeave={() => setHoverActive(false)}>
         <Slider
             orientation={props.orientation}
@@ -37,6 +50,7 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
             max={max}
             step={step}
             defaultValue={defaultPos}
+            components={{MarkLabel: ExpandingSliderMark}}
             onChange={(_, newOffset) => {
                 const newValue = props.labeledValues[newOffset as number / step].value;
                 props.onChange(newValue);

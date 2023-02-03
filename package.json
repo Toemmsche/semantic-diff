@@ -48,6 +48,7 @@
     "@types/vkbeautify": "^0.99.2",
     "@types/yargs": "^17.0.10",
     "@xmldom/xmldom": "^0.8.6",
+    "animejs": "^3.2.1",
     "chart.js": "^4.1.1",
     "d3-hierarchy": "^3.1.2",
     "d3-scale": "^4.0.2",
@@ -88,6 +89,7 @@
     ]
   },
   "devDependencies": {
+    "@types/animejs": "^3.1.7",
     "@types/dagre-d3": "^0.6.3",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
