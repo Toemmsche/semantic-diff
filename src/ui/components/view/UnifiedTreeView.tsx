@@ -7,7 +7,11 @@ import useAnimatedNodes from '../useAnimatedNodes';
 import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';
 import CustomUnifiedEdge, { ICustomUnifiedEdgeData } from './elements/CustomUnifiedEdge';
-import { LayoutAlgorithm, useParameterState } from '../../state/ParameterStore';
+import {
+  LayoutAlgorithm,
+  useCouldIncludeDagEdges,
+  useParameterState
+} from '../../state/ParameterStore';
 import DefaultNormalizer from './normalize/DefaultNormalizer';
 import { defaultTreeLayoutOptions } from './layout/ITreeLayoutOptions';
 import { NODE_HEIGHT, NODE_WIDTH } from './elements/dimensions';
@@ -31,6 +35,7 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
   const { unifiedTree } = props;
 
   const [parameters] = useParameterState();
+  const [couldIncludeDagEdges] = useCouldIncludeDagEdges();
 
   const { collapsible, layoutAlgorithm } = parameters;
 
@@ -109,8 +114,11 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
       case LayoutAlgorithm.D3_HIERARCHY:
         layouter = new D3HierarchyLayouter();
         break;
-      case LayoutAlgorithm.ELK_JS:
-        layouter = new ElkJsLayouter();
+      case LayoutAlgorithm.ELK_JS_LAYERED:
+        layouter = new ElkJsLayouter('layered');
+        break;
+      case LayoutAlgorithm.ELK_JS_MRTREE:
+        layouter = new ElkJsLayouter('mrtree');
         break;
     }
 

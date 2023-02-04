@@ -36,7 +36,8 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     markerEnd
   } = props;
 
-  const { childPlanNode, parentPlanNode } = data;
+  const childPlanNode: PlanNode = data.childPlanNode;
+  const parentPlanNode: PlanNode = data.parentPlanNode;
 
   const [parameters] = useParameterState();
 
@@ -96,11 +97,12 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     const existsInNew =
       childPlanNode.getMatch().getParent() === parentPlanNode.getMatch() ||
       (TempScan.isTempScan(parentPlanData) &&
-        parentPlanNode.getMatch().data.scannedId === childPlanNode.getMatch().data.operatorId);
+        (parentPlanNode.getMatch().data as TempScan).scannedId ===
+          childPlanNode.getMatch().data.operatorId);
     const existsInOld =
       childPlanNode.getParent() == parentPlanNode ||
       (TempScan.isTempScan(parentPlanData) &&
-        parentPlanNode.data.scannedId === childPlanNode.data.operatorId);
+        (parentPlanNode.data as TempScan).scannedId === childPlanNode.data.operatorId);
     if (existsInNew && existsInOld) {
       edgeOrigin = Origin.SHARED;
     } else if (existsInOld) {
@@ -124,6 +126,15 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   const isEarlyProbeEdge =
     EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
 
+  let cardinality = childPlanData.exactCardinality;
+  // in case of shared, stay with the old one
+  if (edgeOrigin === Origin.NEW) {
+    if (childPlanNode.isMatched()) {
+      cardinality = childPlanNode.getMatch().data.exactCardinality;
+    } else {
+      cardinality = childPlanData.exactCardinality;
+    }
+  }
   return (
     <>
       <path
@@ -151,7 +162,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
               fontWeight: 700
             }}
             className="nodrag nopan">
-            {childPlanData.exactCardinality}
+            {cardinality}
           </div>
         </EdgeLabelRenderer>
       )}

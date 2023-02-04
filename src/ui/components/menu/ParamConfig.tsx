@@ -2,6 +2,7 @@ import { Stack } from '@mui/material';
 import React from 'react';
 import {
   EdgeType,
+  helpers,
   LayoutAlgorithm,
   MatchAlgorithm,
   useParameterState
@@ -37,12 +38,17 @@ const layoutAlgorithmSliderMarks = [
     label: 'dagre'
   },
   {
-    value: LayoutAlgorithm.D3_HIERARCHY,
-    label: 'd3-hierarchy'
+    value: LayoutAlgorithm.ELK_JS_LAYERED,
+    label: 'elk.js (layered)'
+  },
+
+  {
+    value: LayoutAlgorithm.ELK_JS_MRTREE,
+    label: 'elk.js (mrtree)'
   },
   {
-    value: LayoutAlgorithm.ELK_JS,
-    label: 'elk.js'
+    value: LayoutAlgorithm.D3_HIERARCHY,
+    label: 'd3-hierarchy'
   }
 ];
 
@@ -95,13 +101,19 @@ export default function ParamConfig() {
         <DiscreteSliderPicker<MatchAlgorithm>
           orientation="vertical"
           defaultValue={parameters.matchAlgorithm}
-          labeledValues={matchAlgorithmSliderMarks}
+          labeledValues={matchAlgorithmSliderMarks.map((lv) => ({
+            ...lv,
+            disabled: !helpers.isMatchAlgorithmPossible(parameters, lv.value)
+          }))}
           onChange={parameterActions.setMatchAlgorithm}
         />
         <DiscreteSliderPicker<LayoutAlgorithm>
           orientation="vertical"
           defaultValue={parameters.layoutAlgorithm}
-          labeledValues={layoutAlgorithmSliderMarks}
+          labeledValues={layoutAlgorithmSliderMarks.map((lv) => ({
+            ...lv,
+            disabled: !helpers.isLayoutAlgorithmPossible(parameters, lv.value)
+          }))}
           onChange={parameterActions.setLayoutAlgorithm}
         />
         <DiscreteSliderPicker<EdgeType>
@@ -119,7 +131,10 @@ export default function ParamConfig() {
         <DiscreteSliderPicker<boolean>
           orientation="vertical"
           defaultValue={parameters.renderDagEdges}
-          labeledValues={renderDagEdgesSliderMarks}
+          labeledValues={renderDagEdgesSliderMarks.map((lv) => ({
+            ...lv,
+            disabled: !helpers.isRenderDagEdgesPossible(parameters, lv.value)
+          }))}
           onChange={parameterActions.setRenderDagEdges}
         />
       </Stack>
