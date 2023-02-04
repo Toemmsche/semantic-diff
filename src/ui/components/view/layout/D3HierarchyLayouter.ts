@@ -1,5 +1,5 @@
 import IBlockingLayouter from "./IBlockingLayouter";
-import {PlanData} from "../../../model/PlanData";
+import {PlanData} from "../../../model/operator/PlanData";
 import {Edge, Node} from "reactflow";
 import {hierarchy as d3Hierarchy, tree as d3Tree} from "d3-hierarchy";
 import {TreeLayoutOptions} from "./ITreeLayoutOptions";

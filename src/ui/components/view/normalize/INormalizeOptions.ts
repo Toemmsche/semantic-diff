@@ -1,4 +1,4 @@
-import {PlanNode} from "../../../model/PlanData";
+import {PlanNode} from "../../../model/operator/PlanData";
 
 
 export default interface INormalizeOptions {

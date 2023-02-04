@@ -1,12 +1,7 @@
 import {Action, createHook, createStore} from 'react-sweet-state';
 
-export enum DiffViewMode {
-    TWO_WAY, UNIFIED,
-
-}
-
 export enum MatchAlgorithm {
-    TOP_DOWN, BOTTOM_UP, SIMPLE, SEMANTIC_DIFF
+    NONE, TOP_DOWN, BOTTOM_UP, SIMPLE, SEMANTIC_DIFF
 }
 
 export enum LayoutAlgorithm {
@@ -19,33 +14,14 @@ export enum EdgeType {
 
 
 export interface IParameterState {
-    showMatches: boolean;
     collapsible: boolean;
-    viewMode: DiffViewMode;
     matchAlgorithm: MatchAlgorithm;
     layoutAlgorithm: LayoutAlgorithm;
-
     edgeType: EdgeType;
 }
 
 const actions = {
-    setShowMatches: (showMatches: boolean): Action<IParameterState> => ({
-                                                                            setState,
-                                                                            getState
-                                                                        }) => {
-        setState({
-            showMatches
-        });
-    },
-    setViewMode: (viewMode: DiffViewMode): Action<IParameterState> => ({
-                                                                           setState,
-                                                                           getState
-                                                                       }) => {
-        setState({
-            viewMode
-        });
-    },
-    setcollapsible: (collapsible: boolean): Action<IParameterState> => ({
+    setCollapsible: (collapsible: boolean): Action<IParameterState> => ({
                                                                             setState,
                                                                             getState
                                                                         }) => {
@@ -78,23 +54,18 @@ const actions = {
         });
     }
 };
-const Store = createStore<IParameterState, typeof actions>({
+const ParameterStore = createStore<IParameterState, typeof actions>({
     initialState: {
-        showMatches: true,
         collapsible: false,
-        viewMode: DiffViewMode.UNIFIED,
-        matchAlgorithm: MatchAlgorithm.TOP_DOWN,
+        matchAlgorithm: MatchAlgorithm.NONE,
         layoutAlgorithm: LayoutAlgorithm.DAGRE,
         edgeType: EdgeType.BEZIER
     },
     actions
 });
 
-export const useParameterState = createHook(Store);
+export const useParameterState = createHook(ParameterStore);
 
-export const useDiffViewMode = createHook(Store, {
-    selector: (state: IParameterState) => state.viewMode
-});
-export const useMatchAlgorithm = createHook(Store, {
+export const useMatchAlgorithm = createHook(ParameterStore, {
     selector: (state: IParameterState) => state.matchAlgorithm
 });

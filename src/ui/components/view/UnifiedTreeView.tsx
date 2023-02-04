@@ -1,19 +1,19 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import ReactFlow, {ReactFlowInstance, ReactFlowProvider, useEdgesState, useReactFlow} from 'reactflow';
 import 'reactflow/dist/style.css';
-import {PlanNode} from "../../../model/PlanData";
-import RefreshLayout, {fitLater} from "../layout/RefreshLayout";
-import useAnimatedNodes, {animationOptions} from "../../useAnimatedNodes";
-import UnifiedDiffPlanNode from "./UnifiedDiffPlanNode";
-import Legend from "../../Legend";
-import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './CustomUnifiedEdge';
-import {LayoutAlgorithm, useParameterState} from "../../../data/Store";
-import DefaultNormalizer from "../normalize/DefaultNormalizer";
-import {defaultTreeLayoutOptions} from "../layout/ITreeLayoutOptions";
-import {NODE_HEIGHT, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
-import D3HierarchyLayouter from "../layout/D3HierarchyLayouter";
-import DagreLayouter from "../layout/DagreLayouter";
-import ElkJsLayouter from "../layout/ElkJsLayouter";
+import {PlanNode} from "../../model/operator/PlanData";
+import RefreshLayout, {fitLater} from "./layout/RefreshLayout";
+import useAnimatedNodes, {animationOptions} from "../useAnimatedNodes";
+import UnifiedDiffPlanNode from "./elements/UnifiedDiffPlanNode";
+import Legend from "./Legend";
+import CustomUnifiedEdge, {ICustomUnifiedEdgeData} from './elements/CustomUnifiedEdge';
+import {LayoutAlgorithm, useParameterState} from "../../state/ParameterStore";
+import DefaultNormalizer from "./normalize/DefaultNormalizer";
+import {defaultTreeLayoutOptions} from "./layout/ITreeLayoutOptions";
+import {NODE_HEIGHT, NODE_WIDTH} from "./elements/dimensions";
+import D3HierarchyLayouter from "./layout/D3HierarchyLayouter";
+import DagreLayouter from "./layout/DagreLayouter";
+import ElkJsLayouter from "./layout/ElkJsLayouter";
 
 
 export interface IUnifiedTreeViewProps {

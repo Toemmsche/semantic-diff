@@ -1,19 +1,17 @@
 import React from 'react';
-// @ts-ignore
-import s from './QueryPlanDiff.module.scss';
-import TwoWayDiffView from "./view/diff/TwoWayDiffView";
-import UnifiedTreeView from "./view/unified/UnifiedTreeView";
+import UnifiedTreeView from "./view/UnifiedTreeView";
 import {defaultDiffOptions, PlanNodeBrowserSerDes} from "../../semantic-diff";
 import {QP_GRAMMAR} from "../model/meta/QpGrammar";
-import UnifiedTreeGenerator, {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
-import {PlanData} from "../model/PlanData";
+import UnifiedTreeGenerator from "../../semantic-diff/delta/UnifiedTreeGenerator";
+import {PlanData} from "../model/operator/PlanData";
 import {Stack} from "@mui/material";
-import {useQueryPlanState} from "../data/QueryPlanResultStore";
-import {DiffViewMode, MatchAlgorithm, useDiffViewMode, useMatchAlgorithm, useParameterState} from "../data/Store";
-import {ReactFlowProvider} from "reactflow";
+import {useQueryPlanState} from "../state/QueryPlanResultStore";
+import {MatchAlgorithm, useMatchAlgorithm} from "../state/ParameterStore";
 import {MatchPipeline} from "../../semantic-diff/match/MatchPipeline";
 import {Comparator} from "../../semantic-diff/compare/Comparator";
-import FloatingBar from "./FloatingBar";
+import FloatingBar from "./menu/FloatingBar";
+import {machine} from "os";
+import {FixedMatcher} from "../../semantic-diff/match/FixedMatcher";
 
 
 /**
@@ -22,11 +20,9 @@ import FloatingBar from "./FloatingBar";
 export default function QueryPlanDiff() {
 
     const [state, actions] = useQueryPlanState();
-    const [viewMode] = useDiffViewMode();
     const [matchAlgorithm] = useMatchAlgorithm();
 
-    // TODO allow nullable
-    let GraphView, ChartView;
+    let GraphView;
     if (state.resultSelection) {
         const [firstPlanResult, secondPlanResult] = state.resultSelection
 
@@ -34,17 +30,13 @@ export default function QueryPlanDiff() {
         const firstPlan = planSerdes.parseFromString(firstPlanResult.queryPlanXml);
         const secondPlan = planSerdes.parseFromString(secondPlanResult.queryPlanXml);
 
-        // set metadata on plan
-        for (const node of firstPlan.toPreOrderArray()) {
-            node.data.origin = Origin.OLD;
-        }
-        for (const node of secondPlan.toPreOrderArray()) {
-            node.data.origin = Origin.NEW;
-        }
-
         // We match in both cases
         let matchPipeline;
         switch (matchAlgorithm) {
+            case MatchAlgorithm.NONE:
+                // We cannot match literally nothing, that would break the layout algorithms
+                matchPipeline = new MatchPipeline([new FixedMatcher()]);
+                break;
             case MatchAlgorithm.TOP_DOWN:
                 matchPipeline = MatchPipeline.topDownOnly(defaultDiffOptions);
                 break;
@@ -70,21 +62,10 @@ export default function QueryPlanDiff() {
             node.data.diffState = node.getDiffState();
         }
 
+        const unifiedTree = new UnifiedTreeGenerator<PlanData>(defaultDiffOptions).generate(firstPlan, secondPlan);
 
-        if (viewMode === DiffViewMode.UNIFIED) {
-            const unifiedTree = new UnifiedTreeGenerator<PlanData>(defaultDiffOptions).generate(firstPlan, secondPlan);
-
-            // tag matched nodes
-            unifiedTree.toPreOrderUnique()
-                .filter(pn => pn.isMatched())
-                .forEach(pn => pn.data.origin = Origin.SHARED);
-
-            GraphView = <UnifiedTreeView
-                unifiedTree={unifiedTree}/>
-        } else {
-            GraphView = <TwoWayDiffView firstPlan={firstPlan}
-                                        secondPlan={secondPlan}/>
-        }
+        GraphView = <UnifiedTreeView
+            unifiedTree={unifiedTree}/>
     } else {
         GraphView = <></>;
     }
@@ -96,11 +77,3 @@ export default function QueryPlanDiff() {
             {GraphView}
     </Stack>);
 }
-
-/**
- * What is this for? -> Wraps the component in an AppContextConsumer that
- * injects the appContext (store root state) and takes in a function to
- * generate component props from store state.
- */
-//export default withAppContext(connect((state: Store.RootState) =>
-// ({}))(QueryPlanDiff));

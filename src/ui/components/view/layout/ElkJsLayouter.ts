@@ -1,5 +1,5 @@
 import {TreeLayoutOptions} from "./ITreeLayoutOptions";
-import {PlanData} from "../../../model/PlanData";
+import {PlanData} from "../../../model/operator/PlanData";
 import {Edge, Node} from "reactflow";
 import {default as ELK, ElkExtendedEdge, ElkNode} from "elkjs";
 import IAsyncLayouter from "./IAsyncLayouter";

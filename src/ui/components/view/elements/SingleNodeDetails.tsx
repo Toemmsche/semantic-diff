@@ -1,10 +1,10 @@
 import React from "react";
-import {PlanData} from "../../model/PlanData";
+import {PlanData} from "../../../model/operator/PlanData";
 import {
     styled, Table, TableBody, TableCell, tableCellClasses, TableRow
 } from "@mui/material";
 
-export default function RenderPlanNodeDetails (props: { data: PlanData }) {
+export default function SingleNodeDetails (props: { data: PlanData }) {
     const {data: planData} = props;
 
     // Generate table for all properties

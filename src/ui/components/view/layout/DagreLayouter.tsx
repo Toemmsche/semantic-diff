@@ -1,7 +1,7 @@
 import {Edge, Node} from "reactflow";
 import dagre from "dagre";
 import React from "react";
-import {PlanData} from "../../../model/PlanData";
+import {PlanData} from "../../../model/operator/PlanData";
 import IBlockingLayouter from "./IBlockingLayouter";
 import {LayoutDirection, TreeLayoutOptions} from "./ITreeLayoutOptions";
 

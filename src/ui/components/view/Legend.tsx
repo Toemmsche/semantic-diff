@@ -1,17 +1,17 @@
 import {Box, Stack} from "@mui/material";
 import React from "react";
-import {useQueryPlanState} from "../data/QueryPlanResultStore";
-import {useParameterState} from "../data/Store";
-import {UnifiedColors} from "./view/unified/UnifiedDiffPlanNode";
+import {useQueryPlanState} from "../../state/QueryPlanResultStore";
+import {useParameterState} from "../../state/ParameterStore";
+import {UnifiedColors} from "./elements/UnifiedDiffPlanNode";
 import {
     NODE_BORDER_RADIUS, NODE_HEIGHT, NODE_PADDING, NODE_WIDTH
-} from "./view/diff/TwoWayDiffPlanNode";
+} from "./elements/dimensions";
 
 export default function Legend (props: {}) {
     const [qprState] = useQueryPlanState();
     const [parameters] = useParameterState();
 
-    // No legend necessary if no tree or no unified view
+    // No legend necessary if no tree or no elements view
     if (!qprState.resultSelection) {
         return (<></>);
     } else {

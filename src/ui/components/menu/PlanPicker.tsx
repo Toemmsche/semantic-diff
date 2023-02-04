@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import {
     Box, Chip, Divider, FormControl, FormControlLabel, IconButton, Paper, Popover, Radio, RadioGroup, Stack
 } from "@mui/material";
-import {useAllLabels, useQueryPlanState, useUniqueDbms} from "../data/QueryPlanResultStore";
-import {Nullable} from "../../semantic-diff/Types";
-import {DBMS} from "../model/meta/DBMS";
+import {useAllLabels, useQueryPlanState, useUniqueDbms} from "../../state/QueryPlanResultStore";
+import {Nullable} from "../../../semantic-diff/Types";
+import {DBMS} from "../../model/meta/DBMS";
 import {max, scaleLinear as d3ScaleLinear} from "d3";
 import {Edit, Subject} from "@mui/icons-material";
 import Editor from "@monaco-editor/react";

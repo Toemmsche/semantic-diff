@@ -2,9 +2,9 @@
 
 import {Box, Button, Chip, Popover, Stack} from "@mui/material";
 import React, {useState} from "react";
-import {useQueryPlanState} from "../data/QueryPlanResultStore";
-import QueryPlanResult from "../data/QueryPlanResult";
-import {Nullable} from "../../semantic-diff/Types";
+import {useQueryPlanState} from "../../state/QueryPlanResultStore";
+import QueryPlanResult from "../../state/QueryPlanResult";
+import {Nullable} from "../../../semantic-diff/Types";
 
 
 export interface ICollectionPickerProps {

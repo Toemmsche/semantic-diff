@@ -1,9 +1,7 @@
-import {TNode} from "../../semantic-diff";
-import XmlData from "../../semantic-diff/data/XmlData";
-import IDiffNodeData from "../components/view/diff/IDiffNodeData";
-import {Origin} from "../../semantic-diff/delta/UnifiedTreeGenerator";
-import RenderPlanNodeDetails from "../components/details/RenderPlanNodeDetails";
-import DiffState from "../../semantic-diff/delta/DiffState";
+import {TNode} from "../../../semantic-diff/index";
+import XmlData from "../../../semantic-diff/data/XmlData";
+import SingleNodeDetails from "../../components/view/elements/SingleNodeDetails";
+import DiffState from "../../../semantic-diff/delta/DiffState";
 import {Box} from "@mui/material";
 import React from "react";
 
@@ -41,19 +39,9 @@ export class PlanData extends XmlData {
     }
 
     detailComponent() : Function {
-        return RenderPlanNodeDetails;
+        return SingleNodeDetails;
     }
-
-    // extension for two way viewer
-    hoverActive : boolean = false;
-
-    // extension for unified viewer
-
-    origin: Origin = Origin.OLD;
-
     diffState: DiffState = DiffState.IDENTICAL;
 }
 
 export type PlanNode = TNode<PlanData>;
-export type DiffPlanData = PlanData & IDiffNodeData;
-export type PlanDiffNode = TNode<DiffPlanData>;

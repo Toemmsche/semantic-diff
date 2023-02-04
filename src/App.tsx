@@ -13,7 +13,7 @@ import {
     Title,
     Tooltip
 } from "chart.js";
-import FloatingBar from "./ui/components/FloatingBar";
+import FloatingBar from "./ui/components/menu/FloatingBar";
 
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip,

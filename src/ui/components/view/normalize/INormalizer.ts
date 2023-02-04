@@ -1,4 +1,4 @@
-import {PlanData, PlanNode} from "../../../model/PlanData";
+import {PlanData, PlanNode} from "../../../model/operator/PlanData";
 import INormalizeOptions from "./INormalizeOptions";
 import {Node, Edge} from "reactflow";
 

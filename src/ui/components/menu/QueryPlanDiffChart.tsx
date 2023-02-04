@@ -1,10 +1,10 @@
 import {Box, Chip, IconButton, Popover, Stack} from "@mui/material";
-import QueryPlanResult from "../data/QueryPlanResult";
+import QueryPlanResult from "../../state/QueryPlanResult";
 import React, {useState} from "react";
 import {Bar} from "react-chartjs-2";
-import {useAllLabels, useQueryPlanState} from "../data/QueryPlanResultStore";
-import {UnifiedColors} from "./view/unified/UnifiedDiffPlanNode";
-import {Nullable} from "../../semantic-diff/Types";
+import {useAllLabels, useQueryPlanState} from "../../state/QueryPlanResultStore";
+import {UnifiedColors} from "../view/elements/UnifiedDiffPlanNode";
+import {Nullable} from "../../../semantic-diff/Types";
 import {QueryStats} from "@mui/icons-material";
 
 

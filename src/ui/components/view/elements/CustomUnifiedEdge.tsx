@@ -6,8 +6,8 @@ import {
 } from 'reactflow';
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {UnifiedColors} from "./UnifiedDiffPlanNode";
-import {PlanNode} from "../../../model/PlanData";
-import {EdgeType, useParameterState} from "../../../data/Store";
+import {PlanNode} from "../../../model/operator/PlanData";
+import {EdgeType, useParameterState} from "../../../state/ParameterStore";
 
 export interface ICustomUnifiedEdgeData {
 

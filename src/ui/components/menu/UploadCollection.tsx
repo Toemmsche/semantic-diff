@@ -1,7 +1,7 @@
 import React from "react";
 import {IconButton} from "@mui/material";
 import {UploadFile} from "@mui/icons-material";
-import {useQueryPlanState} from "../data/QueryPlanResultStore";
+import {useQueryPlanState} from "../../state/QueryPlanResultStore";
 
 export default function UploadCollection (props: {}) {
 

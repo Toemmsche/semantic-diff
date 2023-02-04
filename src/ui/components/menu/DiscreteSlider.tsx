@@ -1,7 +1,5 @@
-import React, {useEffect, useRef, useState} from "react"
+import React, {useState} from "react"
 import {Box, Fade, Slider, SliderMarkLabel} from "@mui/material";
-import anime from 'animejs/lib/anime.es.js';
-import {Animation} from "animejs";
 
 export interface ILabeledValue<T> {
     value: T
@@ -11,7 +9,6 @@ export interface ILabeledValue<T> {
 export interface IDiscreteSliderPickerProps<T> {
     orientation: "vertical" | "horizontal";
     labeledValues: ILabeledValue<T>[];
-
     defaultValue: T;
     onChange: (newValue: T) => void;
 }
@@ -21,7 +18,9 @@ export function ExpandingSliderMark(props: any) {
     // very hacky
     const active = props.children != ""
     if (active) {
-        return <Fade in={active}><SliderMarkLabel {...props}></SliderMarkLabel></Fade>
+        return <Fade in={active}>
+                <SliderMarkLabel {...props}></SliderMarkLabel>
+        </Fade>
     }
     return <></>
 }
@@ -39,6 +38,10 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
 
     const defaultPos = props.labeledValues.findIndex((lv) => lv.value === props.defaultValue) * step;
     return <Box
+        width={hoverActive ? "9vw" : "2vw"}
+        sx={{
+            transition: "width 0.5s"
+        }}
         onMouseEnter={() => {
             setHoverActive(true)
         }}

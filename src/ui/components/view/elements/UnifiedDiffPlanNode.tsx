@@ -1,13 +1,13 @@
 import React, {useState} from "react";
-import {PlanNode} from "../../../model/PlanData";
+import {PlanNode} from "../../../model/operator/PlanData";
 import {Handle, Position} from "reactflow";
-import {useParameterState} from "../../../data/Store";
+import {useParameterState} from "../../../state/ParameterStore";
 import {Box, IconButton, Popover, Stack} from "@mui/material";
 import {ExpandMore, Menu} from "@mui/icons-material";
 import {Origin} from "../../../../semantic-diff/delta/UnifiedTreeGenerator";
 import {Nullable} from "../../../../semantic-diff/Types";
-import {NODE_BORDER_RADIUS, NODE_HEIGHT, NODE_PADDING, NODE_WIDTH} from "../diff/TwoWayDiffPlanNode";
-import UnifiedDiffPlanNodeDetails from "../../details/UnifiedDiffPlanNodeDetails";
+import {NODE_BORDER_RADIUS, NODE_HEIGHT, NODE_PADDING, NODE_WIDTH} from "./dimensions";
+import UnifiedDiffPlanNodeDetails from "./SharedNodeDetails";
 
 export interface IUnifiedDiffProps {
     data: {
@@ -60,7 +60,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
     }
 
     let bgColor: string;
-    switch (metaPlanData.origin) {
+    switch (planNode.unifiedOrigin) {
         case Origin.NEW:
             bgColor = UnifiedColors.EXCLUSIVE_NEW;
             break;

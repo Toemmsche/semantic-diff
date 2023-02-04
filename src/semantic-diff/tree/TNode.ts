@@ -31,7 +31,7 @@ export class TNodeBuilder<T> {
 
   build(): TNode<T> {
     if (!this._data) {
-      throw new Error('Missing data');
+      throw new Error('Missing state');
     }
     const node = new TNode<T>(this._data, this._grammarNode);
     for (const child of this._children) {
@@ -52,7 +52,7 @@ export default class TNode<T> {
   protected _index: number | null = null;
 
   public constructor(
-    public data: T, // data fully modifiable for now
+    public data: T, // state fully modifiable for now
     public readonly grammarNode: Nullable<GrammarNode>
   ) {}
 

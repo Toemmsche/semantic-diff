@@ -1,11 +1,11 @@
 import React from "react";
-import {PlanData} from "../../model/PlanData";
+import {PlanData} from "../../../model/operator/PlanData";
 import {Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
-import {useQueryPlanState} from "../../data/QueryPlanResultStore";
+import {useQueryPlanState} from "../../../state/QueryPlanResultStore";
 
 // choose non-nullable props since we would use a regular details viewer
 // otherwise
-export default function RenderPlanNodeDetails (props: { firstPlanData: PlanData, secondPlanData: PlanData }) {
+export default function SharedNodeDetails (props: { firstPlanData: PlanData, secondPlanData: PlanData }) {
     const {
         firstPlanData,
         secondPlanData
