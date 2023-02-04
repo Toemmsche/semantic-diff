@@ -18,7 +18,7 @@ export default class UnifiedTreeGenerator<T> {
 
     // make all matched nodes in the new tree point to their match partner
     // in the old tree
-    newTree.toPreOrderArray().forEach((node) => {
+    newTree.toPreOrderUnique().forEach((node) => {
       for (let i = 0; i < node.children.length; i++) {
         if (node.childAt(i).isMatched()) {
           // do not clear parent
@@ -28,7 +28,7 @@ export default class UnifiedTreeGenerator<T> {
     });
 
     oldTree
-      .toPostOrderArray()
+      .toPostOrderUnique()
       .filter((node) => node.isMatched())
       .forEach((node) => {
         const match = node.getMatch();

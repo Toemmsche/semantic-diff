@@ -13,8 +13,9 @@ import { QueryPlanResultCollection } from '../../../ui/state/QueryPlanResult';
 import BenchmarkResult from '../../../ui/state/BenchmarkResult';
 import { median } from 'd3';
 import { Result } from '../../../ui/model/operator/Result';
-import GroupBy from "../../../ui/model/operator/GroupBy";
-import Sort from "../../../ui/model/operator/Sort";
+import GroupBy from '../../../ui/model/operator/GroupBy';
+import Sort from '../../../ui/model/operator/Sort';
+import { EarlyProbe } from '../../../ui/model/operator/EarlyProbe';
 
 export default class PlanNodeBrowserSerDes
   extends TNodeBrowserSerDes
@@ -36,6 +37,8 @@ export default class PlanNodeBrowserSerDes
         return new TNodeBuilder<GroupBy>().data(new GroupBy(tagName, text, attributes));
       case Sort.LABEL:
         return new TNodeBuilder<Sort>().data(new Sort(tagName, text, attributes));
+      case EarlyProbe.LABEL:
+        return new TNodeBuilder<EarlyProbe>().data(new EarlyProbe(tagName, text, attributes));
       default:
         return new TNodeBuilder<PlanData>().data(new PlanData(tagName, text, attributes));
     }
@@ -47,7 +50,7 @@ export default class PlanNodeBrowserSerDes
     // parse attributes
     const attributes = new Map();
     for (let i = 0; i < xmlElement.attributes.length; i++) {
-      const attrNode = xmlElement.attributes.item(i)!!;
+      const attrNode = xmlElement.attributes.item(i)!;
       attributes.set(attrNode.name, attrNode.value);
     }
 
@@ -74,7 +77,7 @@ export default class PlanNodeBrowserSerDes
     return builder.build();
   }
 
-  public override parseFromString(xml: string, includeChildren: boolean = true): TNode<PlanData> {
+  public override parseFromString(xml: string, includeChildren = true): TNode<PlanData> {
     const root = new DOMParser().parseFromString(xml, 'text/xml').childNodes.item(0) as Element; // assume single root node as an element
 
     const rootOperator = this.parseXmlDom(root);

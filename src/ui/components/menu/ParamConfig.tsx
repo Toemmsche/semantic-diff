@@ -1,91 +1,128 @@
-import {Box, Stack} from "@mui/material";
-import React from "react";
-import {EdgeType, LayoutAlgorithm, MatchAlgorithm, useParameterState} from "../../state/ParameterStore";
-import DiscreteSliderPicker from "./DiscreteSlider";
+import { Stack } from '@mui/material';
+import React from 'react';
+import {
+  EdgeType,
+  LayoutAlgorithm,
+  MatchAlgorithm,
+  useParameterState
+} from '../../state/ParameterStore';
+import DiscreteSliderPicker from './DiscreteSlider';
 
-
-const matchAlgorithmSliderMarks = [{
+const matchAlgorithmSliderMarks = [
+  {
     value: MatchAlgorithm.NONE,
-    label: "none"
-}, {
+    label: 'none'
+  },
+  {
     value: MatchAlgorithm.TOP_DOWN,
-    label: "top down"
-}, {
+    label: 'top down'
+  },
+  {
     value: MatchAlgorithm.BOTTOM_UP,
-    label: "bottom up"
-}, {
+    label: 'bottom up'
+  },
+  {
     value: MatchAlgorithm.SIMPLE,
-    label: "top down & bottom up"
-}, {
+    label: 'top down & bottom up'
+  },
+  {
     value: MatchAlgorithm.SEMANTIC_DIFF,
-    label: "semantic diff"
-}]
+    label: 'semantic diff'
+  }
+];
 
-const layoutAlgorithmSliderMarks = [{
+const layoutAlgorithmSliderMarks = [
+  {
     value: LayoutAlgorithm.DAGRE,
-    label: "dagre",
-}, {
+    label: 'dagre'
+  },
+  {
     value: LayoutAlgorithm.D3_HIERARCHY,
-    label: "d3-hierarchy"
-}, {
+    label: 'd3-hierarchy'
+  },
+  {
     value: LayoutAlgorithm.ELK_JS,
-    label: "elk.js",
-}];
+    label: 'elk.js'
+  }
+];
 
-const edgeTypeSliderMarks = [{
+const edgeTypeSliderMarks = [
+  {
     value: EdgeType.BEZIER,
-    label: "Bezier",
-}, {
+    label: 'Bezier'
+  },
+  {
     value: EdgeType.STRAIGHT,
-    label: "straight",
-}, {
+    label: 'straight'
+  },
+  {
     value: EdgeType.SMOOTH_STEP,
-    label: "smooth step",
-}, {
+    label: 'smooth step'
+  },
+  {
     value: EdgeType.SIMPLE_BEZIER,
-    label: "simple bezier",
-}];
+    label: 'simple bezier'
+  }
+];
 
-const collapsibleSliderMarks = [{
+const collapsibleSliderMarks = [
+  {
     value: false,
-    label: "no expand & collapse",
-}, {
+    label: 'no expand & collapse'
+  },
+  {
     value: true,
-    label: "expand & collapse",
-}];
+    label: 'expand & collapse'
+  }
+];
+const renderDagEdgesSliderMarks = [
+  {
+    value: false,
+    label: 'no DAG edges'
+  },
+  {
+    value: true,
+    label: 'render DAG edges'
+  }
+];
 
 export default function ParamConfig() {
+  const [parameters, parameterActions] = useParameterState();
 
-    const [parameters, parameterActions] = useParameterState();
-
-    return (<Stack
-        direction="row"
-        width="15vw">
-        <Stack
-            marginRight="auto"
-            direction="row"
-            height="100%"
-            justifyContent="space-between">
-            <DiscreteSliderPicker<MatchAlgorithm>
-                orientation="vertical"
-                defaultValue={parameters.matchAlgorithm}
-                labeledValues={matchAlgorithmSliderMarks}
-                onChange={parameterActions.setMatchAlgorithm}/>
-            <DiscreteSliderPicker<LayoutAlgorithm>
-                orientation="vertical"
-                defaultValue={parameters.layoutAlgorithm}
-                labeledValues={layoutAlgorithmSliderMarks}
-                onChange={parameterActions.setLayoutAlgorithm}/>
-            <DiscreteSliderPicker<EdgeType>
-                orientation="vertical"
-                defaultValue={parameters.edgeType}
-                labeledValues={edgeTypeSliderMarks}
-                onChange={parameterActions.setEdgeType}/>
-            <DiscreteSliderPicker<boolean>
-                orientation="vertical"
-                defaultValue={parameters.collapsible}
-                labeledValues={collapsibleSliderMarks}
-                onChange={parameterActions.setCollapsible}/>
-        </Stack>
-    </Stack>)
+  return (
+    <Stack direction="row" width="15vw">
+      <Stack marginRight="auto" direction="row" height="100%" justifyContent="space-between">
+        <DiscreteSliderPicker<MatchAlgorithm>
+          orientation="vertical"
+          defaultValue={parameters.matchAlgorithm}
+          labeledValues={matchAlgorithmSliderMarks}
+          onChange={parameterActions.setMatchAlgorithm}
+        />
+        <DiscreteSliderPicker<LayoutAlgorithm>
+          orientation="vertical"
+          defaultValue={parameters.layoutAlgorithm}
+          labeledValues={layoutAlgorithmSliderMarks}
+          onChange={parameterActions.setLayoutAlgorithm}
+        />
+        <DiscreteSliderPicker<EdgeType>
+          orientation="vertical"
+          defaultValue={parameters.edgeType}
+          labeledValues={edgeTypeSliderMarks}
+          onChange={parameterActions.setEdgeType}
+        />
+        <DiscreteSliderPicker<boolean>
+          orientation="vertical"
+          defaultValue={parameters.collapsible}
+          labeledValues={collapsibleSliderMarks}
+          onChange={parameterActions.setCollapsible}
+        />
+        <DiscreteSliderPicker<boolean>
+          orientation="vertical"
+          defaultValue={parameters.renderDagEdges}
+          labeledValues={renderDagEdgesSliderMarks}
+          onChange={parameterActions.setRenderDagEdges}
+        />
+      </Stack>
+    </Stack>
+  );
 }

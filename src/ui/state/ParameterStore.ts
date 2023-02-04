@@ -1,71 +1,87 @@
-import {Action, createHook, createStore} from 'react-sweet-state';
+import { Action, createHook, createStore } from 'react-sweet-state';
 
 export enum MatchAlgorithm {
-    NONE, TOP_DOWN, BOTTOM_UP, SIMPLE, SEMANTIC_DIFF
+  NONE,
+  TOP_DOWN,
+  BOTTOM_UP,
+  SIMPLE,
+  SEMANTIC_DIFF
 }
 
 export enum LayoutAlgorithm {
-    DAGRE, D3_HIERARCHY, ELK_JS
+  DAGRE,
+  D3_HIERARCHY,
+  ELK_JS
 }
 
 export enum EdgeType {
-    BEZIER, STRAIGHT, SMOOTH_STEP, SIMPLE_BEZIER
+  BEZIER,
+  STRAIGHT,
+  SMOOTH_STEP,
+  SIMPLE_BEZIER
 }
 
-
 export interface IParameterState {
-    collapsible: boolean;
-    matchAlgorithm: MatchAlgorithm;
-    layoutAlgorithm: LayoutAlgorithm;
-    edgeType: EdgeType;
+  collapsible: boolean;
+  renderDagEdges: boolean;
+  matchAlgorithm: MatchAlgorithm;
+  layoutAlgorithm: LayoutAlgorithm;
+  edgeType: EdgeType;
 }
 
 const actions = {
-    setCollapsible: (collapsible: boolean): Action<IParameterState> => ({
-                                                                            setState,
-                                                                            getState
-                                                                        }) => {
-        setState({
-            collapsible
-        });
+  setCollapsible:
+    (collapsible: boolean): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      setState({
+        collapsible
+      });
     },
-    setMatchAlgorithm: (matchAlgorithm: MatchAlgorithm): Action<IParameterState> => ({
-                                                                                         setState,
-                                                                                         getState
-                                                                                     }) => {
-        setState({
-            matchAlgorithm
-        });
+  setRenderDagEdges:
+    (renderDagEdges: boolean): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      setState({
+        renderDagEdges
+      });
     },
-    setLayoutAlgorithm: (layoutAlgorithm: LayoutAlgorithm): Action<IParameterState> => ({
-                                                                                            setState,
-                                                                                            getState
-                                                                                        }) => {
-        setState({
-            layoutAlgorithm
-        });
+  setMatchAlgorithm:
+    (matchAlgorithm: MatchAlgorithm): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      setState({
+        matchAlgorithm
+      });
     },
-    setEdgeType: (edgeType: EdgeType): Action<IParameterState> => ({
-                                                                       setState,
-                                                                       getState
-                                                                   }) => {
-        setState({
-            edgeType
-        });
+  setLayoutAlgorithm:
+    (layoutAlgorithm: LayoutAlgorithm): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      setState({
+        layoutAlgorithm
+      });
+    },
+  setEdgeType:
+    (edgeType: EdgeType): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      setState({
+        edgeType
+      });
     }
 };
 const ParameterStore = createStore<IParameterState, typeof actions>({
-    initialState: {
-        collapsible: false,
-        matchAlgorithm: MatchAlgorithm.NONE,
-        layoutAlgorithm: LayoutAlgorithm.DAGRE,
-        edgeType: EdgeType.BEZIER
-    },
-    actions
+  initialState: {
+    collapsible: false,
+    renderDagEdges: true,
+    matchAlgorithm: MatchAlgorithm.NONE,
+    layoutAlgorithm: LayoutAlgorithm.DAGRE,
+    edgeType: EdgeType.BEZIER
+  },
+  actions
 });
 
 export const useParameterState = createHook(ParameterStore);
 
 export const useMatchAlgorithm = createHook(ParameterStore, {
-    selector: (state: IParameterState) => state.matchAlgorithm
+  selector: (state: IParameterState) => state.matchAlgorithm
+});
+export const useRenderDagEdges = createHook(ParameterStore, {
+  selector: (state: IParameterState) => state.renderDagEdges
 });

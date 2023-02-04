@@ -17,11 +17,11 @@ export default function Legend (props: {}) {
     } else {
         const [firstDbms, secondDbms] = qprState.resultSelection.map(
             qpr => qpr.dbms);
-        return (<Stack direction="row"
+        return (<Stack direction="column"
                        sx={{
                            position: "absolute",
-                           bottom: 15,
-                           right: 200
+                           bottom: 2 * NODE_HEIGHT,
+                           right: NODE_WIDTH / 4
                        }}
         spacing={2}>
             <Box width={NODE_WIDTH}

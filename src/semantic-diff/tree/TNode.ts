@@ -117,7 +117,7 @@ export default class TNode<T> {
     return node.text;
   }
 
-  copy(includeChildren: Boolean = true): TNode<T> {
+  copy(includeChildren = true): TNode<T> {
     const dataCopy = (this.data as IData & ICopyable<T>).copy();
     // grammar node stays the same
     const copy = new TNode<T>(dataCopy, this.grammarNode);
@@ -180,9 +180,20 @@ export default class TNode<T> {
     return arr;
   }
 
+  toPostOrderUnique(nodeSet = new Set<TNode<T>>()): TNode<T>[] {
+    if (!nodeSet.has(this)) {
+      for (const child of this._children) {
+        child.toPostOrderUnique(nodeSet);
+      }
+
+      nodeSet.add(this);
+    }
+    return Array.from(nodeSet);
+  }
+
   removeFromParent(): void {
-    this._parent!!._children.splice(this._index!!, 1);
-    this._parent!!.adjustChildIndices();
+    this._parent!._children.splice(this._index!, 1);
+    this._parent!.adjustChildIndices();
   }
 
   childAt(index: number): TNode<T> {
@@ -190,7 +201,7 @@ export default class TNode<T> {
   }
 
   getIndex(): number {
-    return this._index!!;
+    return this._index!;
   }
 
   setIndex(index: number): void {
@@ -198,7 +209,7 @@ export default class TNode<T> {
   }
 
   getParent(): TNode<T> {
-    return this._parent!!;
+    return this._parent!;
   }
 
   insertChild(newIndex: number, newChild: TNode<T>): void {
@@ -248,19 +259,19 @@ export default class TNode<T> {
 
   changeIndex(newIndex: number) {
     // delete
-    this._parent!!._children.splice(this._index!!, 1);
+    this._parent!._children.splice(this._index!, 1);
     // insert
-    this._parent!!._children.splice(newIndex, 0, this);
+    this._parent!._children.splice(newIndex, 0, this);
     // adjust indices of all children
-    this._parent!!.adjustChildIndices();
+    this._parent!.adjustChildIndices();
   }
 
   getLeftSibling(): Nullable<TNode<T>> {
-    return this.getSiblings()[this._index!! - 1];
+    return this.getSiblings()[this._index! - 1];
   }
 
   getRightSibling(): Nullable<TNode<T>> {
-    return this.getSiblings()[this._index!! + 1];
+    return this.getSiblings()[this._index! + 1];
   }
 
   [Symbol.iterator]() {
@@ -280,7 +291,7 @@ export default class TNode<T> {
   }
 
   getMatch(): TNode<T> {
-    return this._matchPartner!!;
+    return this._matchPartner!;
   }
 
   isMatchedTo(other: TNode<T>): boolean {
