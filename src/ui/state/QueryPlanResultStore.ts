@@ -10,7 +10,7 @@ import { System } from '../model/meta/types';
 export interface IQueryPlanResultsState {
   queryPlanResults: QueryPlanResultCollection;
 
-  resultSelection: Nullable<[QueryPlanResult, QueryPlanResult]>;
+  resultSelection: Nullable<QueryPlanResult[]>;
 }
 
 const actions = {
@@ -30,7 +30,7 @@ const actions = {
     },
 
   setResultSelection:
-    (selection: Nullable<[QueryPlanResult, QueryPlanResult]>): Action<IQueryPlanResultsState> =>
+    (selection: Nullable<QueryPlanResult[]>): Action<IQueryPlanResultsState> =>
     ({ setState, getState }) => {
       setState({
         resultSelection: selection

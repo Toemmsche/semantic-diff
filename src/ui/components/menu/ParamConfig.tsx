@@ -87,6 +87,16 @@ const renderDagEdgesSliderMarks = [
     label: 'render DAG edges'
   }
 ];
+const nwayDiffSliderMarks = [
+  {
+    value: false,
+    label: '2-way diff'
+  },
+  {
+    value: true,
+    label: 'n-way diff (exp)'
+  }
+];
 
 export default function ParamConfig() {
   const [parameters, parameterActions] = useParameterState();
@@ -132,6 +142,15 @@ export default function ParamConfig() {
             disabled: !helpers.isRenderDagEdgesPossible(parameters, lv.value)
           }))}
           onChange={parameterActions.setRenderDagEdges}
+        />
+        <DiscreteSliderPicker<boolean>
+          orientation="vertical"
+          defaultValue={parameters.nwayDiff}
+          labeledValues={nwayDiffSliderMarks.map((lv) => ({
+            ...lv,
+            disabled: !helpers.isNwayDiffPossible(parameters, lv.value)
+          }))}
+          onChange={parameterActions.setNwayDiff}
         />
       </Stack>
     </Stack>

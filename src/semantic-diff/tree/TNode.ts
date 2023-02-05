@@ -185,7 +185,6 @@ export default class TNode<T> {
       for (const child of this._children) {
         child.toPostOrderUnique(nodeSet);
       }
-
       nodeSet.add(this);
     }
     return Array.from(nodeSet);
@@ -347,5 +346,78 @@ export default class TNode<T> {
       child._parent = this;
       child._index = i;
     }
+  }
+
+  // =============== NWAY STUFF =================
+
+  public NclearRegularMatchesRec() {
+    this.toPreOrderUnique().forEach((n) => (n._matchPartner = null));
+  }
+
+  public indexSourceOrigin: number = 0;
+  public debugName: string = "unknown";
+
+  get NindexSharedOrigins(): number[] {
+    const origins = [this.indexSourceOrigin];
+    for (const match of this._matches) {
+      origins.push(match.indexSourceOrigin);
+    }
+    origins.sort();
+    return origins;
+  }
+
+  private _matches: Set<TNode<T>> = new Set();
+
+  get Nmatches(): Set<TNode<T>> {
+    return this._matches;
+  }
+
+  public NaddMatch(node: TNode<T>) {
+    this._matches.add(node);
+    // bidirectional matching
+
+    node._matches.add(this);
+  }
+
+  public NisMatchedTo(node: TNode<T>): boolean {
+    return this._matches.has(node);
+  }
+
+  public NisMatched(): boolean {
+    return this._matches.size > 0;
+  }
+
+  public NlowestMatch(): TNode<T> {
+    if (!this.NisMatched()) throw new Error('no match available');
+
+    const sorted = [...this._matches].sort((a, b) => a.indexSourceOrigin - b.indexSourceOrigin);
+
+    console.assert(!sorted.splice(1).some(n => n.indexSourceOrigin < sorted[0].indexSourceOrigin));
+    return sorted[0];
+  }
+  public NMatchesDesc(): TNode<T>[] {
+    if (!this.NisMatched()) throw new Error('no match available');
+
+    const sorted = [...this._matches].sort((a, b) => b.indexSourceOrigin - a.indexSourceOrigin);
+
+    console.assert(!sorted.splice(1).some(n => n.indexSourceOrigin > sorted[0].indexSourceOrigin));
+    return sorted;
+  }
+
+  public NgetNextHigherMatch() : Nullable<TNode<T>> {
+    const cand = [...this._matches].filter(m => m.indexSourceOrigin === this.indexSourceOrigin + 1);
+    if (cand.length > 0) {
+      console.assert(cand.length === 1)
+      return cand[0]
+    }
+    return null;
+  }
+  public NgetNextLowerMatch() : Nullable<TNode<T>> {
+    const cand = [...this._matches].filter(m => m.indexSourceOrigin === this.indexSourceOrigin - 1);
+    if (cand.length > 0) {
+      console.assert(cand.length === 1)
+      return cand[0]
+    }
+    return null;
   }
 }

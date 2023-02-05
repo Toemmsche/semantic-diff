@@ -22,6 +22,7 @@ import { max, scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
 import { ComparisonMetric } from '../../state/BenchmarkResult';
+import { useNwayDiff } from '../../state/ParameterStore';
 
 export interface IQueryPlanResultDiffProps {}
 
@@ -35,23 +36,28 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
   const [compDbms, setCompDbms] = useState(undefined as Nullable<System>);
   const [state, actions] = useQueryPlanState();
+  const [nwayDiff] = useNwayDiff();
 
   useEffect(() => {
-    if (baselineDbms && selectedQuery && compDbms) {
+    if (nwayDiff && selectedQuery) {
+      const qprs = state.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
+      actions.setResultSelection(qprs);
+    } else if (baselineDbms && selectedQuery && compDbms) {
       const firstPlanResult = state.queryPlanResults.find(
         (qpr) => qpr.system === baselineDbms && qpr.query === selectedQuery
       )!;
       const secondPlanResult = state.queryPlanResults.find(
         (qpr) => qpr.system === compDbms && qpr.query === selectedQuery
       )!;
+
       actions.setResultSelection([firstPlanResult, secondPlanResult]);
     } else {
       actions.setResultSelection(null);
     }
-  }, [baselineDbms, selectedQuery, compDbms]);
+  }, [baselineDbms, selectedQuery, compDbms, nwayDiff]);
 
   function resetBaseline(newBaseline: System) {
-    setSelectedQuery(null);
+    // keep query selected
     setCompDbms(null);
     setBaseLineDbms(newBaseline);
   }
@@ -112,7 +118,11 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     const [editorOpen, setEditorOpen] = useState(false);
 
     const MetricItems = allLabels.map((metric) => {
-      return <MenuItem key={metric} value={metric}>{metric}</MenuItem>;
+      return (
+        <MenuItem key={metric} value={metric}>
+          {metric}
+        </MenuItem>
+      );
     });
 
     const QueryItems = worstResultsPerQuery.map((obj) => {
@@ -193,7 +203,11 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
 
     const BaselineItems = availableDbms.map((system) => {
-      return <MenuItem key={system} value={system}>{system}</MenuItem>;
+      return (
+        <MenuItem key={system} value={system}>
+          {system}
+        </MenuItem>
+      );
     });
 
     return (
@@ -202,7 +216,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         <Select
           label="Baseline"
           value={baselineDbms}
-          onChange={(e) => setBaseLineDbms(e.target.value as System)}>
+          onChange={(e) => resetBaseline(e.target.value as System)}>
           {BaselineItems}
         </Select>
       </FormControl>

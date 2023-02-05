@@ -36,6 +36,8 @@ export interface IParameterState {
   matchAlgorithm: MatchAlgorithm;
   layoutAlgorithm: LayoutAlgorithm;
   edgeType: EdgeType;
+
+  nwayDiff: boolean;
 }
 
 export const helpers = {
@@ -43,7 +45,8 @@ export const helpers = {
     if (renderDagEdges) {
       return (
         state.layoutAlgorithm !== LayoutAlgorithm.D3_HIERARCHY &&
-        state.layoutAlgorithm !== LayoutAlgorithm.ELK_JS_MRTREE
+        state.layoutAlgorithm !== LayoutAlgorithm.ELK_JS_MRTREE &&
+        !state.nwayDiff
       );
     }
     return true;
@@ -63,6 +66,12 @@ export const helpers = {
       layoutAlgorithm === LayoutAlgorithm.ELK_JS_MRTREE
     ) {
       return !state.renderDagEdges && state.matchAlgorithm < MatchAlgorithm.BOTTOM_UP;
+    }
+    return true;
+  },
+  isNwayDiffPossible(state: IParameterState, nwayDiff: boolean) {
+    if (nwayDiff) {
+      return !state.renderDagEdges;
     }
     return true;
   }
@@ -112,15 +121,26 @@ const actions = {
       setState({
         edgeType
       });
+    },
+  setNwayDiff:
+    (nwayDiff: boolean): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      if (!helpers.isNwayDiffPossible(getState(), nwayDiff)) {
+        throw new Error('Illegal state transition');
+      }
+      setState({
+        nwayDiff: nwayDiff
+      });
     }
 };
 const ParameterStore = createStore<IParameterState, typeof actions>({
   initialState: {
     collapsible: false,
     renderDagEdges: false,
-    matchAlgorithm: MatchAlgorithm.NONE,
+    matchAlgorithm: MatchAlgorithm.SEMANTIC_DIFF,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
-    edgeType: EdgeType.BEZIER
+    edgeType: EdgeType.BEZIER,
+    nwayDiff: false
   },
   actions
 });
@@ -132,6 +152,9 @@ export const useMatchAlgorithm = createHook(ParameterStore, {
 });
 export const useRenderDagEdges = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.renderDagEdges
+});
+export const useNwayDiff = createHook(ParameterStore, {
+  selector: (state: IParameterState) => state.nwayDiff
 });
 
 export const useCouldIncludeDagEdges = createHook(ParameterStore, {
