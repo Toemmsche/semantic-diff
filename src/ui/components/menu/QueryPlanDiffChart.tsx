@@ -1,11 +1,10 @@
-import { Box, Chip, IconButton, Popover, Stack } from '@mui/material';
+import {Box, Chip, IconButton, Modal, Popover, Stack} from '@mui/material';
 import QueryPlanResult from '../../state/QueryPlanResult';
-import React, { useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { useAllLabels, useQueryPlanState } from '../../state/QueryPlanResultStore';
-import { UnifiedColors } from '../view/elements/UnifiedDiffPlanNode';
-import { Nullable } from '../../../semantic-diff/Types';
-import { QueryStats } from '@mui/icons-material';
+import React, {useState} from 'react';
+import {Bar} from 'react-chartjs-2';
+import {useAllLabels, useQueryPlanState} from '../../state/QueryPlanResultStore';
+import {UnifiedColors} from '../view/elements/UnifiedDiffPlanNode';
+import {QueryStats} from '@mui/icons-material';
 
 export default function QueryPlanDiffChart(props: {}) {
   const [allLabels, _] = useAllLabels();
@@ -13,7 +12,7 @@ export default function QueryPlanDiffChart(props: {}) {
   const [activeLabels, setActiveLabels] = useState(initialLabels);
   const [qprState, qprActions] = useQueryPlanState();
 
-  const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
+  const [open, setOpen] = useState(false);
 
   // TODO get the selected query some other way
 
@@ -26,20 +25,16 @@ export default function QueryPlanDiffChart(props: {}) {
   const chips = [];
   for (const label of allLabels) {
     if (activeLabels.some((l) => l === label)) {
-      chips.push(
-        <Chip
+      chips.push(<Chip
           key={label}
           label={label}
           color="primary"
-          onClick={() => setActiveLabels(activeLabels.filter((l) => l !== label))}></Chip>
-      );
+          onClick={() => setActiveLabels(activeLabels.filter((l) => l !== label))}></Chip>);
     } else {
-      chips.push(
-        <Chip
+      chips.push(<Chip
           key={label}
           label={label}
-          onClick={() => setActiveLabels([...activeLabels, label])}></Chip>
-      );
+          onClick={() => setActiveLabels([...activeLabels, label])}></Chip>);
     }
   }
 
@@ -84,22 +79,27 @@ export default function QueryPlanDiffChart(props: {}) {
     datasets: selectedQprs.map((qpr) => getDataset(qpr))
   };
 
-  return (
-    <>
-      <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
-        <QueryStats
-          sx={{
-            fontSize: 60
-          }}></QueryStats>
-      </IconButton>
-      <Popover anchorEl={anchorEl} open={anchorEl != null} onClose={() => setAnchorEl(null)}>
-        <Box margin={4}>
-          <Stack direction="row" flexWrap="wrap" spacing={1}>
-            {chips}
-          </Stack>
-          <Bar options={chartOptions} data={chartData}></Bar>
-        </Box>
-      </Popover>
-    </>
-  );
+  return (<>
+        <IconButton onClick={() => setOpen(true)}>
+          <QueryStats
+              sx={{
+                fontSize: 60
+              }}></QueryStats>
+        </IconButton>
+        <Modal
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            open={open}
+            onClose={() => setOpen(false)}>
+          <Box padding={4} bgcolor="white">
+            <Stack direction="row" flexWrap="wrap" spacing={1}>
+              {chips}
+            </Stack>
+            <Bar options={chartOptions} data={chartData}></Bar>
+          </Box>
+        </Modal>
+      </>);
 }

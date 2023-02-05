@@ -7,7 +7,7 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Popover,
+  Modal,
   Select,
   Stack
 } from '@mui/material';
@@ -107,8 +107,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const bestOverallDiff = worstResultsPerQuery[worstResultsPerQuery.length - 1].worstDiff;
 
   function QueryComponent(props: {}) {
-    const [listAnchorEl, setListAnchorEl] = useState(null as Nullable<HTMLElement>);
-    const [textAnchorEl, setTextAnchorEl] = useState(null as Nullable<HTMLElement>);
+    const [editorOpen, setEditorOpen] = useState(false);
 
     const MetricItems = allLabels.map((metric) => {
       return <MenuItem value={metric}>{metric}</MenuItem>;
@@ -128,7 +127,11 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
             ? betterColorScale(worstDiff / bestOverallDiff)
             : worseColorScale(worstDiff / worstOverallDiff);
       }
-      return <MenuItem value={query} ><Box color={color}>{label}</Box></MenuItem>;
+      return (
+        <MenuItem value={query}>
+          <Box color={color}>{label}</Box>
+        </MenuItem>
+      );
     });
 
     return (
@@ -154,23 +157,29 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           </FormControl>
           {selectedQuery != null && (
             <>
-              <IconButton onClick={(event) => setTextAnchorEl(event.currentTarget)}>
+              <IconButton onClick={(event) => setEditorOpen(true)}>
                 <Subject />
               </IconButton>
-              <Popover
-                anchorEl={textAnchorEl}
-                open={textAnchorEl != null}
-                onClose={() => setTextAnchorEl(null)}>
-                <Editor
-                  height="80vh"
-                  width="100vh"
-                  defaultLanguage="sql"
-                  defaultValue={baseLineQprForSelectedQuery?.queryText}
-                  options={{
-                    readOnly: true
-                  }}
-                />
-              </Popover>
+              <Modal
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+                open={editorOpen}
+                onClose={() => setEditorOpen(false)}>
+                <Box padding={4} bgcolor="white">
+                  <Editor
+                    height="80vh"
+                    width="100vh"
+                    defaultLanguage="sql"
+                    defaultValue={baseLineQprForSelectedQuery?.queryText}
+                    options={{
+                      readOnly: true
+                    }}
+                  />
+                </Box>
+              </Modal>
             </>
           )}
         </Stack>
