@@ -49,6 +49,7 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
   const defaultPos = props.labeledValues.findIndex((lv) => lv.value === props.defaultValue) * step;
   return (
     <Box
+        height="100%"
       width={hoverActive ? '9vw' : '2vw'}
       sx={{
         transition: 'width 0.5s'

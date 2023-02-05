@@ -1,9 +1,10 @@
 import { Action, createHook, createStore } from 'react-sweet-state';
-import { batchPlans} from './defaultPlans';
-import {QP_GRAMMAR} from '../model/meta/QpGrammar';
+import { batchPlans } from './defaultPlans';
+import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import QueryPlanResult, { QueryPlanResultCollection } from './QueryPlanResult';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { Nullable } from '../../semantic-diff/Types';
+import { ComparisonMetric } from './BenchmarkResult';
 
 export interface IQueryPlanResultsState {
   queryPlanResults: QueryPlanResultCollection;
@@ -50,9 +51,9 @@ export const useQueryPlanState = createHook(Store);
 
 export const useAllLabels = createHook(Store, {
   selector: (state: IQueryPlanResultsState) => {
-    return Object.keys(state.queryPlanResults[0].benchmarkResult).filter(
-      (l) => l !== 'error' && l !== 'result'
-    );
+    return Object.keys(state.queryPlanResults[0].benchmarkResult)
+      .filter((l) => l !== 'error' && l !== 'result')
+      .map((metric) => metric as ComparisonMetric);
   }
 });
 

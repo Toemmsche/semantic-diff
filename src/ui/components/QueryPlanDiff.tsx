@@ -9,7 +9,7 @@ import { useQueryPlanState } from '../state/QueryPlanResultStore';
 import { MatchAlgorithm, useMatchAlgorithm, useRenderDagEdges } from '../state/ParameterStore';
 import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
-import FloatingBar from './menu/FloatingBar';
+import FloatingMenu from './menu/FloatingMenu';
 import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
 import { TempScan } from '../model/operator/TempScan';
 import { EarlyProbe } from '../model/operator/EarlyProbe';
@@ -83,7 +83,7 @@ export default function QueryPlanDiff() {
 
   return (
     <Stack direction="column" height="inherit" width="inherit">
-      <FloatingBar></FloatingBar>
+      <FloatingMenu></FloatingMenu>
       {GraphView}
     </Stack>
   );

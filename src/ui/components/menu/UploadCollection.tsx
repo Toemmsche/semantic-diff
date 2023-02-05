@@ -10,8 +10,8 @@ export default function UploadCollection(props: {}) {
     event.preventDefault();
     const reader = new FileReader();
     reader.onload = (progressEvent) => {
-      const text: string = progressEvent!!.target!!.result!!.toString();
-      console.log(text);
+      // TODO validate input
+      const text: string = progressEvent!.target!.result!.toString();
       qprActions.setQueryPlanResults(text);
     };
     reader.readAsText(event.target.files[0]);
@@ -21,14 +21,17 @@ export default function UploadCollection(props: {}) {
     <>
       <input
         style={{ display: 'none' }}
-        id="raised-button-file"
+        id="qpr-file-input"
         multiple
         type="file"
         onChange={loadCollection}
       />
-      <label htmlFor="raised-button-file">
+      <label htmlFor="qpr-file-input">
         <IconButton component="span">
-          <UploadFile></UploadFile>
+          <UploadFile
+            sx={{
+              fontSize: 60
+            }}></UploadFile>
         </IconButton>
       </label>
     </>

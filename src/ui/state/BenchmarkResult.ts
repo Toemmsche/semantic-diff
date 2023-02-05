@@ -20,3 +20,8 @@ export default interface BenchmarkResult {
   scale: Nullable<number>;
   error: Nullable<string>;
 }
+
+// only allow number types
+export type ComparisonMetric = Exclude<keyof BenchmarkResult, "result" | "error">
+
+

@@ -5,7 +5,7 @@ import {Box, Stack} from "@mui/material";
 import ParamConfig from "./ParamConfig";
 import UploadCollection from "./UploadCollection";
 
-export default function FloatingBar(props: {}) {
+export default function FloatingMenu(props: {}) {
 
     return (<Stack direction="row"
                    justifyContent="center"
@@ -26,6 +26,7 @@ export default function FloatingBar(props: {}) {
                 }}>
                 <Stack direction="row"
                        justifyContent="space-between"
+                       alignItems="center"
                        width="100%"
                        height="100%">
                     <UploadCollection></UploadCollection>
