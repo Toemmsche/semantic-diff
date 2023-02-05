@@ -12,7 +12,6 @@ export default class ElkJsLayouter implements IAsyncLayouter {
     options: TreeLayoutOptions
   ): Promise<Node[]> {
     // transform nodes and edges into elk format
-    console.log(nodes);
     const elkNodes: ElkNode[] = nodes.map((n) => ({
       id: n.id,
       width: n.width!!,

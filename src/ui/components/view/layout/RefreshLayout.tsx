@@ -6,8 +6,8 @@ import React from 'react';
 import { Fab } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
 import { defaultTreeLayoutOptions } from './ITreeLayoutOptions';
-import DagreLayouter from './DagreLayouter';
 import { animationOptions } from '../../useAnimatedNodes';
+import { useLayouter } from '../../../state/ParameterStore';
 
 export interface INodeLayouterProps {
   nodeSetter: (nodes: Node[]) => void;
@@ -26,6 +26,7 @@ export function fitLater(reactFlowInstance: ReactFlowInstance) {
 
 export default function RefreshLayout(props: INodeLayouterProps) {
   const reactFlowInstance = useReactFlow();
+  const [layouter] = useLayouter();
   const nodeHasDimension = (node: Node) => node.width != null && node.height != null;
 
   function changeLayout() {
@@ -34,15 +35,21 @@ export default function RefreshLayout(props: INodeLayouterProps) {
     const internalNodes = reactFlowInstance.getNodes();
     const internalEdges = reactFlowInstance.getEdges();
     if (internalNodes.length > 0 && internalNodes.every(nodeHasDimension)) {
-      const layoutedNodes = new DagreLayouter().treeLayout(
+      const layoutNodes = layouter.treeLayout(
         internalNodes,
         internalEdges,
         defaultTreeLayoutOptions
       );
-      props.nodeSetter(layoutedNodes);
+      if (layoutNodes instanceof Promise) {
+        layoutNodes.then((ln) => {
+          props.nodeSetter(ln);
+          fitLater(reactFlowInstance);
+        });
+      } else {
+        props.nodeSetter(layoutNodes);
+        fitLater(reactFlowInstance);
+      }
     }
-
-    fitLater(reactFlowInstance);
   }
 
   return (

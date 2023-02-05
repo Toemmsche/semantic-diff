@@ -8,16 +8,13 @@ import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';
 import CustomUnifiedEdge, { ICustomUnifiedEdgeData } from './elements/CustomUnifiedEdge';
 import {
-  LayoutAlgorithm,
   useCouldIncludeDagEdges,
+  useLayouter,
   useParameterState
 } from '../../state/ParameterStore';
 import DefaultNormalizer from './normalize/DefaultNormalizer';
 import { defaultTreeLayoutOptions } from './layout/ITreeLayoutOptions';
 import { NODE_HEIGHT, NODE_WIDTH } from './elements/dimensions';
-import D3HierarchyLayouter from './layout/D3HierarchyLayouter';
-import DagreLayouter from './layout/DagreLayouter';
-import ElkJsLayouter from './layout/ElkJsLayouter';
 
 export interface IUnifiedTreeViewProps {
   unifiedTree: PlanNode;
@@ -35,6 +32,7 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
   const { unifiedTree } = props;
 
   const [parameters] = useParameterState();
+  const [layouter] = useLayouter();
   const [couldIncludeDagEdges] = useCouldIncludeDagEdges();
 
   const { collapsible, layoutAlgorithm } = parameters;
@@ -106,30 +104,14 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
       n.height = NODE_HEIGHT;
     });
 
-    let layouter;
-    switch (parameters.layoutAlgorithm) {
-      case LayoutAlgorithm.DAGRE:
-        layouter = new DagreLayouter();
-        break;
-      case LayoutAlgorithm.D3_HIERARCHY:
-        layouter = new D3HierarchyLayouter();
-        break;
-      case LayoutAlgorithm.ELK_JS_LAYERED:
-        layouter = new ElkJsLayouter('layered');
-        break;
-      case LayoutAlgorithm.ELK_JS_MRTREE:
-        layouter = new ElkJsLayouter('mrtree');
-        break;
-    }
-
-    const layoutedNodes = layouter.treeLayout(
+    const layoutNodes = layouter.treeLayout(
       normalizedNodes,
       normalizedEdges,
       defaultTreeLayoutOptions
     );
-    if (layoutedNodes instanceof Promise) {
+    if (layoutNodes instanceof Promise) {
       // async layouter
-      layoutedNodes.then((ln) => {
+      layoutNodes.then((ln) => {
         setNodes(ln);
         setEdges(normalizedEdges);
         console.log(`Rendered ${ln.length} nodes and ${normalizedEdges.length} edges`);
@@ -137,12 +119,12 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
       });
     } else {
       // blocking layouter
-      setNodes(layoutedNodes);
+      setNodes(layoutNodes);
       setEdges(normalizedEdges);
-      console.log(`Rendered ${layoutedNodes.length} nodes and ${normalizedEdges.length} edges`);
+      console.log(`Rendered ${layoutNodes.length} nodes and ${normalizedEdges.length} edges`);
       fitLater(reactFlowInstance);
     }
-  }, [props, expandedNodes, parameters.layoutAlgorithm, parameters.collapsible]);
+  }, [props, expandedNodes, layouter, parameters.collapsible]);
 
   return (
     <>

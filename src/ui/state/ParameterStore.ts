@@ -1,4 +1,13 @@
 import { Action, createHook, createStore } from 'react-sweet-state';
+import DagreLayouter from '../components/view/layout/DagreLayouter';
+import D3HierarchyLayouter from '../components/view/layout/D3HierarchyLayouter';
+import ElkJsLayouter from '../components/view/layout/ElkJsLayouter';
+import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
+import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
+import { defaultDiffOptions } from '../../semantic-diff/index';
+import { PlanData } from '../model/operator/PlanData';
+import IAsyncLayouter from '../components/view/layout/IAsyncLayouter';
+import IBlockingLayouter from '../components/view/layout/IBlockingLayouter';
 
 export enum MatchAlgorithm {
   NONE,
@@ -128,4 +137,37 @@ export const useRenderDagEdges = createHook(ParameterStore, {
 export const useCouldIncludeDagEdges = createHook(ParameterStore, {
   selector: (state: IParameterState) =>
     state.renderDagEdges || state.matchAlgorithm >= MatchAlgorithm.BOTTOM_UP
+});
+
+export const useLayouter = createHook(ParameterStore, {
+  selector: (state: IParameterState): IBlockingLayouter | IAsyncLayouter => {
+    switch (state.layoutAlgorithm) {
+      case LayoutAlgorithm.DAGRE:
+        return new DagreLayouter();
+      case LayoutAlgorithm.D3_HIERARCHY:
+        return new D3HierarchyLayouter();
+      case LayoutAlgorithm.ELK_JS_LAYERED:
+        return new ElkJsLayouter('layered');
+      case LayoutAlgorithm.ELK_JS_MRTREE:
+        return new ElkJsLayouter('mrtree');
+    }
+  }
+});
+
+export const useMatchPipeline = createHook(ParameterStore, {
+  selector: (state: IParameterState): MatchPipeline<PlanData> => {
+    switch (state.matchAlgorithm) {
+      case MatchAlgorithm.NONE:
+        // We cannot match literally nothing, that would break the layout algorithms
+        return new MatchPipeline([new FixedMatcher()]);
+      case MatchAlgorithm.TOP_DOWN:
+        return MatchPipeline.topDownOnly(defaultDiffOptions);
+      case MatchAlgorithm.BOTTOM_UP:
+        return MatchPipeline.bottomUpOnly(defaultDiffOptions);
+      case MatchAlgorithm.SIMPLE:
+        return MatchPipeline.onlySimpleMatchers(defaultDiffOptions);
+      case MatchAlgorithm.SEMANTIC_DIFF:
+        return MatchPipeline.fromMode(defaultDiffOptions);
+    }
+  }
 });

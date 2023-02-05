@@ -32,7 +32,7 @@ export default class D3HierarchyLayouter implements IBlockingLayouter {
 
         const nodeWidth = root.width!!;
         const nodeHeight = root.height!!;
-        console.log(nodeWidth, nodeHeight)
+
         const layout = d3Tree<Node>().nodeSize([2 * nodeWidth, 3 * nodeHeight]);
 
         const layoutedRoot = layout(hierarchy);
