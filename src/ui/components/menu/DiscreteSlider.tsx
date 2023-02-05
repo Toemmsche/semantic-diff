@@ -64,7 +64,7 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
         min={min}
         max={max}
         step={step}
-        defaultValue={defaultPos}
+        value={defaultPos}
         components={{ MarkLabel: ExpandingSliderMark }}
         onChange={(_, newOffset) => {
           const newValue = props.labeledValues[(newOffset as number) / step].value;

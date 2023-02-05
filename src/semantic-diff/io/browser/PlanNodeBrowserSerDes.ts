@@ -8,8 +8,6 @@ import { Nullable } from '../../Types';
 import Join from '../../../ui/model/operator/Join';
 import { PipelineBreakerScan } from '../../../ui/model/operator/PipelineBreakerScan';
 import { QueryPlanResultCollection } from '../../../ui/state/QueryPlanResult';
-import BenchmarkResult from '../../../ui/state/BenchmarkResult';
-import { Result } from '../../../ui/model/operator/Result';
 import GroupBy from '../../../ui/model/operator/GroupBy';
 import Sort from '../../../ui/model/operator/Sort';
 import { EarlyProbe } from '../../../ui/model/operator/EarlyProbe';
@@ -78,35 +76,7 @@ export default class PlanNodeBrowserSerDes
 
   public override parseFromString(xml: string, includeChildren = true): TNode<PlanData> {
     const root = new DOMParser().parseFromString(xml, 'text/xml').childNodes.item(0) as Element; // assume single root node as an element
-
-    const rootOperator = this.parseXmlDom(root);
-    // Insert a dummy root node (the result) since we always match the root
-    // node even when it is not the same operator
-    const resultRoot = new TNode<Result>(
-      new Result(
-        'Result',
-        null,
-        new Map([['exact_cardinality', rootOperator.data.exactCardinality.toString()]])
-      ),
-      this.grammar.getGrammarNodeByLabel('Result')
-    );
-    resultRoot.appendChild(rootOperator);
-    return resultRoot;
-  }
-
-  public benchmarkResultFromJsonNode(benchmarkResultRaw: any): BenchmarkResult {
-    for (const prop in benchmarkResultRaw) {
-      const member = benchmarkResultRaw[prop];
-      if (prop !== 'result' && prop !== 'error' && member instanceof Array) {
-        for (let i = 0; i < member.length; i++) {
-          if (member[i] instanceof String) {
-            // They are all floats
-            member[i] = parseFloat(member[i]);
-          }
-        }
-      }
-    }
-    return benchmarkResultRaw as BenchmarkResult;
+    return this.parseXmlDom(root);
   }
 
   public queryPlanResultCollectionFromJson(jsontext: string): QueryPlanResultCollection {

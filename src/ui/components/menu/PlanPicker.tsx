@@ -152,7 +152,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           <InputLabel>Metric</InputLabel>
           <Select
             label="Metric"
-            value={selectedMetric}
+            value={selectedMetric ?? ""}
             onChange={(e) => setSelectedMetric(e.target.value as ComparisonMetric)}>
             {MetricItems}
           </Select>
@@ -162,7 +162,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
             <InputLabel>Query</InputLabel>
             <Select
               label="Query"
-              value={selectedQuery}
+              value={selectedQuery ?? ""}
               onChange={(e) => setSelectedQuery(e.target.value)}>
               {QueryItems}
             </Select>
@@ -215,7 +215,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         <InputLabel>Baseline</InputLabel>
         <Select
           label="Baseline"
-          value={baselineDbms}
+          value={baselineDbms ?? ""}
           onChange={(e) => resetBaseline(e.target.value as System)}>
           {BaselineItems}
         </Select>
