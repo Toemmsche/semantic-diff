@@ -73,16 +73,6 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
         targetPosition
       });
       break;
-    case EdgeType.SIMPLE_BEZIER:
-      [edgePath, labelX, labelY] = getSimpleBezierPath({
-        sourceX,
-        sourceY,
-        sourcePosition,
-        targetX,
-        targetY,
-        targetPosition
-      });
-      break;
   }
 
   let edgeOrigin;
@@ -146,7 +136,8 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
         css={{
           strokeWidth: Math.log(card) + 1,
           stroke: pathStroke,
-          'stroke-dasharray': isEarlyProbeEdge ? 5 : 0
+          'stroke-dasharray': 5,
+          animation: "dashdraw 0.5s linear infinite"
         }}
       />
       {!isEarlyProbeEdge && (

@@ -64,10 +64,6 @@ const edgeTypeSliderMarks = [
   {
     value: EdgeType.SMOOTH_STEP,
     label: 'smooth step'
-  },
-  {
-    value: EdgeType.SIMPLE_BEZIER,
-    label: 'simple bezier'
   }
 ];
 

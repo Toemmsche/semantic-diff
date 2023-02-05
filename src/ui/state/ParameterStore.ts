@@ -18,8 +18,7 @@ export enum LayoutAlgorithm {
 export enum EdgeType {
   BEZIER,
   STRAIGHT,
-  SMOOTH_STEP,
-  SIMPLE_BEZIER
+  SMOOTH_STEP
 }
 
 export interface IParameterState {
