@@ -6,7 +6,12 @@ import UnifiedTreeGenerator from '../../semantic-diff/delta/UnifiedTreeGenerator
 import { PlanData } from '../model/operator/PlanData';
 import { Stack } from '@mui/material';
 import { useQueryPlanState } from '../state/QueryPlanResultStore';
-import {useMatchPipeline, useNwayDiff, useRenderDagEdges} from '../state/ParameterStore';
+import {
+  getMatchPipelineForAlgorithm,
+  useMatchAlgorithm,
+  useNwayDiff,
+  useRenderDagEdges
+} from '../state/ParameterStore';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
 import FloatingMenu from './menu/FloatingMenu';
 import { PipelineBreakerScan } from '../model/operator/PipelineBreakerScan';
@@ -19,13 +24,13 @@ import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator
 export default function QueryPlanDiff() {
   const [state, actions] = useQueryPlanState();
   const [nwayDiff] = useNwayDiff();
-  const [matchPipeline] = useMatchPipeline();
   const [renderDagEdges] = useRenderDagEdges();
+  const [matchAlgorithm] = useMatchAlgorithm();
 
   let GraphView;
   if (state.resultSelection) {
     const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
-
+    const matchPipeline = getMatchPipelineForAlgorithm(matchAlgorithm);
     let unifiedTree;
     if (nwayDiff) {
       const plans = state.resultSelection.map((qpr) => {

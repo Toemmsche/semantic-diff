@@ -157,10 +157,6 @@ export const useNwayDiff = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.nwayDiff
 });
 
-export const useCouldIncludeDagEdges = createHook(ParameterStore, {
-  selector: (state: IParameterState) =>
-    state.renderDagEdges || state.matchAlgorithm >= MatchAlgorithm.BOTTOM_UP
-});
 
 export const useLayouter = createHook(ParameterStore, {
   selector: (state: IParameterState): IBlockingLayouter | IAsyncLayouter => {
@@ -177,20 +173,18 @@ export const useLayouter = createHook(ParameterStore, {
   }
 });
 
-export const useMatchPipeline = createHook(ParameterStore, {
-  selector: (state: IParameterState): MatchPipeline<PlanData> => {
-    switch (state.matchAlgorithm) {
-      case MatchAlgorithm.NONE:
-        // We cannot match literally nothing, that would break the layout algorithms
-        return new MatchPipeline([new FixedMatcher()]);
-      case MatchAlgorithm.TOP_DOWN:
-        return MatchPipeline.topDownOnly(defaultDiffOptions);
-      case MatchAlgorithm.BOTTOM_UP:
-        return MatchPipeline.bottomUpOnly(defaultDiffOptions);
-      case MatchAlgorithm.SIMPLE:
-        return MatchPipeline.onlySimpleMatchers(defaultDiffOptions);
-      case MatchAlgorithm.SEMANTIC_DIFF:
-        return MatchPipeline.fromMode(defaultDiffOptions);
-    }
+export function getMatchPipelineForAlgorithm(matchAlgorithm: MatchAlgorithm) {
+  switch (matchAlgorithm) {
+    case MatchAlgorithm.NONE:
+      // We cannot match literally nothing, that would break the layout algorithms
+      return new MatchPipeline([new FixedMatcher()]);
+    case MatchAlgorithm.TOP_DOWN:
+      return MatchPipeline.topDownOnly(defaultDiffOptions);
+    case MatchAlgorithm.BOTTOM_UP:
+      return MatchPipeline.bottomUpOnly(defaultDiffOptions);
+    case MatchAlgorithm.SIMPLE:
+      return MatchPipeline.onlySimpleMatchers(defaultDiffOptions);
+    case MatchAlgorithm.SEMANTIC_DIFF:
+      return MatchPipeline.fromMode(defaultDiffOptions);
   }
-});
+}

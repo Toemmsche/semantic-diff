@@ -8,7 +8,6 @@ import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';
 import CustomUnifiedEdge, { ICustomUnifiedEdgeData } from './elements/CustomUnifiedEdge';
 import {
-  useCouldIncludeDagEdges,
   useLayouter,
   useParameterState
 } from '../../state/ParameterStore';
@@ -33,9 +32,8 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
 
   const [parameters] = useParameterState();
   const [layouter] = useLayouter();
-  const [couldIncludeDagEdges] = useCouldIncludeDagEdges();
 
-  const { collapsible, layoutAlgorithm } = parameters;
+  const { collapsible } = parameters;
 
   const nodeTypes = useMemo(
     () => ({
