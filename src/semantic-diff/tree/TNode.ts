@@ -354,13 +354,18 @@ export default class TNode<T> {
     this.toPreOrderUnique().forEach((n) => (n._matchPartner = null));
   }
 
-  public indexSourceOrigin: number = 0;
+  private _indexSourceOrigin: number = 0;
+
+  set indexSourceOrigin(index: number) {
+    this._indexSourceOrigin = index;
+    this.currIndex = index;
+  }
   public debugName: string = "unknown";
 
   get NindexSharedOrigins(): number[] {
-    const origins = [this.indexSourceOrigin];
+    const origins = [this._indexSourceOrigin];
     for (const match of this._matches) {
-      origins.push(match.indexSourceOrigin);
+      origins.push(match._indexSourceOrigin);
     }
     origins.sort();
     return origins;
@@ -390,22 +395,24 @@ export default class TNode<T> {
   public NlowestMatch(): TNode<T> {
     if (!this.NisMatched()) throw new Error('no match available');
 
-    const sorted = [...this._matches].sort((a, b) => a.indexSourceOrigin - b.indexSourceOrigin);
+    const sorted = [...this._matches].sort((a, b) => a._indexSourceOrigin - b._indexSourceOrigin);
 
-    console.assert(!sorted.splice(1).some(n => n.indexSourceOrigin < sorted[0].indexSourceOrigin));
+    console.assert(!sorted.splice(1).some(n => n._indexSourceOrigin < sorted[0]._indexSourceOrigin));
     return sorted[0];
   }
   public NMatchesDesc(): TNode<T>[] {
     if (!this.NisMatched()) throw new Error('no match available');
 
-    const sorted = [...this._matches].sort((a, b) => b.indexSourceOrigin - a.indexSourceOrigin);
+    const sorted = [...this._matches].sort((a, b) => b._indexSourceOrigin - a._indexSourceOrigin);
 
-    console.assert(!sorted.splice(1).some(n => n.indexSourceOrigin > sorted[0].indexSourceOrigin));
+    console.assert(!sorted.splice(1).some(n => n._indexSourceOrigin > sorted[0]._indexSourceOrigin));
     return sorted;
   }
 
+  public currIndex = -1;
+
   public NgetNextHigherMatch() : Nullable<TNode<T>> {
-    const cand = [...this._matches].filter(m => m.indexSourceOrigin === this.indexSourceOrigin + 1);
+    const cand = [...this._matches].filter(m => m.currIndex === this.currIndex + 1);
     if (cand.length > 0) {
       console.assert(cand.length === 1)
       return cand[0]
@@ -413,7 +420,7 @@ export default class TNode<T> {
     return null;
   }
   public NgetNextLowerMatch() : Nullable<TNode<T>> {
-    const cand = [...this._matches].filter(m => m.indexSourceOrigin === this.indexSourceOrigin - 1);
+    const cand = [...this._matches].filter(m => m.currIndex === this.currIndex - 1);
     if (cand.length > 0) {
       console.assert(cand.length === 1)
       return cand[0]

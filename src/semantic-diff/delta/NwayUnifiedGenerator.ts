@@ -26,15 +26,18 @@ export default class NwayUnifiedGenerator<T> {
       .toPostOrderUnique()
       .filter((node) => node.NisMatched())
       .forEach((node) => {
+
         const nextHigherMatch = node.NgetNextHigherMatch();
+
         if (nextHigherMatch != null) {
           const filteredMatchChildren = nextHigherMatch.children.filter((child) => {
             return (
               // have to add any unmatched children
-              !child.NgetNextHigherMatch() || // or those that were moved between this and the next higher tree
+              !child.NgetNextLowerMatch() ||
+              // or those that were moved between this and the next higher tree
               // ...either to a node not matched between the trees
-              !child.NgetNextHigherMatch()!.getParent() || // ...or to a different node that IS matched between the trees
-              child.NgetNextHigherMatch()!.getParent() != node
+              !child.NgetNextLowerMatch()!.getParent() || // ...or to a different node that IS matched between the trees
+              child.NgetNextLowerMatch()!.getParent() != node
             );
           });
 
@@ -72,6 +75,16 @@ export default class NwayUnifiedGenerator<T> {
       .slice(1)
       .forEach((tree) => {
         this.unify(tree);
+
+        // lower act index
+        tree.toPreOrderUnique().forEach(n => {
+          // align indices
+          if (n.currIndex !== tree.currIndex) {
+            console.log("DIFF between", n.label, tree.label);
+          }
+          n.currIndex = tree.currIndex;
+        })
+
         this.converge(tree);
       });
 
