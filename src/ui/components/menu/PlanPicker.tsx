@@ -11,9 +11,13 @@ import {
   Select,
   Stack
 } from '@mui/material';
-import { useAllLabels, useQueryPlanState, useUniqueDbms } from '../../state/QueryPlanResultStore';
+import {
+  useAllLabels,
+  useQueryPlanState,
+  useUniqueSystems
+} from '../../state/QueryPlanResultStore';
 import { Nullable } from '../../../semantic-diff/Types';
-import { DBMS } from '../../model/meta/DBMS';
+import { Query, System } from '../../model/meta/types';
 import { max, scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
@@ -26,19 +30,19 @@ const betterColorScale = d3ScaleLinear<string>().domain([1, 0]).range(['#00bb00'
 const worseColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#808080', '#ff0000']); //red
 
 export default function PlanPicker(props: IQueryPlanResultDiffProps) {
-  const [baselineDbms, setBaseLineDbms] = useState(DBMS.Umbra as Nullable<DBMS>);
+  const [baselineDbms, setBaseLineDbms] = useState(undefined as Nullable<System>);
   const [selectedMetric, setSelectedMetric] = useState('total' as ComparisonMetric);
-  const [selectedQuery, setSelectedQuery] = useState('8.sql' as Nullable<string>);
-  const [compDbms, setCompDbms] = useState(DBMS.Hyper as Nullable<DBMS>);
+  const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
+  const [compDbms, setCompDbms] = useState(undefined as Nullable<System>);
   const [state, actions] = useQueryPlanState();
 
   useEffect(() => {
     if (baselineDbms && selectedQuery && compDbms) {
       const firstPlanResult = state.queryPlanResults.find(
-        (qpr) => qpr.dbms === baselineDbms && qpr.queryName === selectedQuery
+        (qpr) => qpr.system === baselineDbms && qpr.query === selectedQuery
       )!;
       const secondPlanResult = state.queryPlanResults.find(
-        (qpr) => qpr.dbms === compDbms && qpr.queryName === selectedQuery
+        (qpr) => qpr.system === compDbms && qpr.query === selectedQuery
       )!;
       actions.setResultSelection([firstPlanResult, secondPlanResult]);
     } else {
@@ -46,7 +50,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     }
   }, [baselineDbms, selectedQuery, compDbms]);
 
-  function resetBaseline(newBaseline: DBMS) {
+  function resetBaseline(newBaseline: System) {
     setSelectedQuery(null);
     setCompDbms(null);
     setBaseLineDbms(newBaseline);
@@ -55,28 +59,26 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   // Labels
   const [allLabels] = useAllLabels();
 
-  // dbms
-  const [availableDbms] = useUniqueDbms();
+  // system
+  const [availableDbms] = useUniqueSystems();
 
-  const qprForSelectedQuery = state.queryPlanResults.filter(
-    (qpr) => qpr.queryName === selectedQuery
-  );
+  const qprForSelectedQuery = state.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
 
   const baseLineQprForSelectedQuery = state.queryPlanResults.find(
-    (qpr) => qpr.queryName === selectedQuery && qpr.dbms === baselineDbms
+    (qpr) => qpr.query === selectedQuery && qpr.system === baselineDbms
   );
 
-  const QueriesSet = new Set(state.queryPlanResults.map((qpr) => qpr.queryName));
+  const QueriesSet = new Set(state.queryPlanResults.map((qpr) => qpr.query));
   const uniqueQueries = Array.from(QueriesSet.entries()).map((val) => val[1]);
 
   const worstResultsPerQuery = uniqueQueries
     .map((query) => ({
       query,
-      baseLineResult: state.queryPlanResults.find(
-        (qpr) => qpr.dbms === baselineDbms && qpr.queryName === query
-      )!,
+      baselineResult: state.queryPlanResults.find((qpr) => {
+        return qpr.system === baselineDbms && qpr.query === query;
+      }),
       otherResults: state.queryPlanResults.filter((qpr) => {
-        return qpr.dbms !== baselineDbms && qpr.queryName === query;
+        return qpr.system !== baselineDbms && qpr.query === query;
       })
     }))
     .map((obj) => ({
@@ -86,12 +88,12 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           .map((qpr) => {
             if (
               !qpr.benchmarkResult[selectedMetric] ||
-              !obj.baseLineResult.benchmarkResult[selectedMetric]
+              !obj.baselineResult?.benchmarkResult[selectedMetric]
             ) {
               return null;
             } else {
               // null case has been checked
-              const baseLineMetric = obj.baseLineResult.benchmarkResult[selectedMetric]!;
+              const baseLineMetric = obj.baselineResult.benchmarkResult[selectedMetric]!;
               const otherMetric = qpr.benchmarkResult[selectedMetric]!;
 
               return baseLineMetric / otherMetric - 1;
@@ -110,7 +112,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     const [editorOpen, setEditorOpen] = useState(false);
 
     const MetricItems = allLabels.map((metric) => {
-      return <MenuItem value={metric}>{metric}</MenuItem>;
+      return <MenuItem key={metric} value={metric}>{metric}</MenuItem>;
     });
 
     const QueryItems = worstResultsPerQuery.map((obj) => {
@@ -128,7 +130,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
             : worseColorScale(worstDiff / worstOverallDiff);
       }
       return (
-        <MenuItem value={query}>
+        <MenuItem key={query} value={query}>
           <Box color={color}>{label}</Box>
         </MenuItem>
       );
@@ -190,8 +192,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   function BaselineComponent(props: {}) {
     const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
 
-    const BaselineItems = availableDbms.map((dbms) => {
-      return <MenuItem value={dbms}>{dbms}</MenuItem>;
+    const BaselineItems = availableDbms.map((system) => {
+      return <MenuItem key={system} value={system}>{system}</MenuItem>;
     });
 
     return (
@@ -200,7 +202,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         <Select
           label="Baseline"
           value={baselineDbms}
-          onChange={(e) => setBaseLineDbms(e.target.value as DBMS)}>
+          onChange={(e) => setBaseLineDbms(e.target.value as System)}>
           {BaselineItems}
         </Select>
       </FormControl>
@@ -211,7 +213,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     const CompCandidateItems = qprForSelectedQuery
       .filter((qpr) => qpr != baseLineQprForSelectedQuery)
       .map((qpr) => {
-        const dbms = qpr.dbms;
+        const system = qpr.system;
 
         let addLabel = '(N/A)';
         if (
@@ -231,13 +233,13 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
         return (
           <Chip
-            key={dbms}
-            color={dbms === compDbms ? 'primary' : 'default'}
+            key={system}
+            color={system === compDbms ? 'primary' : 'default'}
             sx={{
               borderRadius: '16px'
             }}
-            label={dbms + ' ' + addLabel}
-            onClick={() => setCompDbms(dbms)}></Chip>
+            label={system + ' ' + addLabel}
+            onClick={() => setCompDbms(system)}></Chip>
         );
       });
 

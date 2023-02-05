@@ -1,7 +1,7 @@
 import { PlanData, PlanNode, RenderPlanNode } from './PlanData';
 
-export class TempScan extends PlanData {
-  public static LABEL = 'TempScan';
+export class PipelineBreakerScan extends PlanData {
+  public static LABEL = 'PipelineBreakerScan';
 
   get scannedId(): string {
     return this.attributes.get('scanned_id')!;
@@ -11,17 +11,17 @@ export class TempScan extends PlanData {
     return RenderPlanNode;
   }
 
-  static isTempScan(data: PlanData): data is TempScan {
-    return data.label === TempScan.LABEL;
+  static isPipelineBreakerScan(data: PlanData): data is PipelineBreakerScan {
+    return data.label === PipelineBreakerScan.LABEL;
   }
 
-  public static handleTempScans(tree: PlanNode) {
+  public static handlePipelineBreakerScans(tree: PlanNode) {
     tree.toPreOrderUnique().forEach((node) => {
-      if (!TempScan.isTempScan(node.data)) {
+      if (!PipelineBreakerScan.isPipelineBreakerScan(node.data)) {
         return;
       }
       if (!node.data.scannedId) {
-        throw new Error('TempScan is missing scanned id');
+        throw new Error('PipelineBreakerScan is missing scanned id');
       }
       const scannedId = node.data.scannedId;
 

@@ -5,13 +5,10 @@ import { PlanData } from '../../../ui/model/operator/PlanData';
 import TNodeBrowserSerDes from './TNodeBrowserSerDes';
 import { TableScan } from '../../../ui/model/operator/TableScan';
 import { Nullable } from '../../Types';
-import { DBMS } from '../../../ui/model/meta/DBMS';
-import { Dataset } from '../../../ui/model/meta/Dataset';
 import Join from '../../../ui/model/operator/Join';
-import { TempScan } from '../../../ui/model/operator/TempScan';
+import { PipelineBreakerScan } from '../../../ui/model/operator/PipelineBreakerScan';
 import { QueryPlanResultCollection } from '../../../ui/state/QueryPlanResult';
 import BenchmarkResult from '../../../ui/state/BenchmarkResult';
-import { median } from 'd3';
 import { Result } from '../../../ui/model/operator/Result';
 import GroupBy from '../../../ui/model/operator/GroupBy';
 import Sort from '../../../ui/model/operator/Sort';
@@ -31,8 +28,10 @@ export default class PlanNodeBrowserSerDes
         return new TNodeBuilder<TableScan>().data(new TableScan(tagName, text, attributes));
       case Join.LABEL:
         return new TNodeBuilder<Join>().data(new Join(tagName, text, attributes));
-      case TempScan.LABEL:
-        return new TNodeBuilder<TempScan>().data(new TempScan(tagName, text, attributes));
+      case PipelineBreakerScan.LABEL:
+        return new TNodeBuilder<PipelineBreakerScan>().data(
+          new PipelineBreakerScan(tagName, text, attributes)
+        );
       case GroupBy.LABEL:
         return new TNodeBuilder<GroupBy>().data(new GroupBy(tagName, text, attributes));
       case Sort.LABEL:
@@ -111,30 +110,7 @@ export default class PlanNodeBrowserSerDes
   }
 
   public queryPlanResultCollectionFromJson(jsontext: string): QueryPlanResultCollection {
-    const collection = JSON.parse(jsontext) as QueryPlanResultCollection;
-    for (const result of collection) {
-      const dbms = result.dbms;
-      if (!(<any>Object).values(DBMS).includes(dbms)) {
-        throw new Error('Unrecognized DBMS ' + dbms);
-      }
-
-      const dataset = result.dataset;
-      if (!(<any>Object).values(Dataset).includes(dataset)) {
-        throw new Error('Unrecognized Dataset ' + dataset);
-      }
-
-      for (const benchProp in result.benchmarkResult) {
-        if (benchProp === 'error' || benchProp === 'result') continue;
-
-        const val = (result.benchmarkResult as any)[benchProp];
-        if (val instanceof Array && !isNaN(val[0])) {
-          // dirty isNumber() check
-          (result.benchmarkResult as any)[benchProp] = median(val);
-        } else {
-          (result.benchmarkResult as any)[benchProp] = null;
-        }
-      }
-    }
-    return collection;
+    // no preprocessing necessary, we expect a valid input
+    return JSON.parse(jsontext) as QueryPlanResultCollection;
   }
 }

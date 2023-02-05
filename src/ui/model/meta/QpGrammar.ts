@@ -5,7 +5,7 @@ import {defaultDiffOptions, Grammar, GrammarBrowserSerDes} from "../../../semant
 // TODO
 // SetOperation method, example
 // GroupBy Method
-// TempScan table name / id
+// PipelineBreakerScan table name / id
 // Predicates for select / map
 // Early probe probed table, example
 // Inline table name, example
@@ -42,7 +42,7 @@ export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).
         <Select></Select>
         <Sort></Sort>
         <Map></Map>
-        <TempScan></TempScan>
+        <PipelineBreakerScan></PipelineBreakerScan>
         <Temp></Temp>
         <EarlyProbe></EarlyProbe>
         <SetOperation></SetOperation>

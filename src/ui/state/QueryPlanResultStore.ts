@@ -5,6 +5,7 @@ import QueryPlanResult, { QueryPlanResultCollection } from './QueryPlanResult';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { Nullable } from '../../semantic-diff/Types';
 import { ComparisonMetric } from './BenchmarkResult';
+import { System } from '../model/meta/types';
 
 export interface IQueryPlanResultsState {
   queryPlanResults: QueryPlanResultCollection;
@@ -21,7 +22,7 @@ const actions = {
         defaultDiffOptions
       ).queryPlanResultCollectionFromJson(text);
 
-      // TODO verify that all dbms have all queries or handle this in planpicker
+      // TODO verify that all system have all queries or handle this in planpicker
       setState({
         queryPlanResults: queryPlanResults,
         resultSelection: null
@@ -51,16 +52,15 @@ export const useQueryPlanState = createHook(Store);
 
 export const useAllLabels = createHook(Store, {
   selector: (state: IQueryPlanResultsState) => {
-    return Object.keys(state.queryPlanResults[0].benchmarkResult)
-      .filter((l) => l !== 'error' && l !== 'result')
-      .map((metric) => metric as ComparisonMetric);
+    return [
+      ...new Set(state.queryPlanResults.map((qpr) => Object.keys(qpr.benchmarkResult)).flat())
+    ] as ComparisonMetric[];
   }
 });
 
-export const useUniqueDbms = createHook(Store, {
-  selector: (state: IQueryPlanResultsState) => {
-    const dbmsSet = new Set(state.queryPlanResults.map((qpr) => qpr.dbms));
-    const uniqueDbmsArr = Array.from(dbmsSet.entries()).map((val) => val[1]);
-    return uniqueDbmsArr;
+export const useUniqueSystems = createHook(Store, {
+  selector: (state: IQueryPlanResultsState): System[] => {
+    const systemSet = new Set(state.queryPlanResults.map((qpr) => qpr.system));
+    return Array.from(systemSet.entries()).map((val) => val[1]);
   }
 });

@@ -11,7 +11,7 @@ import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
 import FloatingMenu from './menu/FloatingMenu';
 import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
-import { TempScan } from '../model/operator/TempScan';
+import { PipelineBreakerScan } from '../model/operator/PipelineBreakerScan';
 import { EarlyProbe } from '../model/operator/EarlyProbe';
 
 /**
@@ -42,8 +42,8 @@ export default function QueryPlanDiff() {
 
     if (renderDagEdges) {
       // TODO find a more generalizable and extendible way to handle these DAG edges
-      TempScan.handleTempScans(firstPlan);
-      TempScan.handleTempScans(secondPlan);
+      PipelineBreakerScan.handlePipelineBreakerScans(firstPlan);
+      PipelineBreakerScan.handlePipelineBreakerScans(secondPlan);
 
       EarlyProbe.handleEarlyProbes(firstPlan);
       EarlyProbe.handleEarlyProbes(secondPlan);

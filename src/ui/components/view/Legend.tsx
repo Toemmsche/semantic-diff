@@ -16,7 +16,7 @@ export default function Legend (props: {}) {
         return (<></>);
     } else {
         const [firstDbms, secondDbms] = qprState.resultSelection.map(
-            qpr => qpr.dbms);
+            qpr => qpr.system);
         return (<Stack direction="column"
                        sx={{
                            position: "absolute",

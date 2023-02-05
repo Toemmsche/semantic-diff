@@ -14,7 +14,7 @@ import { UnifiedColors } from './UnifiedDiffPlanNode';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { EdgeType, useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/EarlyProbe';
-import { TempScan } from '../../../model/operator/TempScan';
+import { PipelineBreakerScan } from '../../../model/operator/PipelineBreakerScan';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
@@ -86,13 +86,13 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   } else {
     const existsInNew =
       childPlanNode.getMatch().getParent() === parentPlanNode.getMatch() ||
-      (TempScan.isTempScan(parentPlanData) &&
-        (parentPlanNode.getMatch().data as TempScan).scannedId ===
+      (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) &&
+        (parentPlanNode.getMatch().data as PipelineBreakerScan).scannedId ===
           childPlanNode.getMatch().data.operatorId);
     const existsInOld =
       childPlanNode.getParent() == parentPlanNode ||
-      (TempScan.isTempScan(parentPlanData) &&
-        (parentPlanNode.data as TempScan).scannedId === childPlanNode.data.operatorId);
+      (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) &&
+        (parentPlanNode.data as PipelineBreakerScan).scannedId === childPlanNode.data.operatorId);
     if (existsInNew && existsInOld) {
       edgeOrigin = Origin.SHARED;
     } else if (existsInOld) {

@@ -1,4 +1,4 @@
-import {Box, Chip, IconButton, Modal, Popover, Stack} from '@mui/material';
+import {Box, Chip, IconButton, Modal, Stack} from '@mui/material';
 import QueryPlanResult from '../../state/QueryPlanResult';
 import React, {useState} from 'react';
 import {Bar} from 'react-chartjs-2';
@@ -18,8 +18,8 @@ export default function QueryPlanDiffChart(props: {}) {
 
   let selectedQprs = [] as QueryPlanResult[];
   if (qprState.resultSelection) {
-    const selectedQuery = qprState.resultSelection!![0].queryName;
-    selectedQprs = qprState.queryPlanResults.filter((qpr) => qpr.queryName === selectedQuery);
+    const selectedQuery = qprState.resultSelection!![0].query;
+    selectedQprs = qprState.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
   }
 
   const chips = [];
@@ -53,15 +53,15 @@ export default function QueryPlanDiffChart(props: {}) {
 
   const getDataset = (qpr: QueryPlanResult) => {
     let bgColor;
-    if (qpr.dbms === qprState.resultSelection!![0].dbms) {
+    if (qpr.system === qprState.resultSelection!![0].system) {
       bgColor = UnifiedColors.EXCLUSIVE_OLD;
-    } else if (qpr.dbms === qprState.resultSelection!![1].dbms) {
+    } else if (qpr.system === qprState.resultSelection!![1].system) {
       bgColor = UnifiedColors.EXCLUSIVE_NEW;
     } else {
       bgColor = 'rgba(0, 0, 0, 0.5)';
     }
     return {
-      label: qpr.dbms,
+      label: qpr.system,
       data: activeLabels.map((cat) => {
         // @ts-ignore
         const val = qpr.benchmarkResult[cat];
@@ -94,7 +94,7 @@ export default function QueryPlanDiffChart(props: {}) {
             }}
             open={open}
             onClose={() => setOpen(false)}>
-          <Box padding={4} bgcolor="white">
+          <Box padding={4} bgcolor="white" width="70vw">
             <Stack direction="row" flexWrap="wrap" spacing={1}>
               {chips}
             </Stack>

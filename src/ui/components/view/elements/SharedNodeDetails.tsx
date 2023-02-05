@@ -14,7 +14,7 @@ export default function SharedNodeDetails (props: { firstPlanData: PlanData, sec
     const [qprState] = useQueryPlanState();
 
     const [firstDbms, secondDbms] = qprState.resultSelection!!.map(
-        qpr => qpr.dbms);
+        qpr => qpr.system);
 
     // Generate table for all properties
     const allKeys = new Set([

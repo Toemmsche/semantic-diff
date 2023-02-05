@@ -1,14 +1,11 @@
-import { Dataset } from '../model/meta/Dataset';
-import { DBMS } from '../model/meta/DBMS';
+import { Dataset, Query, System } from '../model/meta/types';
 import BenchmarkResult from './BenchmarkResult';
 
 export default interface QueryPlanResult {
   // Metadata
-  systemTitle: string;
-  dbms: DBMS;
-  dbmsVersion: string;
+  system: System;
   dataset: Dataset;
-  queryName: string;
+  query: Query;
   queryText: string;
 
   // Result state
@@ -17,7 +14,7 @@ export default interface QueryPlanResult {
 }
 
 export function getKey(qpr: QueryPlanResult): string {
-  return qpr.dbms + qpr.dbmsVersion + qpr.dataset + qpr.queryName;
+  return qpr.system + qpr.dataset + qpr.query;
 }
 
 export type QueryPlanResultCollection = QueryPlanResult[];
