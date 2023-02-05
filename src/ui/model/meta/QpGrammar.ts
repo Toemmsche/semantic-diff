@@ -35,6 +35,8 @@ export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).
     <inners>
         <Join ordered="true">
             <comparisonValue weight="100">@_method</comparisonValue>
+            <comparisonValue weight="30" comparisonType="LCS">@_type</comparisonValue>
+            <comparisonValue weight="30" >@_exact_cardinality</comparisonValue>
         </Join>
         <GroupJoin ordered="true"></GroupJoin>
         <Projection></Projection>

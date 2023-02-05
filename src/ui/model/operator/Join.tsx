@@ -3,7 +3,7 @@ import { Box, Stack } from '@mui/material';
 import { getJoinSymbolForType } from '../Chars';
 import React from 'react';
 
-export enum JoinType {
+export enum JoinMethod {
   HASH_JOIN = 'hash',
   NESTED_LOOP_JOIN = 'nl',
   BLOCKWISE_NESTED_LOOP_JOIN = 'bnl',
@@ -16,16 +16,16 @@ export function RenderJoin(props: { data: Join }) {
 
   let joinName = 'JOIN';
   switch (joinData.method) {
-    case JoinType.INDEX_JOIN:
+    case JoinMethod.INDEX_JOIN:
       joinName = 'INDEX NL JOIN';
       break;
-    case JoinType.HASH_JOIN:
+    case JoinMethod.HASH_JOIN:
       joinName = 'HASH JOIN';
       break;
-    case JoinType.NESTED_LOOP_JOIN:
+    case JoinMethod.NESTED_LOOP_JOIN:
       joinName = 'NL JOIN';
       break;
-    case JoinType.BLOCKWISE_NESTED_LOOP_JOIN:
+    case JoinMethod.BLOCKWISE_NESTED_LOOP_JOIN:
       joinName = 'BLOCK NL JOIN';
       break;
   }
@@ -50,7 +50,7 @@ export default class Join extends PlanData {
     return RenderJoin;
   }
 
-  get method(): JoinType {
-    return this.attributes.get('method')! as JoinType;
+  get method(): JoinMethod {
+    return this.attributes.get('method')! as JoinMethod;
   }
 }
