@@ -1,15 +1,17 @@
-/** @jsxImportSource @emotion/react */
-
 import React from 'react';
 import {
-  EdgeLabelRenderer, EdgeProps, getBezierPath, getSmoothStepPath, getStraightPath
+  EdgeLabelRenderer,
+  EdgeProps,
+  getBezierPath,
+  getSmoothStepPath,
+  getStraightPath
 } from 'reactflow';
-import {Origin} from '../../../../semantic-diff/delta/UnifiedTreeGenerator';
-import {UnifiedColors} from './UnifiedDiffPlanNode';
-import {PlanNode} from '../../../model/operator/PlanData';
-import {EdgeType, useParameterState} from '../../../state/ParameterStore';
-import {EarlyProbe} from '../../../model/operator/EarlyProbe';
-import {PipelineBreakerScan} from '../../../model/operator/PipelineBreakerScan';
+import { Origin } from '../../../../semantic-diff/delta/UnifiedTreeGenerator';
+import { UnifiedColors } from './UnifiedDiffPlanNode';
+import { PlanNode } from '../../../model/operator/PlanData';
+import { EdgeType, useParameterState } from '../../../state/ParameterStore';
+import { EarlyProbe } from '../../../model/operator/EarlyProbe';
+import { PipelineBreakerScan } from '../../../model/operator/PipelineBreakerScan';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
@@ -73,16 +75,26 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   let pathStroke: string;
   let cardinality = childPlanData.exactCardinality;
   if (parameters.nwayDiff) {
-    pathStroke = "lightgrey"
+    pathStroke = 'lightgrey';
   } else {
     let edgeOrigin;
     if (parentPlanNode.unifiedOrigin === Origin.NEW || childPlanNode.unifiedOrigin === Origin.NEW) {
       edgeOrigin = Origin.NEW;
-    } else if (parentPlanNode.unifiedOrigin === Origin.OLD || childPlanNode.unifiedOrigin === Origin.OLD) {
+    } else if (
+      parentPlanNode.unifiedOrigin === Origin.OLD ||
+      childPlanNode.unifiedOrigin === Origin.OLD
+    ) {
       edgeOrigin = Origin.OLD;
     } else {
-      const existsInNew = childPlanNode.getMatch().getParent() === parentPlanNode.getMatch() || (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) && (parentPlanNode.getMatch().data as PipelineBreakerScan).scannedId === childPlanNode.getMatch().data.operatorId);
-      const existsInOld = childPlanNode.getParent() == parentPlanNode || (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) && (parentPlanNode.data as PipelineBreakerScan).scannedId === childPlanNode.data.operatorId);
+      const existsInNew =
+        childPlanNode.getMatch().getParent() === parentPlanNode.getMatch() ||
+        (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) &&
+          (parentPlanNode.getMatch().data as PipelineBreakerScan).scannedId ===
+            childPlanNode.getMatch().data.operatorId);
+      const existsInOld =
+        childPlanNode.getParent() == parentPlanNode ||
+        (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) &&
+          (parentPlanNode.data as PipelineBreakerScan).scannedId === childPlanNode.data.operatorId);
       if (existsInNew && existsInOld) {
         edgeOrigin = Origin.SHARED;
       } else if (existsInOld) {
@@ -110,39 +122,48 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     }
   }
 
+  const isEarlyProbeEdge =
+    EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
 
-  const isEarlyProbeEdge = EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
-
-
-  return (<>
-        <path
-            id={id}
-            style={style}
-            className="react-flow__edge-path"
-            d={edgePath}
-            markerEnd={markerEnd}
-            css={{
-              strokeWidth: Math.log(cardinality) + 1,
-              stroke: pathStroke,
-              'stroke-dasharray': 5,
-              animation: "dashdraw 0.5s linear infinite"
+  return (
+    <>
+      <path
+        id={id}
+        className="react-flow__edge-path"
+        d={edgePath}
+        markerEnd={markerEnd}
+        style={{
+          ...style,
+          strokeWidth: Math.log(cardinality) + 1,
+          stroke: pathStroke,
+          strokeDasharray: 5,
+          animation: 'dashdraw 0.5s linear infinite'
+        }}
+      />
+      {!isEarlyProbeEdge && (
+        <EdgeLabelRenderer>
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              background: '#ffffff',
+              fontSize: 12,
+              fontWeight: 700
             }}
-        />
-        {!isEarlyProbeEdge && (<EdgeLabelRenderer>
-              <div
-                  style={{
-                    position: 'absolute',
-                    transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                    background: '#ffffffcc',
-                    padding: 10,
-                    borderRadius: 5,
-                    fontSize: 12,
-                    fontWeight: 700
-                  }}
-                  className="nodrag nopan">
-                {cardinality}
-              </div>
-            </EdgeLabelRenderer>
+            className="nodrag nopan">
+            <div
+              //className="border-dance"
+              style={{
+                borderRadius: 5,
+                borderWidth: 2,
+                borderColor: pathStroke,
+                borderStyle: "dashed",
+                padding: 10
+              }}>
+              {cardinality}
+            </div>
+          </div>
+        </EdgeLabelRenderer>
       )}
     </>
   );
