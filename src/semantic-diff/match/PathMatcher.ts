@@ -19,7 +19,7 @@ export class PathMatcher<T> implements IMatcher<T> {
     let candidateMap = new Map<TNode<T>, Set<TNode<T>>>();
 
     // Starting point is existing matches between leaves
-    for (const [newNode, oldNode] of newTree.getMatchingMap()) {
+    for (const [newNode, oldNode] of newTree.getSingleMatchingMap()) {
       // copy paths, reverse them and remove first element, discard already
       // matched nodes
       const newPath = newNode

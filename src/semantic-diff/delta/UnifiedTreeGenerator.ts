@@ -3,13 +3,6 @@ import { MatchPipeline } from '../match/MatchPipeline';
 import { Comparator } from '../compare/Comparator';
 import ISemanticDiffOptions from '../diff/ISemanticDiffOptions';
 
-export const enum Origin {
-  OLD = 'old',
-  NEW = 'new',
-
-  SHARED = 'shared'
-}
-
 export default class UnifiedTreeGenerator<T> {
   constructor(private options: ISemanticDiffOptions) {}
 
@@ -22,7 +15,7 @@ export default class UnifiedTreeGenerator<T> {
       for (let i = 0; i < node.children.length; i++) {
         if (node.childAt(i).isMatched()) {
           // do not clear parent
-          node.children[i] = node.childAt(i).getMatch();
+          node.children[i] = node.childAt(i).getSingleMatch();
         }
       }
     });
@@ -31,13 +24,13 @@ export default class UnifiedTreeGenerator<T> {
       .toPostOrderUnique()
       .filter((node) => node.isMatched())
       .forEach((node) => {
-        const match = node.getMatch();
+        const match = node.getSingleMatch();
 
         const filteredMatchChildren = match.children.filter((child) => {
           return (
             !child.isMatched() ||
-            !child.getMatch().getParent().isMatched() ||
-            child.getMatch().getParent() != node
+            !child.getSingleMatch().getParent().isMatched() ||
+            child.getSingleMatch().getParent() != node
           );
         });
 

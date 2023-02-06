@@ -10,7 +10,6 @@ import { PropertyMatcher } from './PropertyMatcher';
 import IComparator from '../compare/IComparator';
 import IMatchOptions from './IMatchOptions';
 import TopDownMatcher from './TopDownMatcher';
-import { Origin } from '../delta/UnifiedTreeGenerator';
 import BottomUpMatcher from './BottomUpMatcher';
 
 export class MatchPipeline<T> {
@@ -88,17 +87,10 @@ export class MatchPipeline<T> {
    * matching pipeline in order.
    */
   execute(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>): void {
-    // set origin
-    for (const oldNode of oldTree.toPostOrderArray()) {
-      oldNode._origin = Origin.OLD;
-    }
-    for (const newNode of newTree.toPostOrderArray()) {
-      newNode._origin = Origin.NEW;
-    }
-
     for (const matcher of this.matchers) {
       matcher.match(oldTree, newTree, comparator);
       if (!this.verifyMatching(oldTree, newTree)) {
+        console.log(oldTree);
         throw new MalformedMatchingError(`${matcher.constructor.name} produced invalid matching`);
       }
     }
@@ -111,15 +103,15 @@ export class MatchPipeline<T> {
     const newNodeSet = new Set(newTree.toPreOrderArray());
 
     for (const oldNode of oldNodeSet) {
-      if (!oldNode.verifyMatching()) return false;
+      if (!oldNode.verifySingleMatching()) return false;
       if (oldNode.isMatched()) {
-        if (!newNodeSet.has(oldNode.getMatch())) return false;
+        if (!newNodeSet.has(oldNode.getSingleMatch())) return false;
       }
     }
     for (const newNode of newNodeSet) {
-      if (!newNode.verifyMatching()) return false;
+      if (!newNode.verifySingleMatching()) return false;
       if (newNode.isMatched()) {
-        if (!oldNodeSet.has(newNode.getMatch())) return false;
+        if (!oldNodeSet.has(newNode.getSingleMatch())) return false;
       }
     }
     return true;

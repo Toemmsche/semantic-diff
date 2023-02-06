@@ -3,7 +3,7 @@ import UnifiedTreeView from './view/UnifiedTreeView';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import UnifiedTreeGenerator from '../../semantic-diff/delta/UnifiedTreeGenerator';
-import { PlanData } from '../model/operator/PlanData';
+import { PlanData, PlanNode } from '../model/operator/PlanData';
 import { Stack } from '@mui/material';
 import { useQueryPlanState } from '../state/QueryPlanResultStore';
 import {
@@ -17,83 +17,107 @@ import FloatingMenu from './menu/FloatingMenu';
 import { PipelineBreakerScan } from '../model/operator/PipelineBreakerScan';
 import { EarlyProbe } from '../model/operator/EarlyProbe';
 import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator';
+import Origin from '../../semantic-diff/tree/Origin';
+import UnionFind from '../../semantic-diff/lib/UnionFind';
+import { hasDuplicates } from '../../semantic-diff/lib/ArrayUtil';
 
 /**
  * Root Component for QueryPlan diff view
  */
 export default function QueryPlanDiff() {
-  const [state, actions] = useQueryPlanState();
+  const [state] = useQueryPlanState();
   const [nwayDiff] = useNwayDiff();
   const [renderDagEdges] = useRenderDagEdges();
   const [matchAlgorithm] = useMatchAlgorithm();
 
   let GraphView;
-  if (state.resultSelection) {
+  if (state.resultSelection && state.resultSelection.length > 0) {
     const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
+    const plans = state.resultSelection.map((qpr) =>
+      planSerdes.parseFromString(qpr.queryPlanXml, true)
+    );
+
+    plans.forEach((plan, i) => {
+      if (renderDagEdges) {
+        PipelineBreakerScan.handlePipelineBreakerScans(plan);
+        EarlyProbe.handleEarlyProbes(plan);
+      }
+      plan
+        .toPreOrderUnique()
+        .forEach((n) => (n.origin = new Origin(i, i, state.resultSelection![i].system)));
+    });
+
     const matchPipeline = getMatchPipelineForAlgorithm(matchAlgorithm);
     let unifiedTree;
-    if (nwayDiff) {
-      const plans = state.resultSelection.map((qpr) => {
-        const plan = planSerdes.parseFromString(qpr.queryPlanXml, true);
-        plan.toPreOrderUnique().forEach((n) => (n.debugName = qpr.system));
-        return plan;
-      });
+    if (state.resultSelection.length === 1) {
+      // SIMPLE VIEW
+      unifiedTree = plans[0];
+    } else if (state.resultSelection.length === 2) {
+      // TWO-WAY DIFF
+      matchPipeline.execute(plans[0], plans[1], new Comparator(defaultDiffOptions));
+      unifiedTree = new UnifiedTreeGenerator<PlanData>(defaultDiffOptions).generate(
+        plans[0],
+        plans[1]
+      );
+    } else {
+      // N-WAY DIFF
 
+      const matches = new Map<PlanNode, Set<PlanNode>>();
+
+      const unionFind = new UnionFind<PlanNode>();
       // set exclusive source index
-      plans.forEach((p, i) => p.toPreOrderUnique().forEach((n) => (n.indexSourceOrigin = i)));
-
-      for (let i = 0; i < plans.length; i++) {
-        const firstPlan = plans[i];
-        for (let j = i + 1; j < plans.length; j++) {
-          const secondPlan = plans[j];
-
+      plans.forEach((firstPlan, i) => {
+        plans.slice(i + 1).forEach((secondPlan) => {
           matchPipeline.execute(firstPlan, secondPlan, new Comparator(defaultDiffOptions));
 
-          // copy and clear matches
-          [firstPlan, secondPlan].forEach((p) => {
-            // copy matches into set
-            p.toPreOrderUnique().forEach((n) => {
-              if (n.isMatched()) {
-                n.NaddMatch(n.getMatch());
-              }
-            });
+          // save matches and continue
+          [firstPlan, secondPlan].forEach((plan) => {
+            plan
+              .toPreOrderUnique()
+              .filter((node) => node.isMatched())
+              .forEach((node) => {
+                unionFind.union(node, node.getSingleMatch());
 
-            // reset regular matches
-            p.NclearRegularMatchesRec();
+                // and clear
+                node.resetMatches();
+              });
           });
+        });
+      });
+
+      const rootMatchSets = new Map<PlanNode, Set<PlanNode>>();
+      plans
+        .flatMap((plan) => plan.toPreOrderUnique())
+        .forEach((node) => {
+          const root = unionFind.find(node);
+          if (unionFind.size(root) > 1) {
+            // node was matched
+            if (!rootMatchSets.has(root)) {
+              rootMatchSets.set(root, new Set());
+            }
+            rootMatchSets.get(root)!.add(node);
+          }
+        });
+
+      rootMatchSets.forEach((matchSet) => {
+        const matchArr = [...matchSet];
+
+        // if the set contains two nodes from the same tree, do not match at all
+        if (hasDuplicates(matchArr.map((node) => node.sourceIndex))) {
+          console.warn('match_set_same_tree');
+          return;
         }
-      }
+
+        if (matchArr.some((node) => matchSet))
+          matchArr.forEach((firstNode, i) => {
+            matchArr.slice(i + 1).forEach((secondNode) => {
+              // ensures complete matching
+              firstNode.matchTo(secondNode);
+            });
+          });
+      });
 
       unifiedTree = new NwayUnifiedGenerator<PlanData>(defaultDiffOptions).generate(plans);
-    } else {
-      const [firstPlanResult, secondPlanResult] = state.resultSelection;
-
-      const firstPlan = planSerdes.parseFromString(firstPlanResult.queryPlanXml);
-      const secondPlan = planSerdes.parseFromString(secondPlanResult.queryPlanXml);
-
-      matchPipeline.execute(firstPlan, secondPlan, new Comparator(defaultDiffOptions));
-
-      // set diff metadata on plan
-      for (const node of firstPlan.toPreOrderArray()) {
-        node.data.diffState = node.getDiffState();
-      }
-      for (const node of secondPlan.toPreOrderArray()) {
-        node.data.diffState = node.getDiffState();
-      }
-
-      if (renderDagEdges) {
-        // TODO find a more generalizable and extendible way to handle these DAG edges
-        PipelineBreakerScan.handlePipelineBreakerScans(firstPlan);
-        PipelineBreakerScan.handlePipelineBreakerScans(secondPlan);
-
-        EarlyProbe.handleEarlyProbes(firstPlan);
-        EarlyProbe.handleEarlyProbes(secondPlan);
-      }
-
-      unifiedTree = new UnifiedTreeGenerator<PlanData>(defaultDiffOptions).generate(
-        firstPlan,
-        secondPlan
-      );
     }
 
     GraphView = <UnifiedTreeView unifiedTree={unifiedTree} />;

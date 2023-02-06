@@ -1,10 +1,10 @@
 import { TNode } from '../../../semantic-diff/index';
 import XmlData from '../../../semantic-diff/data/XmlData';
-import SingleNodeDetails from '../../components/view/elements/SingleNodeDetails';
 import DiffState from '../../../semantic-diff/delta/DiffState';
 import { Box } from '@mui/material';
 import React from 'react';
 import { Nullable } from '../../../semantic-diff/Types';
+import NodeDetails from '../../components/view/elements/NodeDetails';
 
 export function RenderPlanNode(props: { data: PlanData }) {
   const { data: planData } = props;
@@ -40,12 +40,6 @@ export class PlanData extends XmlData {
   component(): Function {
     return RenderPlanNode;
   }
-
-  detailComponent(): Function {
-    return SingleNodeDetails;
-  }
-
-  diffState: DiffState = DiffState.IDENTICAL;
 }
 
 export type PlanNode = TNode<PlanData>;

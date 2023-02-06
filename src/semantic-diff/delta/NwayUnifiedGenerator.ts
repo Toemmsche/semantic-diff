@@ -1,5 +1,6 @@
 import TNode from '../tree/TNode';
 import ISemanticDiffOptions from '../diff/ISemanticDiffOptions';
+import GroupBy from '../../ui/model/operator/GroupBy';
 
 export const enum Origin {
   OLD = 'old',
@@ -13,9 +14,9 @@ export default class NwayUnifiedGenerator<T> {
   converge(tree: TNode<T>) {
     tree.toPreOrderUnique().forEach((node) => {
       for (let i = 0; i < node.children.length; i++) {
-        if (node.childAt(i).NgetNextLowerMatch() != null) {
+        if (node.childAt(i).getAdjacentLowerMatch() != null) {
           // do not clear parent
-          node.children[i] = node.childAt(i).NgetNextLowerMatch()!;
+          node.children[i] = node.childAt(i).getAdjacentLowerMatch()!;
         }
       }
     });
@@ -24,20 +25,19 @@ export default class NwayUnifiedGenerator<T> {
   unify(tree: TNode<T>) {
     tree
       .toPostOrderUnique()
-      .filter((node) => node.NisMatched())
+      .filter((node) => node.isMatched())
       .forEach((node) => {
-
-        const nextHigherMatch = node.NgetNextHigherMatch();
+        const nextHigherMatch = node.getAdjacentHigherMatch();
 
         if (nextHigherMatch != null) {
           const filteredMatchChildren = nextHigherMatch.children.filter((child) => {
             return (
               // have to add any unmatched children
-              !child.NgetNextLowerMatch() ||
+              !child.getAdjacentLowerMatch() ||
               // or those that were moved between this and the next higher tree
               // ...either to a node not matched between the trees
-              !child.NgetNextLowerMatch()!.getParent() || // ...or to a different node that IS matched between the trees
-              child.NgetNextLowerMatch()!.getParent() != node
+              !child.getAdjacentLowerMatch()!.getParent() || // ...or to a different node that IS matched between the trees
+              child.getAdjacentLowerMatch()!.getParent() != node
             );
           });
 
@@ -65,7 +65,6 @@ export default class NwayUnifiedGenerator<T> {
 
   generate(trees: TNode<T>[]): TNode<T> {
     // Turn tree into DAG by reusing nodes
-
     this.converge(trees[trees.length - 1]);
 
     // do NOT use reverse since it modifies the array in-place
@@ -77,13 +76,10 @@ export default class NwayUnifiedGenerator<T> {
         this.unify(tree);
 
         // lower act index
-        tree.toPreOrderUnique().forEach(n => {
+        tree.toPreOrderUnique().forEach((n) => {
           // align indices
-          if (n.currIndex !== tree.currIndex) {
-            console.log("DIFF between", n.label, tree.label);
-          }
-          n.currIndex = tree.currIndex;
-        })
+          n.workingIndex = tree.workingIndex;
+        });
 
         this.converge(tree);
       });

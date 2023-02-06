@@ -19,10 +19,10 @@ export class EditScriptGenerator<T> {
     for (const newNode of newPreOrder) {
       if (newNode.isMatched()) {
         // New node is matched -> Move, Update, or Nil
-        const match = newNode.getMatch();
+        const match = newNode.getSingleMatch();
 
         // Move if parents of matched nodes aren't matched
-        if (!newNode.isRoot() && newNode.getParent().getMatch() !== match.getParent()) {
+        if (!newNode.isRoot() && newNode.getParent().getSingleMatch() !== match.getParent()) {
           this.move(match);
         }
 
@@ -73,7 +73,7 @@ export class EditScriptGenerator<T> {
     // To find the minimal number of moves, map each child to the index of
     // its matching partner and compute the longest increasing subsequence (LIS)
     // on the result. Every node that isn't part of the LIS must be moved.
-    const lis = getLis(nodes.map((node) => node.getMatch().getIndex()));
+    const lis = getLis(nodes.map((node) => node.getSingleMatch().getIndex()));
 
     const inLis = new Set();
     for (const index of lis) {
@@ -92,9 +92,9 @@ export class EditScriptGenerator<T> {
         const oldPath = node.xPath();
         // Find the first node that is part of the LIS whose destined index is
         // larger than the destined index of node.
-        const thisMatchIndex = node.getMatch().getIndex();
+        const thisMatchIndex = node.getSingleMatch().getIndex();
         for (let j = 0; j < nodes.length; j++) {
-          const lisMatchIndex = nodes[j].getMatch().getIndex();
+          const lisMatchIndex = nodes[j].getSingleMatch().getIndex();
           if (inLis.has(nodes[j]) && lisMatchIndex > thisMatchIndex) {
             // Move within nodes, adjust index for move further back
             node.changeIndex(j > node.getIndex() ? j - 1 : j);
@@ -121,7 +121,7 @@ export class EditScriptGenerator<T> {
     if (newNode.getIndex() > 0) {
       const leftSibling = newNode.getSiblings()[newNode.getIndex() - 1];
       // Left sibling has a match
-      insertionIndex = leftSibling.getMatch().getIndex() + 1;
+      insertionIndex = leftSibling.getSingleMatch().getIndex() + 1;
     } else {
       insertionIndex = 0;
     }
@@ -151,14 +151,14 @@ export class EditScriptGenerator<T> {
     const insertionIndex = this.findInsertionIndex(newNode);
 
     // Perform insert operation at match of the parent node
-    const newParent = newNode.getParent().getMatch();
+    const newParent = newNode.getParent().getSingleMatch();
     newParent.insertChild(insertionIndex, copy);
 
     this.editScript.appendInsertion(copy);
   }
 
   private move(oldNode: TNode<T>) {
-    const newNode = oldNode.getMatch();
+    const newNode = oldNode.getSingleMatch();
     const oldPath = oldNode.xPath();
     // Delete from tree
     oldNode.removeFromParent();
@@ -166,14 +166,14 @@ export class EditScriptGenerator<T> {
     // Find appropriate insertion index
     const insertionIndex = this.findInsertionIndex(newNode);
 
-    const newParent = newNode.getParent().getMatch();
+    const newParent = newNode.getParent().getSingleMatch();
     newParent.insertChild(insertionIndex, oldNode);
     const newPath = oldNode.xPath();
     this.editScript.appendMove(oldPath, newPath);
   }
 
   private update(oldNode: TNode<T>) {
-    const newNode = oldNode.getMatch();
+    const newNode = oldNode.getSingleMatch();
 
     // Overwrite old values
     oldNode.attributes.clear();

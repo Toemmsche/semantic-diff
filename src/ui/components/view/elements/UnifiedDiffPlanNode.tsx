@@ -4,10 +4,10 @@ import { Handle, Position } from 'reactflow';
 import { useParameterState } from '../../../state/ParameterStore';
 import { Box, IconButton, Popover, Stack } from '@mui/material';
 import { ExpandMore, Menu } from '@mui/icons-material';
-import { Origin } from '../../../../semantic-diff/delta/UnifiedTreeGenerator';
 import { Nullable } from '../../../../semantic-diff/Types';
 import { NODE_BORDER_RADIUS, NODE_HEIGHT, NODE_PADDING, NODE_WIDTH } from './dimensions';
-import UnifiedDiffPlanNodeDetails from './SharedNodeDetails';
+import NodeDetails from './NodeDetails';
+import { getColorForSubset } from './color';
 
 export interface IUnifiedDiffProps {
   data: {
@@ -17,22 +17,6 @@ export interface IUnifiedDiffProps {
   };
 }
 
-export enum UnifiedColors {
-  EXCLUSIVE_OLD = 'lightpink',
-  EXCLUSIVE_NEW = 'lightgreen',
-  SHARED = 'lightblue'
-}
-
-export const nwayColors = new Map([
-  ['1', 'lightpink'],
-  ['2', 'lightgreen'],
-  ['3', 'orange'],
-  ['12', 'mediumpurple'],
-  ['123', 'lightblue'],
-  ['23', 'lightseagreen'],
-  ['13', 'peru'],
-]);
-
 export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
   const [parameters, parameterActions] = useParameterState();
 
@@ -40,17 +24,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
 
   const { hide, planNode, expand } = props.data;
 
-  let firstPlanData;
-  let secondPlanData;
-  if (planNode.sourceOrigin === Origin.OLD) {
-    firstPlanData = planNode.data;
-    secondPlanData = planNode.getMatch()?.data;
-  } else {
-    firstPlanData = planNode.getMatch()?.data;
-    secondPlanData = planNode.data;
-  }
-
-  const metaPlanData = firstPlanData ?? secondPlanData;
+  const metaPlanData = planNode.getMetaNode().data;
 
   const [hasExpanded, setHasExpanded] = useState(false);
 
@@ -59,38 +33,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
   // child component
   let Component = metaPlanData.component();
 
-  let Details;
-  if (firstPlanData && secondPlanData) {
-    Details = (
-      <UnifiedDiffPlanNodeDetails
-        firstPlanData={firstPlanData}
-        secondPlanData={secondPlanData}></UnifiedDiffPlanNodeDetails>
-    );
-  } else {
-    // retrieve detail component from node
-    let DetailComponent = metaPlanData.detailComponent();
-    Details = <DetailComponent data={metaPlanData}></DetailComponent>;
-  }
-
-  let bgColor: string;
-  switch (planNode.unifiedOrigin) {
-    case Origin.NEW:
-      bgColor = UnifiedColors.EXCLUSIVE_NEW;
-      break;
-    case Origin.OLD:
-      bgColor = UnifiedColors.EXCLUSIVE_OLD;
-      break;
-    case Origin.SHARED:
-      bgColor = UnifiedColors.SHARED;
-      break;
-    default:
-      bgColor = 'lightgrey';
-      break;
-  }
-
-  if (parameters.nwayDiff) {
-    bgColor = nwayColors.get(planNode.NindexSharedOrigins.map(i => i + 1).join(''))!;
-  }
+  let bgColor = getColorForSubset(planNode.getGroupSourceIndices());
 
   return (
     <Box
@@ -133,14 +76,18 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
           ))}
         {hoverActive && (
           <>
-            <IconButton onClick={(event) => setDetailsAnchorEl(event.currentTarget)}>
+            <IconButton
+              onClick={(event) => {
+                console.log(planNode);
+                setDetailsAnchorEl(event.currentTarget);
+              }}>
               <Menu />
             </IconButton>
             <Popover
               anchorEl={detailsAnchorEl}
               open={detailsAnchorEl != null}
               onClose={() => setDetailsAnchorEl(null)}>
-              {Details}
+              <NodeDetails planNodes={planNode.getMatchGroup()} />
             </Popover>
           </>
         )}

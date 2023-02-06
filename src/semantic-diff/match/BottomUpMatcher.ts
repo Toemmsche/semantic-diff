@@ -12,7 +12,7 @@ export default class BottomUpMatcher<T> implements IMatcher<T> {
       const next = [];
       for (const node of moreMatches) {
         const cand = node.getParent();
-        const candMatch = node.getMatch().getParent();
+        const candMatch = node.getSingleMatch().getParent();
         if (
           !cand.isMatched() &&
           !candMatch.isMatched() &&

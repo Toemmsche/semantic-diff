@@ -34,33 +34,31 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [baselineDbms, setBaseLineDbms] = useState(undefined as Nullable<System>);
   const [selectedMetric, setSelectedMetric] = useState('total' as ComparisonMetric);
   const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
-  const [compDbms, setCompDbms] = useState(undefined as Nullable<System>);
+  const [compDbms, setCompDbms] = useState([] as System[]);
   const [state, actions] = useQueryPlanState();
   const [nwayDiff] = useNwayDiff();
 
   useEffect(() => {
-    if (nwayDiff && selectedQuery) {
-      const qprs = state.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
-      actions.setResultSelection(qprs);
-    } else if (baselineDbms && selectedQuery && compDbms) {
-      const firstPlanResult = state.queryPlanResults.find(
-        (qpr) => qpr.system === baselineDbms && qpr.query === selectedQuery
-      )!;
-      const secondPlanResult = state.queryPlanResults.find(
-        (qpr) => qpr.system === compDbms && qpr.query === selectedQuery
-      )!;
-
-      actions.setResultSelection([firstPlanResult, secondPlanResult]);
+    if (baselineDbms && selectedQuery) {
+      actions.setResultSelection(
+        [baselineDbms, ...compDbms].map(
+          (system) =>
+            state.queryPlanResults.find(
+              (qpr) => qpr.system === system && qpr.query === selectedQuery
+            )!
+        )
+      );
     } else {
       actions.setResultSelection(null);
     }
-  }, [baselineDbms, selectedQuery, compDbms, nwayDiff]);
+  }, [baselineDbms, selectedQuery, compDbms]);
 
-  function resetBaseline(newBaseline: System) {
-    // keep query selected
-    setCompDbms(null);
-    setBaseLineDbms(newBaseline);
-  }
+  useEffect(() => {
+    // reset selection if n-way diff is disabled
+    if (!nwayDiff && compDbms.length > 0) {
+      setCompDbms([]);
+    }
+  }, [nwayDiff]);
 
   // Labels
   const [allLabels] = useAllLabels();
@@ -152,7 +150,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           <InputLabel>Metric</InputLabel>
           <Select
             label="Metric"
-            value={selectedMetric ?? ""}
+            value={selectedMetric ?? ''}
             onChange={(e) => setSelectedMetric(e.target.value as ComparisonMetric)}>
             {MetricItems}
           </Select>
@@ -162,7 +160,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
             <InputLabel>Query</InputLabel>
             <Select
               label="Query"
-              value={selectedQuery ?? ""}
+              value={selectedQuery ?? ''}
               onChange={(e) => setSelectedQuery(e.target.value)}>
               {QueryItems}
             </Select>
@@ -210,12 +208,18 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       );
     });
 
+    function resetBaseline(newBaseline: System) {
+      // keep query selected
+      setCompDbms([]);
+      setBaseLineDbms(newBaseline);
+    }
+
     return (
       <FormControl>
         <InputLabel>Baseline</InputLabel>
         <Select
           label="Baseline"
-          value={baselineDbms ?? ""}
+          value={baselineDbms ?? ''}
           onChange={(e) => resetBaseline(e.target.value as System)}>
           {BaselineItems}
         </Select>
@@ -245,15 +249,29 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
               : worseColorScale(diff / worstOverallDiff);
         }
 
+        function addOrRemoveComp(system: System) {
+          if (compDbms.includes(system)) {
+            compDbms.splice(compDbms.indexOf(system), 1);
+            // ensure that object identity changes
+            setCompDbms(compDbms.slice());
+          } else if (compDbms.length == 0 || nwayDiff) {
+            // only allow multi selection if n-way diff is enabled
+            setCompDbms([...compDbms, system]);
+          } else {
+            // compbDbms.length === 1
+            setCompDbms([system]);
+          }
+        }
+
         return (
           <Chip
             key={system}
-            color={system === compDbms ? 'primary' : 'default'}
+            color={compDbms.includes(system) ? 'primary' : 'default'}
             sx={{
               borderRadius: '16px'
             }}
             label={system + ' ' + addLabel}
-            onClick={() => setCompDbms(system)}></Chip>
+            onClick={() => addOrRemoveComp(system)}></Chip>
         );
       });
 

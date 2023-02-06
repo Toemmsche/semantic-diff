@@ -4,8 +4,7 @@ import IData from '../data/IData';
 import ICopyable from '../data/ICopyable';
 import NodeType from '../grammar/NodeType';
 import { Nullable } from '../Types';
-import DiffState from '../delta/DiffState';
-import { Origin } from '../delta/UnifiedTreeGenerator';
+import Origin from './Origin';
 
 export class TNodeBuilder<T> {
   private _children: TNode<T>[] = [];
@@ -43,13 +42,13 @@ export class TNodeBuilder<T> {
 
 export default class TNode<T> {
   // Every node is matchable, this is fundamental to our approach
-  protected _matchPartner: Nullable<TNode<T>> = null;
+  private readonly _matches: TNode<T>[] = [];
 
   // will be set by matcher
-  public _origin: Origin = Origin.OLD;
-  protected readonly _children: TNode<T>[] = [];
-  protected _parent: Nullable<TNode<T>> = null;
-  protected _index: number | null = null;
+  private _origin: Origin = new Origin(-1, -1, '');
+  private readonly _children: TNode<T>[] = [];
+  private _parent: Nullable<TNode<T>> = null;
+  private _index: number | null = null;
 
   public constructor(
     public data: T, // state fully modifiable for now
@@ -84,15 +83,20 @@ export default class TNode<T> {
     return this._children;
   }
 
-  get sourceOrigin(): Origin {
+  get matches(): TNode<T>[] {
+    return this._matches;
+  }
+
+  get origin(): Origin {
     return this._origin;
   }
 
-  get unifiedOrigin(): Origin {
-    if (this.isMatched()) {
-      return Origin.SHARED;
-    }
-    return this.sourceOrigin;
+  set origin(origin: Origin) {
+    this._origin = origin;
+  }
+
+  get sourceIndex(): number {
+    return this.origin.sourceIndex;
   }
 
   accessProperty(path: string): Nullable<string> {
@@ -277,69 +281,6 @@ export default class TNode<T> {
     return this._children[Symbol.iterator]();
   }
 
-  /* =============== MATCHING STUFF ================== */
-
-  matchTo(other: TNode<T>): boolean {
-    if (this._matchPartner || other._matchPartner) {
-      return false;
-    }
-    // Bijective matching
-    this._matchPartner = other;
-    other._matchPartner = this;
-    return true;
-  }
-
-  getMatch(): TNode<T> {
-    return this._matchPartner!;
-  }
-
-  isMatchedTo(other: TNode<T>): boolean {
-    return this._matchPartner === other;
-  }
-
-  isMatched(): boolean {
-    return !!this._matchPartner;
-  }
-
-  getMatchingMap(): Map<TNode<T>, TNode<T>> {
-    return new Map(
-      this.toPreOrderArray()
-        .filter((node) => node.isMatched())
-        .map((node) => [node, node.getMatch()])
-    );
-  }
-
-  verifyMatching(): boolean {
-    return !this._matchPartner || this.getMatch().isMatchedTo(this);
-  }
-
-  getDiffState(): DiffState {
-    if (this._matchPartner) {
-      let move;
-      // for typescript
-      if (this._parent == null || this._matchPartner._parent == null) {
-        move = !(this.isRoot() && this._matchPartner.isRoot());
-      } else if (this._parent.isMatched()) {
-        move = this._parent.getMatch() !== this._matchPartner._parent;
-      } else {
-        // the parents cannot be matched to each other
-        move = true;
-      }
-      const update = !this.contentEquals(this._matchPartner);
-      if (move && update) {
-        return DiffState.MOVED_AND_UPDATED;
-      } else if (move) {
-        return DiffState.MOVED;
-      } else if (update) {
-        return DiffState.UPDATED;
-      } else {
-        return DiffState.IDENTICAL;
-      }
-    } else {
-      return DiffState.ADDED_OR_REMOVED;
-    }
-  }
-
   private adjustChildIndices(): void {
     // Set children's parent and index
     for (const [i, child] of this._children.entries()) {
@@ -348,82 +289,91 @@ export default class TNode<T> {
     }
   }
 
+  /* =============== MATCHING STUFF ================== */
+
+  matchTo(other: TNode<T>): boolean {
+    if (this.isMatchedTo(other)) {
+      return false;
+    }
+    // TODO ensure a complete matching
+    this._matches.push(other);
+    other._matches.push(this);
+    return true;
+  }
+
+  getSingleMatch(): TNode<T> {
+    // at max one match for the "traditional" method
+    if (this._matches.length > 1) {
+      throw new Error('single_match_multiple_partners');
+    } else if (this._matches.length === 0) {
+      throw new Error('single_match_no_partner');
+    }
+    return this._matches[0];
+  }
+
+  isMatchedTo(other: TNode<T>): boolean {
+    return this._matches.includes(other);
+  }
+
+  isMatched(): boolean {
+    return this._matches.length > 0;
+  }
+
+  getSingleMatchingMap(): Map<TNode<T>, TNode<T>> {
+    return new Map(
+      this.toPreOrderArray()
+        .filter((node) => node.isMatched())
+        .map((node) => [node, node.getSingleMatch()])
+    );
+  }
+
+  verifySingleMatching(): boolean {
+    return (
+      !this.isMatched() || (this.matches.length === 1 && this.getSingleMatch().isMatchedTo(this))
+    );
+  }
+
   // =============== NWAY STUFF =================
 
-  public NclearRegularMatchesRec() {
-    this.toPreOrderUnique().forEach((n) => (n._matchPartner = null));
+  getMatchGroup(): TNode<T>[] {
+    return [this, ...this._matches];
   }
 
-  private _indexSourceOrigin: number = 0;
-
-  set indexSourceOrigin(index: number) {
-    this._indexSourceOrigin = index;
-    this.currIndex = index;
-  }
-  public debugName: string = "unknown";
-
-  get NindexSharedOrigins(): number[] {
-    const origins = [this._indexSourceOrigin];
-    for (const match of this._matches) {
-      origins.push(match._indexSourceOrigin);
-    }
-    origins.sort();
-    return origins;
+  getGroupSourceIndices(): number[] {
+    return this.getMatchGroup()
+      .map((n) => n.sourceIndex)
+      .sort();
   }
 
-  private _matches: Set<TNode<T>> = new Set();
-
-  get Nmatches(): Set<TNode<T>> {
-    return this._matches;
+  getMetaNode(): TNode<T> {
+    return this.getMatchGroup().sort((a, b) => a.sourceIndex - b.sourceIndex)[0];
   }
 
-  public NaddMatch(node: TNode<T>) {
-    this._matches.add(node);
-    // bidirectional matching
-
-    node._matches.add(this);
+  resetMatches() {
+    // remove everything
+    this._matches.splice(0, this._matches.length);
   }
 
-  public NisMatchedTo(node: TNode<T>): boolean {
-    return this._matches.has(node);
+  get workingIndex(): number {
+    return this.origin.workingIndex;
   }
 
-  public NisMatched(): boolean {
-    return this._matches.size > 0;
+  set workingIndex(index: number) {
+    this.origin.workingIndex = index;
   }
 
-  public NlowestMatch(): TNode<T> {
-    if (!this.NisMatched()) throw new Error('no match available');
-
-    const sorted = [...this._matches].sort((a, b) => a._indexSourceOrigin - b._indexSourceOrigin);
-
-    console.assert(!sorted.splice(1).some(n => n._indexSourceOrigin < sorted[0]._indexSourceOrigin));
-    return sorted[0];
-  }
-  public NMatchesDesc(): TNode<T>[] {
-    if (!this.NisMatched()) throw new Error('no match available');
-
-    const sorted = [...this._matches].sort((a, b) => b._indexSourceOrigin - a._indexSourceOrigin);
-
-    console.assert(!sorted.splice(1).some(n => n._indexSourceOrigin > sorted[0]._indexSourceOrigin));
-    return sorted;
-  }
-
-  public currIndex = -1;
-
-  public NgetNextHigherMatch() : Nullable<TNode<T>> {
-    const cand = [...this._matches].filter(m => m.currIndex === this.currIndex + 1);
-    if (cand.length > 0) {
-      console.assert(cand.length === 1)
-      return cand[0]
+  public getAdjacentHigherMatch(): Nullable<TNode<T>> {
+    const candidates = [...this._matches].filter((m) => m.workingIndex === this.workingIndex + 1);
+    if (candidates.length > 0) {
+      return candidates[0];
     }
     return null;
   }
-  public NgetNextLowerMatch() : Nullable<TNode<T>> {
-    const cand = [...this._matches].filter(m => m.currIndex === this.currIndex - 1);
-    if (cand.length > 0) {
-      console.assert(cand.length === 1)
-      return cand[0]
+
+  public getAdjacentLowerMatch(): Nullable<TNode<T>> {
+    const candidates = [...this._matches].filter((m) => m.workingIndex === this.workingIndex - 1);
+    if (candidates.length > 0) {
+      return candidates[0];
     }
     return null;
   }

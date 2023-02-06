@@ -28,7 +28,7 @@ export class EarlyProbe extends PlanData {
       // find all sources (current and match)
       const sources = [node.data.source];
       if (node.isMatched()) {
-        const matchData = node.getMatch().data;
+        const matchData = node.getSingleMatch().data;
         if (!(matchData instanceof EarlyProbe) || matchData.source == null) {
           throw new Error('Match of EarlyProbe is not a EarlyProbe or missing source');
         }
@@ -39,7 +39,7 @@ export class EarlyProbe extends PlanData {
         .toPreOrderUnique()
         .filter(
           (n) =>
-            n.sourceOrigin === node.sourceOrigin &&
+            n.origin === node.origin &&
             sources.some((s) => s === n.data.operatorId) &&
             !n.children.some((c) => c === node)
         )

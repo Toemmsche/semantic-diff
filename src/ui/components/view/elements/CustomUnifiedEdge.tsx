@@ -6,12 +6,10 @@ import {
   getSmoothStepPath,
   getStraightPath
 } from 'reactflow';
-import { Origin } from '../../../../semantic-diff/delta/UnifiedTreeGenerator';
-import { UnifiedColors } from './UnifiedDiffPlanNode';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { EdgeType, useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/EarlyProbe';
-import { PipelineBreakerScan } from '../../../model/operator/PipelineBreakerScan';
+import { getColorForSubset } from './color';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
@@ -74,52 +72,27 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
 
   let pathStroke: string;
   let cardinality = childPlanData.exactCardinality;
-  if (parameters.nwayDiff) {
-    pathStroke = 'lightgrey';
+
+  const edgeGroupSourceIndices: number[] = [];
+  for (const participant of childPlanNode.getMatchGroup()) {
+    // The edge exists in the tree this participant originally belonged to if the participant is in the child group and its parent is in the parent group
+    const edgeExists = parentPlanNode.getMatchGroup().includes(participant.getParent());
+    if (edgeExists) {
+      edgeGroupSourceIndices.push(participant.sourceIndex);
+    }
+  }
+
+  if (edgeGroupSourceIndices.length === 0) {
+    pathStroke = 'black';
+    console.log(childPlanNode.getMatchGroup(), parentPlanNode.getMatchGroup());
   } else {
-    let edgeOrigin;
-    if (parentPlanNode.unifiedOrigin === Origin.NEW || childPlanNode.unifiedOrigin === Origin.NEW) {
-      edgeOrigin = Origin.NEW;
-    } else if (
-      parentPlanNode.unifiedOrigin === Origin.OLD ||
-      childPlanNode.unifiedOrigin === Origin.OLD
-    ) {
-      edgeOrigin = Origin.OLD;
-    } else {
-      const existsInNew =
-        childPlanNode.getMatch().getParent() === parentPlanNode.getMatch() ||
-        (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) &&
-          (parentPlanNode.getMatch().data as PipelineBreakerScan).scannedId ===
-            childPlanNode.getMatch().data.operatorId);
-      const existsInOld =
-        childPlanNode.getParent() == parentPlanNode ||
-        (PipelineBreakerScan.isPipelineBreakerScan(parentPlanData) &&
-          (parentPlanNode.data as PipelineBreakerScan).scannedId === childPlanNode.data.operatorId);
-      if (existsInNew && existsInOld) {
-        edgeOrigin = Origin.SHARED;
-      } else if (existsInOld) {
-        edgeOrigin = Origin.OLD;
-      } else {
-        edgeOrigin = Origin.NEW;
-      }
-    }
+    pathStroke = getColorForSubset(edgeGroupSourceIndices);
+  }
 
-    if (edgeOrigin === Origin.OLD) {
-      pathStroke = UnifiedColors.EXCLUSIVE_OLD;
-    } else if (edgeOrigin === Origin.SHARED) {
-      pathStroke = UnifiedColors.SHARED;
-    } else {
-      pathStroke = UnifiedColors.EXCLUSIVE_NEW;
-    }
-
-    if (edgeOrigin === Origin.NEW) {
-      if (childPlanNode.isMatched()) {
-        cardinality = childPlanNode.getMatch().data.exactCardinality;
-      } else {
-        // in case of shared, stay with the old one
-        cardinality = childPlanData.exactCardinality;
-      }
-    }
+  if (edgeGroupSourceIndices.length === 1) {
+    cardinality = childPlanNode
+      .getMatchGroup()
+      .filter((m) => m.sourceIndex === edgeGroupSourceIndices[0])[0].data.exactCardinality;
   }
 
   const isEarlyProbeEdge =
@@ -157,7 +130,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
                 borderRadius: 5,
                 borderWidth: 2,
                 borderColor: pathStroke,
-                borderStyle: "dashed",
+                borderStyle: 'dashed',
                 padding: 10
               }}>
               {cardinality}

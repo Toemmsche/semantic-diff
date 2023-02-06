@@ -14,7 +14,7 @@ export class PropertyMatcher<T> implements IMatcher<T> {
     const newMatchedNodes = newTree.nonPropertyNodes().filter((node) => node.isMatched()); // must be matched
 
     for (const newMatchedNode of newMatchedNodes) {
-      this.matchProperties(newMatchedNode.getMatch(), newMatchedNode);
+      this.matchProperties(newMatchedNode.getSingleMatch(), newMatchedNode);
     }
   }
 

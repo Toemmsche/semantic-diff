@@ -6,7 +6,7 @@ import ComparisonType from '../grammar/ComparisonType';
 import ICompareOptions from './ICompareOptions';
 import LcsLib from '../lib/LcsLib';
 import UnimplementedError from '../error/UnimplementedError';
-import {Nullable} from '../Types';
+import { Nullable } from '../Types';
 import GrammarNode from '../grammar/GrammarNode';
 
 /**
@@ -31,7 +31,7 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
     const setB = new Set(nodeA.leaves());
 
     for (const cand of setA) {
-      if (cand.isMatched() && setB.has(cand.getMatch())) {
+      if (cand.isMatched() && setB.has(cand.getSingleMatch())) {
         common++;
       }
     }
@@ -128,12 +128,16 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
       .path(radius + 1)
       .reverse()
       .slice(1)
-      .map((n: TNode<T>) => this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label);
+      .map((n: TNode<T>) =>
+        this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label
+      );
     const otherPathSlice = nodeB
       .path(radius + 1)
       .reverse()
       .slice(1)
-      .map((n: TNode<T>) => this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label);
+      .map((n: TNode<T>) =>
+        this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label
+      );
     return this.comparePathLcs(nodePathSlice, otherPathSlice);
   }
 
