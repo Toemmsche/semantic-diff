@@ -74,8 +74,6 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
       break;
   }
 
-  let cardinality = childPlanData.exactCardinality;
-
   const edgeGroupSourceIndices: number[] = [];
   for (const participant of childPlanNode.getMatchGroup()) {
     // The edge exists in the tree this participant originally belonged to if the participant is in the child group and its parent is in the parent group
@@ -84,12 +82,8 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
       edgeGroupSourceIndices.push(participant.sourceIndex);
     }
   }
-
-  if (edgeGroupSourceIndices.length === 1) {
-    cardinality = childPlanNode
-      .getMatchGroup()
-      .filter((m) => m.sourceIndex === edgeGroupSourceIndices[0])[0].data.exactCardinality;
-  }
+  const cardinalitySet = new Set(childPlanNode.getMatchGroup().map((n) => n.data.exactCardinality));
+  const cardinality = cardinalitySet.size > 1 ? null : [...cardinalitySet][0];
 
   const isEarlyProbeEdge =
     EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
@@ -100,13 +94,13 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     const color = getColorForIndex(sourceIndex);
 
     const myAnim = keyframes`
-          0% {
-            stroke-dashoffset: ${actualGap * j + groupSize * actualGap};
-          }
-          100% {
-            stroke-dashoffset: ${actualGap * j};
-          }
-        `;
+      0% {
+        stroke-dashoffset: ${actualGap * j + groupSize * actualGap};
+      }
+      100% {
+        stroke-dashoffset: ${actualGap * j};
+      }
+    `;
 
     return (
       <path
@@ -116,7 +110,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
         markerEnd={markerEnd}
         style={{
           ...style,
-          strokeWidth: Math.log(cardinality) + 1,
+          strokeWidth: Math.log(cardinality ?? 10) + 1,
           stroke: color,
           strokeDasharray: `${actualGap}, ${(groupSize - 1) * actualGap}`
         }}
@@ -146,7 +140,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
               padding: 4
             }}
             className="nodrag nopan">
-            {cardinality}
+            {cardinality ?? '???'}
           </div>
         </EdgeLabelRenderer>
       )}
