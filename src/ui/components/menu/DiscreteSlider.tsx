@@ -46,10 +46,18 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
     return <></>;
   };
 
+  function selectValue(newOffset: number) {
+    if (props.labeledValues[newOffset / step].disabled) {
+      return;
+    }
+    const newValue = props.labeledValues[newOffset / step].value;
+    props.onChange(newValue);
+  }
+
   const defaultPos = props.labeledValues.findIndex((lv) => lv.value === props.defaultValue) * step;
   return (
     <Box
-        height="100%"
+      height="100%"
       width={hoverActive ? '9vw' : '2vw'}
       sx={{
         transition: 'width 0.5s'
@@ -66,10 +74,7 @@ export default function DiscreteSliderPicker<T>(props: IDiscreteSliderPickerProp
         step={step}
         value={defaultPos}
         components={{ MarkLabel: ExpandingSliderMark }}
-        onChange={(_, newOffset) => {
-          const newValue = props.labeledValues[(newOffset as number) / step].value;
-          props.onChange(newValue);
-        }}></Slider>
+        onChange={(_, newOffset) => selectValue(newOffset as number)}></Slider>
     </Box>
   );
 }

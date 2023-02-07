@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+
 import React from 'react';
 import {
   EdgeLabelRenderer,
@@ -9,7 +11,9 @@ import {
 import { PlanNode } from '../../../model/operator/PlanData';
 import { EdgeType, useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/EarlyProbe';
-import { getColorForSubset } from './color';
+import { getColorForIndex } from './color';
+import { css, keyframes } from '@emotion/react/macro';
+import { DASHARRAY_GAP } from './dimensions';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
@@ -38,7 +42,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
 
   const [childPlanData, parentPlanData] = [childPlanNode.data, parentPlanNode.data];
 
-  let edgePath, labelX, labelY;
+  let edgePath: string | undefined, labelX, labelY;
   switch (parameters.edgeType) {
     case EdgeType.BEZIER:
       [edgePath, labelX, labelY] = getBezierPath({
@@ -70,7 +74,6 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
       break;
   }
 
-  let pathStroke: string;
   let cardinality = childPlanData.exactCardinality;
 
   const edgeGroupSourceIndices: number[] = [];
@@ -82,13 +85,6 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     }
   }
 
-  if (edgeGroupSourceIndices.length === 0) {
-    pathStroke = 'black';
-    console.log(childPlanNode.getMatchGroup(), parentPlanNode.getMatchGroup());
-  } else {
-    pathStroke = getColorForSubset(edgeGroupSourceIndices);
-  }
-
   if (edgeGroupSourceIndices.length === 1) {
     cardinality = childPlanNode
       .getMatchGroup()
@@ -98,8 +94,21 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   const isEarlyProbeEdge =
     EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
 
-  return (
-    <>
+  const groupSize = edgeGroupSourceIndices.length + 1;
+  const actualGap = DASHARRAY_GAP / groupSize;
+  const paths = edgeGroupSourceIndices.map((sourceIndex, j) => {
+    const color = getColorForIndex(sourceIndex);
+
+    const myAnim = keyframes`
+          0% {
+            stroke-dashoffset: ${actualGap * j + groupSize * actualGap};
+          }
+          100% {
+            stroke-dashoffset: ${actualGap * j};
+          }
+        `;
+
+    return (
       <path
         id={id}
         className="react-flow__edge-path"
@@ -108,33 +117,36 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
         style={{
           ...style,
           strokeWidth: Math.log(cardinality) + 1,
-          stroke: pathStroke,
-          strokeDasharray: 5,
-          animation: 'dashdraw 0.5s linear infinite'
+          stroke: color,
+          strokeDasharray: `${actualGap}, ${(groupSize - 1) * actualGap}`
         }}
+        css={css`
+          animation: ${myAnim} 0.5s linear infinite;
+        `}
       />
+    );
+  });
+
+  return (
+    <>
+      {paths}
       {!isEarlyProbeEdge && (
         <EdgeLabelRenderer>
           <div
             style={{
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              background: '#ffffff',
+              background: '#ffffffd0',
               fontSize: 12,
-              fontWeight: 700
+              fontWeight: 500,
+              borderRadius: 5,
+              borderWidth: 1,
+              borderStyle: 'solid',
+              borderColor: 'black',
+              padding: 4
             }}
             className="nodrag nopan">
-            <div
-              //className="border-dance"
-              style={{
-                borderRadius: 5,
-                borderWidth: 2,
-                borderColor: pathStroke,
-                borderStyle: 'dashed',
-                padding: 10
-              }}>
-              {cardinality}
-            </div>
+            {cardinality}
           </div>
         </EdgeLabelRenderer>
       )}

@@ -1,7 +1,7 @@
-import { schemeAccent as d3SchemeAccent } from 'd3-scale-chromatic';
+import { schemeTableau10 as d3Scheme } from 'd3-scale-chromatic';
 import { powerSet } from '../Legend';
 
-const COLORS: readonly string[] = d3SchemeAccent.filter((color) => color != '#ffff99');
+const COLORS: readonly string[] = d3Scheme.map((color) => color.substring(0, 7) + 'c0');
 
 export function getColorForIndex(index: number): string {
   return COLORS[index];

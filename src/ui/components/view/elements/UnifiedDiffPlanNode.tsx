@@ -2,12 +2,18 @@ import React, { useState } from 'react';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { Handle, Position } from 'reactflow';
 import { useParameterState } from '../../../state/ParameterStore';
-import { Box, IconButton, Popover, Stack } from '@mui/material';
+import { Box, IconButton, Paper, Popover, Stack } from '@mui/material';
 import { ExpandMore, Menu } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
-import { NODE_BORDER_RADIUS, NODE_HEIGHT, NODE_PADDING, NODE_WIDTH } from './dimensions';
+import {
+  NODE_BORDER_RADIUS,
+  NODE_ELEVATION,
+  NODE_HEIGHT,
+  NODE_PADDING,
+  NODE_WIDTH
+} from './dimensions';
 import NodeDetails from './NodeDetails';
-import { getColorForSubset } from './color';
+import { getColorForIndex, getColorForSubset } from './color';
 
 export interface IUnifiedDiffProps {
   data: {
@@ -35,64 +41,81 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
 
   let bgColor = getColorForSubset(planNode.getGroupSourceIndices());
 
+  let groupSize = planNode.getGroupSourceIndices().length;
+
+  // this will become a linear gradient
+  let background =
+    'linear-gradient(to right, ' +
+    planNode
+      .getGroupSourceIndices()
+      .map((sourceIndex, j) => {
+        const color = getColorForIndex(sourceIndex);
+        const start = Math.floor((j * 100) / groupSize);
+        const end = Math.floor(((j + 1) * 100) / groupSize);
+        return `${color} ${start}%, ${color} ${end}%`;
+      })
+      .join(', ') +
+    ')';
   return (
-    <Box
-      bgcolor={bgColor}
-      width={NODE_WIDTH}
-      height={NODE_HEIGHT}
-      borderRadius={NODE_BORDER_RADIUS}
-      sx={{
-        borderStyle: planNode.isLeaf() ? 'dotted' : 'none'
-      }}
-      padding={NODE_PADDING}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      onMouseEnter={() => setHoverActive(true)}
-      onMouseLeave={() => setHoverActive(false)}>
-      <Handle type="target" position={Position.Top} style={{ opacity: '0' }} />
-      <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
-        <Component data={metaPlanData} />
-        {hoverActive &&
-          parameters.collapsible &&
-          !planNode.isLeaf() &&
-          (hasExpanded ? (
-            <IconButton
-              onClick={() => {
-                setHasExpanded(false);
-                hide();
-              }}>
-              <ExpandMore sx={{ transform: 'rotate(180deg)' }} />
-            </IconButton>
-          ) : (
-            <IconButton
-              onClick={() => {
-                setHasExpanded(true);
-                expand();
-              }}>
-              <ExpandMore />
-            </IconButton>
-          ))}
-        {hoverActive && (
-          <>
-            <IconButton
-              onClick={(event) => {
-                console.log(planNode);
-                setDetailsAnchorEl(event.currentTarget);
-              }}>
-              <Menu />
-            </IconButton>
-            <Popover
-              anchorEl={detailsAnchorEl}
-              open={detailsAnchorEl != null}
-              onClose={() => setDetailsAnchorEl(null)}>
-              <NodeDetails planNodes={planNode.getMatchGroup()} />
-            </Popover>
-          </>
-        )}
+    <Paper elevation={NODE_ELEVATION}>
+      <Stack
+        width={NODE_WIDTH}
+        height={NODE_HEIGHT}
+        borderRadius={NODE_BORDER_RADIUS}
+        sx={{
+          background: background,
+          borderStyle: planNode.isLeaf() ? 'dotted' : 'none'
+        }}
+        padding={NODE_PADDING}
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        fontWeight={800}
+        onMouseEnter={() => setHoverActive(true)}
+        onMouseLeave={() => setHoverActive(false)}>
+        <Handle type="target" position={Position.Top} style={{ opacity: '0' }} />
+        <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
+          <Component data={metaPlanData} />
+          {hoverActive &&
+            parameters.collapsible &&
+            !planNode.isLeaf() &&
+            (hasExpanded ? (
+              <IconButton
+                onClick={() => {
+                  setHasExpanded(false);
+                  hide();
+                }}>
+                <ExpandMore sx={{ transform: 'rotate(180deg)' }} />
+              </IconButton>
+            ) : (
+              <IconButton
+                onClick={() => {
+                  setHasExpanded(true);
+                  expand();
+                }}>
+                <ExpandMore />
+              </IconButton>
+            ))}
+          {hoverActive && (
+            <>
+              <IconButton
+                onClick={(event) => {
+                  console.log(planNode);
+                  setDetailsAnchorEl(event.currentTarget);
+                }}>
+                <Menu />
+              </IconButton>
+              <Popover
+                anchorEl={detailsAnchorEl}
+                open={detailsAnchorEl != null}
+                onClose={() => setDetailsAnchorEl(null)}>
+                <NodeDetails planNodes={planNode.getMatchGroup()} />
+              </Popover>
+            </>
+          )}
+        </Stack>
+        <Handle type="source" position={Position.Bottom} style={{ opacity: '0' }} />
       </Stack>
-      <Handle type="source" position={Position.Bottom} style={{ opacity: '0' }} />
-    </Box>
+    </Paper>
   );
 }

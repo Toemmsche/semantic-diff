@@ -65,6 +65,7 @@
     "react-sticky-box": "^1.0.2",
     "react-sweet-state": "^2.6.5",
     "reactflow": "^11.3.3",
+    "styled-components": "^5.3.6",
     "typeface-roboto": "^1.1.13",
     "uuid": "^9.0.0",
     "vkbeautify": "^0.99.3",
@@ -92,6 +93,7 @@
   "devDependencies": {
     "@types/animejs": "^3.1.7",
     "@types/dagre-d3": "^0.6.3",
+    "@types/styled-components": "^5.1.26",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",

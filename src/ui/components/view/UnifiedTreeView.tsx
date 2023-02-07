@@ -7,10 +7,7 @@ import useAnimatedNodes from '../useAnimatedNodes';
 import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';
 import CustomUnifiedEdge, { ICustomUnifiedEdgeData } from './elements/CustomUnifiedEdge';
-import {
-  useLayouter,
-  useParameterState
-} from '../../state/ParameterStore';
+import { useLayouter, useParameterState } from '../../state/ParameterStore';
 import DefaultNormalizer from './normalize/DefaultNormalizer';
 import { defaultTreeLayoutOptions } from './layout/ITreeLayoutOptions';
 import { NODE_HEIGHT, NODE_WIDTH } from './elements/dimensions';
@@ -42,7 +39,6 @@ export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
     []
   );
 
-  // @ts-ignore
   const edgeTypes = useMemo(
     () => ({
       customEdge: CustomUnifiedEdge

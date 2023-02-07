@@ -11,6 +11,7 @@ import { QueryPlanResultCollection } from '../../../ui/state/QueryPlanResult';
 import GroupBy from '../../../ui/model/operator/GroupBy';
 import Sort from '../../../ui/model/operator/Sort';
 import { EarlyProbe } from '../../../ui/model/operator/EarlyProbe';
+import { Result } from '../../../ui/model/operator/Result';
 
 export default class PlanNodeBrowserSerDes
   extends TNodeBrowserSerDes
@@ -22,6 +23,8 @@ export default class PlanNodeBrowserSerDes
     attributes: Map<string, string>
   ): TNodeBuilder<PlanData> {
     switch (tagName) {
+      case Result.LABEL:
+        return new TNodeBuilder<Result>().data(new Result(tagName, text, attributes));
       case TableScan.LABEL:
         return new TNodeBuilder<TableScan>().data(new TableScan(tagName, text, attributes));
       case Join.LABEL:
