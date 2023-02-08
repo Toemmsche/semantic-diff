@@ -1,5 +1,5 @@
 import { Box, Chip, IconButton, Modal, Stack } from '@mui/material';
-import QueryPlanResult from '../../state/QueryPlanResult';
+import QueryPlanResult from '../../model/meta/QueryPlanResult';
 import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useAllLabels, useQueryPlanState } from '../../state/QueryPlanResultStore';
@@ -16,8 +16,8 @@ export default function QueryPlanDiffChart(props: {}) {
   // TODO get the selected query some other way
 
   let selectedQprs = [] as QueryPlanResult[];
-  if (qprState.resultSelection) {
-    const selectedQuery = qprState.resultSelection!![0].query;
+  if (qprState.resultSelection.length > 0) {
+    const selectedQuery = qprState.resultSelection.filter((qpr) => qpr != null)[0]!.query;
     selectedQprs = qprState.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
   }
 

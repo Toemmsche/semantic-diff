@@ -21,7 +21,7 @@ import { Query, System } from '../../model/meta/types';
 import { max, scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
-import { ComparisonMetric } from '../../state/BenchmarkResult';
+import { ComparisonMetric } from '../../model/meta/BenchmarkResult';
 import { useNwayDiff } from '../../state/ParameterStore';
 
 export interface IQueryPlanResultDiffProps {}
@@ -31,45 +31,42 @@ const betterColorScale = d3ScaleLinear<string>().domain([1, 0]).range(['#00bb00'
 const worseColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#808080', '#ff0000']); //red
 
 export default function PlanPicker(props: IQueryPlanResultDiffProps) {
-  const [baselineDbms, setBaseLineDbms] = useState(undefined as Nullable<System>);
+  const [baselineSystem, setBaselineSystem] = useState(undefined as Nullable<System>);
   const [selectedMetric, setSelectedMetric] = useState('total' as ComparisonMetric);
   const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
-  const [compDbms, setCompDbms] = useState([] as System[]);
+  const [compSystem, setCompSystem] = useState([] as System[]);
   const [state, actions] = useQueryPlanState();
   const [nwayDiff] = useNwayDiff();
+  const [allLabels] = useAllLabels();
+  const [availableSystems] = useUniqueSystems();
 
   useEffect(() => {
-    if (baselineDbms && selectedQuery) {
+    if (baselineSystem && selectedQuery) {
       actions.setResultSelection(
-        [baselineDbms, ...compDbms].map(
-          (system) =>
-            state.queryPlanResults.find(
-              (qpr) => qpr.system === system && qpr.query === selectedQuery
-            )!
+        availableSystems.map((system) =>
+          [baselineSystem, ...compSystem].includes(system)
+            ? state.queryPlanResults.find(
+                (qpr) => qpr.system === system && qpr.query === selectedQuery
+              )!
+            : null
         )
       );
     } else {
-      actions.setResultSelection(null);
+      actions.setResultSelection([]);
     }
-  }, [baselineDbms, selectedQuery, compDbms]);
+  }, [baselineSystem, selectedQuery, compSystem]);
 
   useEffect(() => {
     // reset selection if n-way diff is disabled
-    if (!nwayDiff && compDbms.length > 0) {
-      setCompDbms([]);
+    if (!nwayDiff && compSystem.length > 0) {
+      setCompSystem([]);
     }
   }, [nwayDiff]);
-
-  // Labels
-  const [allLabels] = useAllLabels();
-
-  // system
-  const [availableDbms] = useUniqueSystems();
 
   const qprForSelectedQuery = state.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
 
   const baseLineQprForSelectedQuery = state.queryPlanResults.find(
-    (qpr) => qpr.query === selectedQuery && qpr.system === baselineDbms
+    (qpr) => qpr.query === selectedQuery && qpr.system === baselineSystem
   );
 
   const QueriesSet = new Set(state.queryPlanResults.map((qpr) => qpr.query));
@@ -79,10 +76,10 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     .map((query) => ({
       query,
       baselineResult: state.queryPlanResults.find((qpr) => {
-        return qpr.system === baselineDbms && qpr.query === query;
+        return qpr.system === baselineSystem && qpr.query === query;
       }),
       otherResults: state.queryPlanResults.filter((qpr) => {
-        return qpr.system !== baselineDbms && qpr.query === query;
+        return qpr.system !== baselineSystem && qpr.query === query;
       })
     }))
     .map((obj) => ({
@@ -200,7 +197,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   function BaselineComponent(props: {}) {
     const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
 
-    const BaselineItems = availableDbms.map((system) => {
+    const BaselineItems = availableSystems.map((system) => {
       return (
         <MenuItem key={system} value={system}>
           {system}
@@ -210,8 +207,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
     function resetBaseline(newBaseline: System) {
       // keep query selected
-      setCompDbms([]);
-      setBaseLineDbms(newBaseline);
+      setCompSystem([]);
+      setBaselineSystem(newBaseline);
     }
 
     return (
@@ -219,7 +216,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         <InputLabel>Baseline</InputLabel>
         <Select
           label="Baseline"
-          value={baselineDbms ?? ''}
+          value={baselineSystem ?? ''}
           onChange={(e) => resetBaseline(e.target.value as System)}>
           {BaselineItems}
         </Select>
@@ -250,23 +247,23 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         }
 
         function addOrRemoveComp(system: System) {
-          if (compDbms.includes(system)) {
-            compDbms.splice(compDbms.indexOf(system), 1);
+          if (compSystem.includes(system)) {
+            compSystem.splice(compSystem.indexOf(system), 1);
             // ensure that object identity changes
-            setCompDbms(compDbms.slice());
-          } else if (compDbms.length == 0 || nwayDiff) {
+            setCompSystem(compSystem.slice());
+          } else if (compSystem.length == 0 || nwayDiff) {
             // only allow multi selection if n-way diff is enabled
-            setCompDbms([...compDbms, system]);
+            setCompSystem([...compSystem, system]);
           } else {
             // compbDbms.length === 1
-            setCompDbms([system]);
+            setCompSystem([system]);
           }
         }
 
         return (
           <Chip
             key={system}
-            color={compDbms.includes(system) ? 'primary' : 'default'}
+            color={compSystem.includes(system) ? 'primary' : 'default'}
             sx={{
               borderRadius: '16px'
             }}

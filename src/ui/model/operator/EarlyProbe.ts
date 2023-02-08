@@ -15,38 +15,36 @@ export class EarlyProbe extends PlanData {
     return data.label === EarlyProbe.LABEL;
   }
 
-  public static handleEarlyProbes(unifiedTree: PlanNode) {
+  public static handleEarlyProbes(tree: PlanNode) {
     // look for temp scans
-    unifiedTree.toPreOrderUnique().forEach((node) => {
+    tree.toPreOrderUnique().forEach((node) => {
       if (!EarlyProbe.isEarlyProbe(node.data)) {
         return;
       }
       if (!node.data.source) {
-        throw new Error('EarlyProbe is missing source');
+        throw new Error('EearlyProbe is missing source');
       }
+      const source = node.data.source;
 
-      // find all sources (current and match)
-      const sources = [node.data.source];
-      if (node.isMatched()) {
-        const matchData = node.getSingleMatch().data;
-        if (!(matchData instanceof EarlyProbe) || matchData.source == null) {
-          throw new Error('Match of EarlyProbe is not a EarlyProbe or missing source');
-        }
-        sources.push(matchData.source);
-      }
-
-      unifiedTree
+      tree
         .toPreOrderUnique()
-        .filter(
-          (n) =>
-            n.origin === node.origin &&
-            sources.some((s) => s === n.data.operatorId) &&
-            !n.children.some((c) => c === node)
-        )
+        .filter((p) => p.data.operatorId === source && !p.children.some((c) => c === node))
         .forEach((sourceNode) => {
-          // appended at the end?
-          sourceNode.children.push(node);
+          sourceNode.appendChildExtra(node);
         });
     });
+  }
+
+  public static isEarlyProbeEdge(parent: PlanNode, child: PlanNode) {
+    return (
+      this.isEarlyProbe(child.data) &&
+      parent
+        .getMatchGroup()
+        .some(
+          (p) =>
+            p.sourceIndex === child.sourceIndex &&
+            p.data.operatorId === (child.data as EarlyProbe).source
+        )
+    );
   }
 }

@@ -147,6 +147,9 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
 
 export const useParameterState = createHook(ParameterStore);
 
+export const useCollapsible = createHook(ParameterStore, {
+  selector: (state: IParameterState) => state.collapsible
+});
 export const useMatchAlgorithm = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.matchAlgorithm
 });
@@ -156,7 +159,6 @@ export const useRenderDagEdges = createHook(ParameterStore, {
 export const useNwayDiff = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.nwayDiff
 });
-
 
 export const useLayouter = createHook(ParameterStore, {
   selector: (state: IParameterState): IBlockingLayouter | IAsyncLayouter => {

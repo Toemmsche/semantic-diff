@@ -7,11 +7,12 @@ import { TableScan } from '../../../ui/model/operator/TableScan';
 import { Nullable } from '../../Types';
 import Join from '../../../ui/model/operator/Join';
 import { PipelineBreakerScan } from '../../../ui/model/operator/PipelineBreakerScan';
-import { QueryPlanResultCollection } from '../../../ui/state/QueryPlanResult';
+import { QueryPlanResultCollection } from '../../../ui/model/meta/QueryPlanResult';
 import GroupBy from '../../../ui/model/operator/GroupBy';
 import Sort from '../../../ui/model/operator/Sort';
 import { EarlyProbe } from '../../../ui/model/operator/EarlyProbe';
 import { Result } from '../../../ui/model/operator/Result';
+import SetOperation from '../../../ui/model/operator/SetOperation';
 
 export default class PlanNodeBrowserSerDes
   extends TNodeBrowserSerDes
@@ -39,6 +40,8 @@ export default class PlanNodeBrowserSerDes
         return new TNodeBuilder<Sort>().data(new Sort(tagName, text, attributes));
       case EarlyProbe.LABEL:
         return new TNodeBuilder<EarlyProbe>().data(new EarlyProbe(tagName, text, attributes));
+      case SetOperation.LABEL:
+        return new TNodeBuilder<SetOperation>().data(new SetOperation(tagName, text, attributes));
       default:
         return new TNodeBuilder<PlanData>().data(new PlanData(tagName, text, attributes));
     }

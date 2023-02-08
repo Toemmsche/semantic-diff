@@ -24,9 +24,9 @@ export default class DefaultNormalizer implements INormalizer {
         id: nodeId,
         type: 'customNode',
         data: options.computeData(planNode)
-      } as any;
+      } as Partial<Node>;
 
-      nodes.push(normalizedNode);
+      nodes.push(normalizedNode as Node);
 
       planNode.children.filter(options.filter).forEach((child) => {
         const source = nodeId;

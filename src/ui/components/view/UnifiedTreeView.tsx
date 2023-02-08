@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import ReactFlow, { ReactFlowProvider, useEdgesState, useReactFlow } from 'reactflow';
+import ReactFlow, { useEdgesState, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { PlanNode } from '../../model/operator/PlanData';
 import RefreshLayout, { fitLater } from './layout/RefreshLayout';
@@ -17,14 +17,6 @@ export interface IUnifiedTreeViewProps {
 }
 
 export default function UnifiedTreeView(props: IUnifiedTreeViewProps) {
-  return (
-    <ReactFlowProvider>
-      <UnifiedTreeFlow {...props}></UnifiedTreeFlow>
-    </ReactFlowProvider>
-  );
-}
-
-export function UnifiedTreeFlow(props: IUnifiedTreeViewProps) {
   const { unifiedTree } = props;
 
   const [parameters] = useParameterState();

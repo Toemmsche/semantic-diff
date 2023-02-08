@@ -1,4 +1,4 @@
-import { Box, Paper, Stack } from '@mui/material';
+import { Paper, Stack } from '@mui/material';
 import React from 'react';
 import { useQueryPlanState } from '../../state/QueryPlanResultStore';
 import {
@@ -28,8 +28,11 @@ export default function Legend(props: {}) {
   const Boxes = Array(qprState.resultSelection.length)
     .fill(null)
     .map((_, index) => {
+      if (!qprState.resultSelection[index]) {
+        return <></>;
+      }
       const color = getColorForIndex(index);
-      const innerText = qprState.resultSelection![index].system;
+      const innerText = qprState.resultSelection[index]!.system;
       return (
         <Paper elevation={NODE_ELEVATION}>
           <Stack

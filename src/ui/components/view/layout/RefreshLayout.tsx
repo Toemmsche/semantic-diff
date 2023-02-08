@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 // internal helper component that manages layouting/
-import { Node, ReactFlowInstance, useReactFlow } from 'reactflow';
+import { Node, ReactFlowInstance, useReactFlow, useStore } from 'reactflow';
 import React from 'react';
 import { Fab } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
@@ -25,6 +25,8 @@ export function fitLater(reactFlowInstance: ReactFlowInstance) {
 }
 
 export default function RefreshLayout(props: INodeLayouterProps) {
+  const internalNodeState = useStore((store) => store.nodeInternals);
+  const edges = useStore((store) => store.edges);
   const reactFlowInstance = useReactFlow();
   const [layouter] = useLayouter();
   const nodeHasDimension = (node: Node) => node.width != null && node.height != null;
@@ -32,14 +34,13 @@ export default function RefreshLayout(props: INodeLayouterProps) {
   function changeLayout() {
     console.log('changing layout...');
 
-    const internalNodes = reactFlowInstance.getNodes();
-    const internalEdges = reactFlowInstance.getEdges();
+    const internalNodes = new Array(...internalNodeState.entries()).map((entry) => {
+      const [id, node] = entry;
+      return node;
+    });
+    console.log(internalNodes);
     if (internalNodes.length > 0 && internalNodes.every(nodeHasDimension)) {
-      const layoutNodes = layouter.treeLayout(
-        internalNodes,
-        internalEdges,
-        defaultTreeLayoutOptions
-      );
+      const layoutNodes = layouter.treeLayout(internalNodes, edges, defaultTreeLayoutOptions);
       if (layoutNodes instanceof Promise) {
         layoutNodes.then((ln) => {
           props.nodeSetter(ln);

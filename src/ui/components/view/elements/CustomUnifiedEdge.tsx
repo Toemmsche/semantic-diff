@@ -14,11 +14,40 @@ import { EarlyProbe } from '../../../model/operator/EarlyProbe';
 import { getColorForIndex } from './color';
 import { css, keyframes } from '@emotion/react/macro';
 import { DASHARRAY_GAP } from './dimensions';
+import { PipelineBreakerScan } from '../../../model/operator/PipelineBreakerScan';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
 
   childPlanNode: PlanNode;
+}
+
+function roughlyEqual(first: number, second: number) {
+  if (first < second) {
+    [first, second] = [second, first];
+  }
+  // tolerate a 20% error in cardinality
+  return 1 - second / first <= 0.2;
+}
+
+function shortCardinality(cardinality: number): string {
+  // just hack this, does not have to be efficient
+  const [exp, suffix] = [
+    [0, ''],
+    [3, 'k'],
+    [6, 'M'],
+    [9, 'B']
+  ][Math.floor(Math.log10(cardinality) / 3)] as [number, string];
+
+  let short;
+  if (cardinality < Math.pow(10, exp + 1) && suffix !== '') {
+    // turns 1240 into 1.2k
+    short = (cardinality / Math.pow(10, exp)).toFixed(1);
+  } else {
+    // turns 6101234 into 610M
+    short = Math.floor(cardinality / Math.pow(10, exp));
+  }
+  return short + suffix;
 }
 
 export default function CustomUnifiedEdge(props: EdgeProps) {
@@ -75,15 +104,28 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   }
 
   const edgeGroupSourceIndices: number[] = [];
+  let cardinalities = [];
   for (const participant of childPlanNode.getMatchGroup()) {
     // The edge exists in the tree this participant originally belonged to if the participant is in the child group and its parent is in the parent group
-    const edgeExists = parentPlanNode.getMatchGroup().includes(participant.getParent());
+    const edgeExists =
+      parentPlanNode.getMatchGroup().includes(participant.getParent()) ||
+      PipelineBreakerScan.isPipelineBreakerScanEdge(parentPlanNode, childPlanNode) ||
+      EarlyProbe.isEarlyProbeEdge(parentPlanNode, childPlanNode);
     if (edgeExists) {
       edgeGroupSourceIndices.push(participant.sourceIndex);
+      cardinalities.push(participant.data.exactCardinality);
     }
   }
-  const cardinalitySet = new Set(childPlanNode.getMatchGroup().map((n) => n.data.exactCardinality));
-  const cardinality = cardinalitySet.size > 1 ? null : [...cardinalitySet][0];
+  const [avgCardinality, allCardinalitiesEqual] = cardinalities.reduce(
+    ([curr, allEqual], cardinality) => {
+      if (curr == null || !roughlyEqual(curr, cardinality)) {
+        return [null, false];
+      }
+      // just average
+      return [(curr + cardinality) / 2, curr === cardinality && allEqual];
+    },
+    [cardinalities[0], true] as [number | null, boolean]
+  );
 
   const isEarlyProbeEdge =
     EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
@@ -104,13 +146,13 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
 
     return (
       <path
-        id={id}
+        key={sourceIndex}
         className="react-flow__edge-path"
         d={edgePath}
         markerEnd={markerEnd}
         style={{
           ...style,
-          strokeWidth: Math.log(cardinality ?? 10) + 1,
+          strokeWidth: Math.log(avgCardinality ?? 10) + 1,
           stroke: color,
           strokeDasharray: `${actualGap}, ${(groupSize - 1) * actualGap}`
         }}
@@ -138,9 +180,10 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
               borderStyle: 'solid',
               borderColor: 'black',
               padding: 4
-            }}
-            className="nodrag nopan">
-            {cardinality ?? '???'}
+            }}>
+            {avgCardinality
+              ? (allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)
+              : '???'}
           </div>
         </EdgeLabelRenderer>
       )}

@@ -8,10 +8,6 @@ import { useQueryPlanState } from '../../../state/QueryPlanResultStore';
 export default function NodeDetails(props: { planNodes: PlanNode[] }) {
   const { planNodes } = props;
 
-  const [qprState] = useQueryPlanState();
-
-  const systems = qprState.resultSelection!!.map((qpr) => qpr.system);
-
   // Generate table for all properties
   const allKeys = [...new Set(planNodes.flatMap((n) => [...n.attributes.keys()]))];
 

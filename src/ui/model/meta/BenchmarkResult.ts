@@ -1,4 +1,4 @@
-import { Nullable } from '../../semantic-diff/Types';
+import { Nullable } from '../../../semantic-diff/Types';
 
 export default interface BenchmarkResult {
   // Most of these values will be undefined, but total runtime is required
@@ -21,6 +21,4 @@ export default interface BenchmarkResult {
 }
 
 // only allow number types
-export type ComparisonMetric = keyof BenchmarkResult
-
-
+export type ComparisonMetric = keyof BenchmarkResult;

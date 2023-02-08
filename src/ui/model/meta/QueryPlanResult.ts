@@ -1,4 +1,4 @@
-import { Dataset, Query, System } from '../model/meta/types';
+import { Dataset, Query, System } from './types';
 import BenchmarkResult from './BenchmarkResult';
 
 export default interface QueryPlanResult {

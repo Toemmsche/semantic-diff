@@ -335,6 +335,11 @@ export default class TNode<T> {
 
   // =============== NWAY STUFF =================
 
+  appendChildExtra(node: TNode<T>): void {
+    // append without setting parent or index
+    this.children.push(node);
+  }
+
   getMatchGroup(): TNode<T>[] {
     return [this, ...this._matches];
   }

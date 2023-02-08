@@ -1,4 +1,12 @@
-import { PlanData, PlanNode, RenderPlanNode } from './PlanData';
+import { PlanData, PlanNode } from './PlanData';
+import { Box } from '@mui/material';
+import React from 'react';
+
+export function RenderPipelineBreakerScan(props: {}) {
+  return (
+    <Box>PIPELINEBREAKERSCAN PIPESDFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFf</Box>
+  );
+}
 
 export class PipelineBreakerScan extends PlanData {
   public static LABEL = 'PipelineBreakerScan';
@@ -8,7 +16,7 @@ export class PipelineBreakerScan extends PlanData {
   }
 
   component(): Function {
-    return RenderPlanNode;
+    return RenderPipelineBreakerScan;
   }
 
   static isPipelineBreakerScan(data: PlanData): data is PipelineBreakerScan {
@@ -29,8 +37,20 @@ export class PipelineBreakerScan extends PlanData {
         .toPreOrderUnique()
         .filter((n) => n.data.operatorId === scannedId && !node.children.some((c) => c === n))
         .forEach((scannedNode) => {
-          node.children.push(scannedNode);
+          node.appendChildExtra(scannedNode);
         });
     });
+  }
+
+  public static isPipelineBreakerScanEdge(parent: PlanNode, child: PlanNode) {
+    // check if match group of parent contains scan of child
+    return parent
+      .getMatchGroup()
+      .some(
+        (p) =>
+          p.sourceIndex === child.sourceIndex &&
+          this.isPipelineBreakerScan(p.data) &&
+          p.data.scannedId === child.data.operatorId
+      );
   }
 }

@@ -9,7 +9,6 @@ import { useQueryPlanState } from '../state/QueryPlanResultStore';
 import {
   getMatchPipelineForAlgorithm,
   useMatchAlgorithm,
-  useNwayDiff,
   useRenderDagEdges
 } from '../state/ParameterStore';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
@@ -20,39 +19,47 @@ import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator
 import Origin from '../../semantic-diff/tree/Origin';
 import UnionFind from '../../semantic-diff/lib/UnionFind';
 import { hasDuplicates } from '../../semantic-diff/lib/ArrayUtil';
+import { ReactFlowProvider } from 'reactflow';
 
 /**
  * Root Component for QueryPlan diff view
  */
 export default function QueryPlanDiff() {
   const [state] = useQueryPlanState();
-  const [nwayDiff] = useNwayDiff();
   const [renderDagEdges] = useRenderDagEdges();
   const [matchAlgorithm] = useMatchAlgorithm();
 
   let GraphView;
-  if (state.resultSelection && state.resultSelection.length > 0) {
+  if (state.resultSelection.length > 0) {
     const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
-    const plans = state.resultSelection.map((qpr) =>
-      planSerdes.parseFromString(qpr.queryPlanXml, true)
-    );
-
-    plans.forEach((plan, i) => {
-      if (renderDagEdges) {
-        PipelineBreakerScan.handlePipelineBreakerScans(plan);
-        EarlyProbe.handleEarlyProbes(plan);
-      }
-      plan
-        .toPreOrderUnique()
-        .forEach((n) => (n.origin = new Origin(i, i, state.resultSelection![i].system)));
-    });
+    let workingIndex = 0;
+    const plans = state.resultSelection
+      .map((qpr, i) => {
+        // do not skip nulls with filter, we need the updated index
+        if (!qpr) {
+          return null;
+        }
+        const plan = planSerdes.parseFromString(qpr.queryPlanXml, true);
+        if (renderDagEdges) {
+          PipelineBreakerScan.handlePipelineBreakerScans(plan);
+          EarlyProbe.handleEarlyProbes(plan);
+        }
+        plan
+          .toPreOrderUnique()
+          .forEach((n) => (n.origin = new Origin(i, workingIndex, qpr.system)));
+        // ensure working indices are adjacent
+        workingIndex++;
+        return plan;
+      })
+      // now filter nulls
+      .filter((plan) => plan != null) as PlanNode[];
 
     const matchPipeline = getMatchPipelineForAlgorithm(matchAlgorithm);
     let unifiedTree;
-    if (state.resultSelection.length === 1) {
+    if (plans.length === 1) {
       // SIMPLE VIEW
       unifiedTree = plans[0];
-    } else if (state.resultSelection.length === 2) {
+    } else if (plans.length === 2) {
       // TWO-WAY DIFF
       matchPipeline.execute(plans[0], plans[1], new Comparator(defaultDiffOptions));
       unifiedTree = new UnifiedTreeGenerator<PlanData>(defaultDiffOptions).generate(
@@ -61,8 +68,6 @@ export default function QueryPlanDiff() {
       );
     } else {
       // N-WAY DIFF
-
-      const matches = new Map<PlanNode, Set<PlanNode>>();
 
       const unionFind = new UnionFind<PlanNode>();
       // set exclusive source index
@@ -128,7 +133,7 @@ export default function QueryPlanDiff() {
   return (
     <Stack direction="column" height="inherit" width="inherit">
       <FloatingMenu></FloatingMenu>
-      {GraphView}
+      <ReactFlowProvider>{GraphView}</ReactFlowProvider>
     </Stack>
   );
 }
