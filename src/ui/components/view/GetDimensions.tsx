@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import IAsyncLayouter from './layout/IAsyncLayouter';
 import IBlockingLayouter from './layout/IBlockingLayouter';
@@ -79,26 +79,54 @@ function normalizeAndLayout(
   }
 }
 
-function Dimentor<T>(props: {
+export interface IDimentorProps<T> {
   item: T;
+  dimensions: any;
   callback: (item: T, width: number, height: number) => void;
   renderFunc: (item: T) => any;
-}) {
-  const { item, callback, renderFunc } = props;
-  const childRef = useRef(null);
+}
 
-  useLayoutEffect(() => {
+class Dimentor<T> extends React.Component<
+  IDimentorProps<T>,
+  {
+    childRef: any;
+  }
+> {
+  childRef: any;
+
+  constructor(props: any) {
+    super(props);
+    this.childRef = React.createRef();
+  }
+
+  shouldComponentUpdate(
+    nextProps: Readonly<IDimentorProps<T>>,
+    nextState: Readonly<{ childRef: any }>,
+    nextContext: any
+  ): boolean {
+    return !nextProps.dimensions.has(nextProps.item);
+  }
+
+  componentDidUpdate() {
     //console.log('render dimentor');
     // @ts-ignore
-    callback(item, childRef.current!.clientWidth, childRef.current!.clientHeight);
-  });
+    this.props.callback(
+      this.props.item,
+      this.childRef.current!.clientWidth,
+      this.childRef.current!.clientHeight
+    );
+  }
 
-  return (
-    // shed all excess height and width
-    <Box ref={childRef} height="max-content" width="max-content">
-      {renderFunc(item)}
-    </Box>
-  );
+  render() {
+    const { item, callback, renderFunc } = this.props;
+
+    return (
+      // shed all excess height and width
+      <Box ref={this.childRef} height="max-content" width="max-content">
+        {renderFunc(item)}
+      </Box>
+    );
+  }
 }
 
 export interface INodeDimensionProps {
@@ -139,9 +167,6 @@ export default function GetDimensionsPortal(props: INodeDimensionProps) {
   const tellDimensions = useMemo(
     () => (item: PlanNode, width: number, height: number) => {
       if (dimensionsComplete) {
-        console.assert(
-          [width, height].every((v, i) => dimensions.has(item) && v === dimensions.get(item)![i])
-        );
         return;
       }
       dimensions.set(item, [width, height]);
@@ -170,7 +195,12 @@ export default function GetDimensionsPortal(props: INodeDimensionProps) {
   }, [unifiedTree, expandedNodes, collapsible, layouter]);
 
   const comps = expandedNodes.map((item, i) => (
-    <Dimentor item={item} callback={tellDimensions} renderFunc={renderPlanNode} />
+    <Dimentor
+      item={item}
+      dimensions={dimensions}
+      callback={tellDimensions}
+      renderFunc={renderPlanNode}
+    />
   ));
   // test component for rendering
   return createPortal(comps, document.body);

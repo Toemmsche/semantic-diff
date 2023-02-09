@@ -38,7 +38,6 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
 
   return (
     <>
-      <RefreshLayout nodeSetter={setNodes}></RefreshLayout>
       <GetDimensionsPortal
         unifiedTree={unifiedTree}
         setNodes={setNodes}
