@@ -38,7 +38,7 @@ export default function RefreshLayout(props: INodeLayouterProps) {
       const [id, node] = entry;
       return node;
     });
-    console.log(internalNodes);
+    console.log('ACTUAL NODE DIMS', internalNodes);
     if (internalNodes.length > 0 && internalNodes.every(nodeHasDimension)) {
       const layoutNodes = layouter.treeLayout(internalNodes, edges, defaultTreeLayoutOptions);
       if (layoutNodes instanceof Promise) {

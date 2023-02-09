@@ -2,16 +2,10 @@ import React, { useState } from 'react';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { Handle, Position } from 'reactflow';
 import { useParameterState } from '../../../state/ParameterStore';
-import { Box, IconButton, Paper, Popover, Stack } from '@mui/material';
+import { IconButton, Paper, Popover, Stack } from '@mui/material';
 import { ExpandMore, Menu } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
-import {
-  NODE_BORDER_RADIUS,
-  NODE_ELEVATION,
-  NODE_HEIGHT,
-  NODE_PADDING,
-  NODE_WIDTH
-} from './dimensions';
+import { NODE_BORDER_RADIUS, NODE_ELEVATION, NODE_PADDING } from './dimensions';
 import NodeDetails from './NodeDetails';
 import { getColorForIndex, getColorForSubset } from './color';
 
@@ -94,23 +88,19 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
                 <ExpandMore />
               </IconButton>
             ))}
-          {hoverActive && (
-            <>
-              <IconButton
-                onClick={(event) => {
-                  console.log(planNode);
-                  setDetailsAnchorEl(event.currentTarget);
-                }}>
-                <Menu />
-              </IconButton>
-              <Popover
-                anchorEl={detailsAnchorEl}
-                open={detailsAnchorEl != null}
-                onClose={() => setDetailsAnchorEl(null)}>
-                <NodeDetails planNodes={planNode.getMatchGroup()} />
-              </Popover>
-            </>
-          )}
+          <IconButton
+            onClick={(event) => {
+              console.log(planNode);
+              setDetailsAnchorEl(event.currentTarget);
+            }}>
+            <Menu />
+          </IconButton>
+          <Popover
+            anchorEl={detailsAnchorEl}
+            open={detailsAnchorEl != null}
+            onClose={() => setDetailsAnchorEl(null)}>
+            <NodeDetails planNodes={planNode.getMatchGroup()} />
+          </Popover>
         </Stack>
         <Handle type="source" position={Position.Bottom} style={{ opacity: '0' }} />
       </Stack>

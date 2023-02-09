@@ -4,8 +4,11 @@ import React from 'react';
 
 export enum SetOperationType {
   UNION = 'union',
-  UNION_ALL = 'unionall'
-  // TODO
+  UNION_ALL = 'unionall',
+  INTERSECT = 'intersect',
+  INTERSECT_ALL = 'intersectall',
+  EXCEPT = 'except',
+  EXCEPT_ALL = 'exceptall'
 }
 
 export function RenderSetOperation(props: { data: SetOperation }) {

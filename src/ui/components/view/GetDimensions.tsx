@@ -88,14 +88,14 @@ function Dimentor<T>(props: {
   const childRef = useRef(null);
 
   useLayoutEffect(() => {
-    console.log('render dimentor');
+    //console.log('render dimentor');
     // @ts-ignore
     callback(item, childRef.current!.clientWidth, childRef.current!.clientHeight);
   });
 
   return (
     // shed all excess height and width
-    <Box ref={childRef} height="min-content" width="min-content">
+    <Box ref={childRef} height="max-content" width="max-content">
       {renderFunc(item)}
     </Box>
   );
@@ -120,27 +120,8 @@ function renderPlanNode(planNode: PlanNode) {
   );
 }
 
-function useTraceUpdate(props: any) {
-  const prev = useRef(props);
-  useEffect(() => {
-    const changedProps = Object.entries(props).reduce((ps: any, [k, v]) => {
-      if (prev.current[k] !== v) {
-        ps[k] = [prev.current[k], v];
-      }
-      return ps;
-    }, {});
-    if (Object.keys(changedProps).length > 0) {
-      console.log('Changed props:', changedProps);
-    }
-    prev.current = props;
-  });
-}
-
 export default function GetDimensionsPortal(props: INodeDimensionProps) {
   const { unifiedTree, setNodes, setEdges, reactFlowInstance } = props;
-
-  useTraceUpdate(props);
-
   const [expandedNodes, setExpandedNodes] = useState([] as PlanNode[]);
   const [collapsible] = useCollapsible();
   const [layouter] = useLayouter();

@@ -33,6 +33,7 @@ export default class DagreLayouter implements IBlockingLayouter {
 
       // copy node width and height
       // TODO determine where to set these in case of default
+      console.log('got dims', node.width, node.height);
       label.width = node.width;
       label.height = node.height;
 
