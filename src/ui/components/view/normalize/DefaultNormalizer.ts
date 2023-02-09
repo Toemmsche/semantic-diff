@@ -7,6 +7,7 @@ export default class DefaultNormalizer implements INormalizer {
   public normalize(
     plan: PlanNode,
     planIndex: number,
+    dimensions: Map<PlanNode, [number, number]>,
     options: INormalizeOptions = defaultNormalizeOptions
   ): [Node<PlanData>[], Edge[]] {
     const nodes: Node[] = [];
@@ -25,6 +26,8 @@ export default class DefaultNormalizer implements INormalizer {
         type: 'customNode',
         data: options.computeData(planNode)
       } as Partial<Node>;
+
+      [normalizedNode.width, normalizedNode.height] = dimensions.get(planNode)!;
 
       nodes.push(normalizedNode as Node);
 

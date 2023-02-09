@@ -59,8 +59,6 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
   return (
     <Paper elevation={NODE_ELEVATION}>
       <Stack
-        width={NODE_WIDTH}
-        height={NODE_HEIGHT}
         borderRadius={NODE_BORDER_RADIUS}
         sx={{
           background: background,

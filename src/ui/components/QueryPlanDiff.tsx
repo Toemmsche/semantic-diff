@@ -1,5 +1,5 @@
 import React from 'react';
-import UnifiedTreeView from './view/UnifiedTreeView';
+import { UnifiedTreeView } from './view/UnifiedTreeView';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import UnifiedTreeGenerator from '../../semantic-diff/delta/UnifiedTreeGenerator';

@@ -15,6 +15,7 @@ import {
   Tooltip
 } from 'chart.js';
 import FloatingMenu from './ui/components/menu/FloatingMenu';
+import GetDimensionsPortal from './ui/components/view/GetDimensions';
 
 // @ts-ignore
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors);
