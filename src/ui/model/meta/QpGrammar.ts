@@ -1,6 +1,4 @@
-import {defaultDiffOptions, Grammar, GrammarBrowserSerDes} from "../../../semantic-diff/index";
-
-
+import { defaultDiffOptions, Grammar, GrammarBrowserSerDes } from '../../../semantic-diff/index';
 
 // TODO
 // SetOperation method, example
@@ -23,7 +21,7 @@ import {defaultDiffOptions, Grammar, GrammarBrowserSerDes} from "../../../semant
 // Materialize Example,
 // Investigate unknowns -> check cli
 export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(
-    `
+  `
 <grammar>
     <leaves>
         <TableScan>
@@ -49,7 +47,6 @@ export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).
         <EarlyProbe></EarlyProbe>
         <SetOperation></SetOperation>
         <Window></Window>
-        <TopN></TopN>
         <EmptyResult></EmptyResult>
         <CrossProduct></CrossProduct>
         <AssertSingle></AssertSingle>

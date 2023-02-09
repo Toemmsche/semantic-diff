@@ -7,12 +7,17 @@ export default class BottomUpMatcher<T> implements IMatcher<T> {
   constructor(private options: IMatchOptions) {}
 
   match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>): void {
-    let moreMatches = oldTree.leaves().filter((n) => n.isMatched() && !n.isRoot());
+    let moreMatches = oldTree.toPreOrderUnique().filter((n) => n.isMatched() && !n.isRoot());
     while (moreMatches.length > 0) {
       const next = [];
       for (const node of moreMatches) {
         const cand = node.getParent();
         const candMatch = node.getSingleMatch().getParent();
+        // @ts-ignore
+        if (candMatch.attributes.get('operator_id') === 10) {
+          console.log(candMatch.label, cand);
+        }
+
         if (
           !cand.isMatched() &&
           !candMatch.isMatched() &&
@@ -28,7 +33,10 @@ export default class BottomUpMatcher<T> implements IMatcher<T> {
           let allMatching = true;
 
           for (let i = 0; i < cand.children.length; i++) {
-            if (!cand.childAt(i).isMatchedTo(candMatch.childAt(i))) {
+            if (
+              !cand.childAt(i).isMatched() ||
+              !candMatch.children.some((c) => c.isMatchedTo(cand.childAt(i)))
+            ) {
               allMatching = false;
               break;
             }

@@ -81,7 +81,7 @@ function normalizeAndLayout(
 
 export interface IDimentorProps<T> {
   item: T;
-  dimensions: any;
+  dimensions: Map<T, [number, number]>;
   callback: (item: T, width: number, height: number) => void;
   renderFunc: (item: T) => any;
 }
@@ -104,7 +104,12 @@ class Dimentor<T> extends React.Component<
     nextState: Readonly<{ childRef: any }>,
     nextContext: any
   ): boolean {
-    return !nextProps.dimensions.has(nextProps.item);
+    if (nextProps.item !== this.props.item || !nextProps.dimensions.has(nextProps.item)) {
+      return true;
+    }
+    const nextDims = nextProps.dimensions.get(nextProps.item)!;
+    const currDims = this.props.dimensions.get(this.props.item)!;
+    return nextDims.every((val, i) => val === currDims[i]);
   }
 
   componentDidUpdate() {

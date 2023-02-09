@@ -26,11 +26,15 @@ function roughlyEqual(first: number, second: number) {
   if (first < second) {
     [first, second] = [second, first];
   }
+
   // tolerate a 20% error in cardinality
-  return 1 - second / first <= 0.2;
+  return first === 0 ? true : 1 - second / first <= 0.2;
 }
 
 function shortCardinality(cardinality: number): string {
+  if (cardinality === 0) {
+    return '0';
+  }
   // just hack this, does not have to be efficient
   const [exp, suffix] = [
     [0, ''],
@@ -152,7 +156,9 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
         markerEnd={markerEnd}
         style={{
           ...style,
-          strokeWidth: Math.log(avgCardinality ?? 10) + 1,
+          // log(0) === inf
+          strokeWidth:
+            Math.log(avgCardinality != null ? (avgCardinality === 0 ? 1 : avgCardinality) : 10) + 1,
           stroke: color,
           strokeDasharray: `${actualGap}, ${(groupSize - 1) * actualGap}`
         }}
@@ -181,7 +187,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
               borderColor: 'black',
               padding: 4
             }}>
-            {avgCardinality
+            {avgCardinality != null
               ? (allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)
               : '???'}
           </div>
