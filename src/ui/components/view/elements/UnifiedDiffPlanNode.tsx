@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { Handle, Position } from 'reactflow';
 import { useParameterState } from '../../../state/ParameterStore';
-import { IconButton, Paper, Popover, Stack } from '@mui/material';
-import { ExpandMore, Menu } from '@mui/icons-material';
+import { Box, IconButton, Paper, Popover, Stack } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
 import { NODE_BORDER_RADIUS, NODE_ELEVATION, NODE_PADDING } from './dimensions';
 import NodeDetails from './NodeDetails';
@@ -18,22 +18,20 @@ export interface IUnifiedDiffProps {
 }
 
 export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
-  const [parameters, parameterActions] = useParameterState();
-
-  const [hoverActive, setHoverActive] = useState(false);
-
   const { hide, planNode, expand } = props.data;
+
+  // Internal state
+  const [hoverActive, setHoverActive] = useState(false);
+  const [hasExpanded, setHasExpanded] = useState(false);
+  const [detailsAnchorEl, setDetailsAnchorEl] = useState(null as Nullable<HTMLElement>);
+  const nodeRef = useRef(null);
+
+  const [parameters] = useParameterState();
 
   const metaPlanData = planNode.getMetaNode().data;
 
-  const [hasExpanded, setHasExpanded] = useState(false);
-
-  const [detailsAnchorEl, setDetailsAnchorEl] = useState(null as Nullable<HTMLElement>);
-
   // child component
   let Component = metaPlanData.component();
-
-  let bgColor = getColorForSubset(planNode.getGroupSourceIndices());
 
   let groupSize = planNode.getGroupSourceIndices().length;
 
@@ -52,58 +50,57 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
     ')';
   return (
     <Paper elevation={NODE_ELEVATION}>
-      <Stack
+      <Box
+        ref={nodeRef}
         borderRadius={NODE_BORDER_RADIUS}
         sx={{
           background: background,
-          borderStyle: planNode.isLeaf() ? 'dotted' : 'none'
+          borderStyle: planNode.isLeaf() ? 'dotted' : 'none',
+          filter: hoverActive ? 'brightness(50%)' : undefined
         }}
-        padding={NODE_PADDING}
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
         fontWeight={800}
         onMouseEnter={() => setHoverActive(true)}
+        onClick={() => {
+          if (!detailsAnchorEl) setDetailsAnchorEl(nodeRef.current);
+        }}
         onMouseLeave={() => setHoverActive(false)}>
         <Handle type="target" position={Position.Top} style={{ opacity: '0' }} />
-        <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
-          <Component data={metaPlanData} />
-          {hoverActive &&
-            parameters.collapsible &&
-            !planNode.isLeaf() &&
-            (hasExpanded ? (
-              <IconButton
-                onClick={() => {
-                  setHasExpanded(false);
-                  hide();
-                }}>
-                <ExpandMore sx={{ transform: 'rotate(180deg)' }} />
-              </IconButton>
-            ) : (
-              <IconButton
-                onClick={() => {
-                  setHasExpanded(true);
-                  expand();
-                }}>
-                <ExpandMore />
-              </IconButton>
-            ))}
-          <IconButton
-            onClick={(event) => {
-              console.log(planNode);
-              setDetailsAnchorEl(event.currentTarget);
-            }}>
-            <Menu />
-          </IconButton>
-          <Popover
-            anchorEl={detailsAnchorEl}
-            open={detailsAnchorEl != null}
-            onClose={() => setDetailsAnchorEl(null)}>
-            <NodeDetails planNodes={planNode.getMatchGroup()} />
-          </Popover>
-        </Stack>
+        <Box padding={NODE_PADDING}>
+          <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
+            <Component data={metaPlanData} />
+            {hoverActive &&
+              parameters.collapsible &&
+              !planNode.isLeaf() &&
+              (hasExpanded ? (
+                <IconButton
+                  onClick={() => {
+                    setHasExpanded(false);
+                    hide();
+                  }}>
+                  <ExpandMore sx={{ transform: 'rotate(180deg)' }} />
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={() => {
+                    setHasExpanded(true);
+                    expand();
+                  }}>
+                  <ExpandMore />
+                </IconButton>
+              ))}
+            <Popover
+              anchorEl={detailsAnchorEl}
+              open={detailsAnchorEl != null}
+              onClose={() => {
+                setDetailsAnchorEl(null);
+                setHoverActive(false);
+              }}>
+              <NodeDetails planNodes={planNode.getMatchGroup()} />
+            </Popover>
+          </Stack>
+        </Box>
         <Handle type="source" position={Position.Bottom} style={{ opacity: '0' }} />
-      </Stack>
+      </Box>
     </Paper>
   );
 }

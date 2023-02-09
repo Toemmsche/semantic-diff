@@ -79,15 +79,15 @@ function normalizeAndLayout(
   }
 }
 
-export interface IDimentorProps<T> {
+export interface IDocumentingRendererProps<T> {
   item: T;
   dimensions: Map<T, [number, number]>;
   callback: (item: T, width: number, height: number) => void;
   renderFunc: (item: T) => any;
 }
 
-class Dimentor<T> extends React.Component<
-  IDimentorProps<T>,
+class DocumentingRenderer<T> extends React.Component<
+  IDocumentingRendererProps<T>,
   {
     childRef: any;
   }
@@ -100,7 +100,7 @@ class Dimentor<T> extends React.Component<
   }
 
   shouldComponentUpdate(
-    nextProps: Readonly<IDimentorProps<T>>,
+    nextProps: Readonly<IDocumentingRendererProps<T>>,
     nextState: Readonly<{ childRef: any }>,
     nextContext: any
   ): boolean {
@@ -134,13 +134,6 @@ class Dimentor<T> extends React.Component<
   }
 }
 
-export interface INodeDimensionProps {
-  unifiedTree: PlanNode;
-  setNodes: (nodes: Node[]) => any;
-  setEdges: (edges: Edge[]) => any;
-  reactFlowInstance: ReactFlowInstance;
-}
-
 function renderPlanNode(planNode: PlanNode) {
   return (
     <UnifiedDiffPlanNode
@@ -153,7 +146,14 @@ function renderPlanNode(planNode: PlanNode) {
   );
 }
 
-export default function GetDimensionsPortal(props: INodeDimensionProps) {
+export interface ILayoutWithDimensionProps {
+  unifiedTree: PlanNode;
+  setNodes: (nodes: Node[]) => any;
+  setEdges: (edges: Edge[]) => any;
+  reactFlowInstance: ReactFlowInstance;
+}
+
+export default function LayoutWithDimensions(props: ILayoutWithDimensionProps) {
   const { unifiedTree, setNodes, setEdges, reactFlowInstance } = props;
   const [expandedNodes, setExpandedNodes] = useState([] as PlanNode[]);
   const [collapsible] = useCollapsible();
@@ -200,13 +200,14 @@ export default function GetDimensionsPortal(props: INodeDimensionProps) {
   }, [unifiedTree, expandedNodes, collapsible, layouter]);
 
   const comps = expandedNodes.map((item, i) => (
-    <Dimentor
+    <DocumentingRenderer
       item={item}
       dimensions={dimensions}
       callback={tellDimensions}
       renderFunc={renderPlanNode}
     />
   ));
+
   // test component for rendering
   return createPortal(comps, document.body);
 }

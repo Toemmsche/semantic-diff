@@ -11,10 +11,9 @@ export default interface QueryPlanResult {
   // Result state
   benchmarkResult: BenchmarkResult;
   queryPlanXml: string;
-}
 
-export function getKey(qpr: QueryPlanResult): string {
-  return qpr.system + qpr.dataset + qpr.query;
+  // plan similarity
+  similarity: Map<QueryPlanResult, number>;
 }
 
 export type QueryPlanResultCollection = QueryPlanResult[];

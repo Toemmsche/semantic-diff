@@ -158,7 +158,8 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
           ...style,
           // log(0) === inf
           strokeWidth:
-            Math.log(avgCardinality != null ? (avgCardinality === 0 ? 1 : avgCardinality) : 10) + 1,
+            Math.log2(avgCardinality != null ? (avgCardinality === 0 ? 1 : avgCardinality) : 10) +
+            1,
           stroke: color,
           strokeDasharray: `${actualGap}, ${(groupSize - 1) * actualGap}`
         }}

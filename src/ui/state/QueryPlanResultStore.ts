@@ -6,6 +6,7 @@ import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { Nullable } from '../../semantic-diff/Types';
 import { ComparisonMetric } from '../model/meta/BenchmarkResult';
 import { System } from '../model/meta/types';
+import computeSimilarity from './ComputeSimilarity';
 
 export interface IQueryPlanResultsState {
   queryPlanResults: QueryPlanResultCollection;
@@ -21,6 +22,8 @@ const actions = {
         QP_GRAMMAR,
         defaultDiffOptions
       ).queryPlanResultCollectionFromJson(text);
+
+      computeSimilarity(queryPlanResults);
 
       // TODO verify that all system have all queries or handle this in planpicker
       setState({
@@ -38,12 +41,15 @@ const actions = {
       });
     }
 };
+
+const initialPlans = new PlanNodeBrowserSerDes(
+  QP_GRAMMAR,
+  defaultDiffOptions
+).queryPlanResultCollectionFromJson(batchPlans);
+computeSimilarity(initialPlans);
 const Store = createStore<IQueryPlanResultsState, typeof actions>({
   initialState: {
-    queryPlanResults: new PlanNodeBrowserSerDes(
-      QP_GRAMMAR,
-      defaultDiffOptions
-    ).queryPlanResultCollectionFromJson(batchPlans),
+    queryPlanResults: initialPlans,
     resultSelection: []
   },
   actions

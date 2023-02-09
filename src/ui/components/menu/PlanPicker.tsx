@@ -18,17 +18,19 @@ import {
 } from '../../state/QueryPlanResultStore';
 import { Nullable } from '../../../semantic-diff/Types';
 import { Query, System } from '../../model/meta/types';
-import { max, scaleLinear as d3ScaleLinear } from 'd3';
+import { scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
 import { ComparisonMetric } from '../../model/meta/BenchmarkResult';
 import { useNwayDiff } from '../../state/ParameterStore';
+import QueryPlanResult from '../../model/meta/QueryPlanResult';
 
 export interface IQueryPlanResultDiffProps {}
 
 // Color scales for results that are better / worse
 const betterColorScale = d3ScaleLinear<string>().domain([1, 0]).range(['#00bb00', '#808080']); // green
 const worseColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#808080', '#ff0000']); //red
+const similarityColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#000000', '#FFD700']); // black to gold
 
 export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [baselineSystem, setBaselineSystem] = useState(undefined as Nullable<System>);
@@ -72,42 +74,74 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const QueriesSet = new Set(state.queryPlanResults.map((qpr) => qpr.query));
   const uniqueQueries = Array.from(QueriesSet.entries()).map((val) => val[1]);
 
-  const worstResultsPerQuery = uniqueQueries
-    .map((query) => ({
-      query,
-      baselineResult: state.queryPlanResults.find((qpr) => {
-        return qpr.system === baselineSystem && qpr.query === query;
-      }),
-      otherResults: state.queryPlanResults.filter((qpr) => {
-        return qpr.system !== baselineSystem && qpr.query === query;
+  let worstOverallMetricDiff: Nullable<number> = null;
+  let bestOverallMetricDiff: Nullable<number> = null;
+  let otherResultsPerQuery: Map<
+    Query,
+    Map<QueryPlanResult, [Nullable<number>, number]>
+  > = new Map();
+  let worstResultsPerQuery: Map<Query, Nullable<[QueryPlanResult, number, number]>> = new Map();
+
+  if (baselineSystem != null) {
+    otherResultsPerQuery = new Map(
+      uniqueQueries.map((query) => {
+        const baselineResult = state.queryPlanResults.find((qpr) => {
+          return qpr.system === baselineSystem && qpr.query === query;
+        })!;
+
+        const otherDiffAndSimilarity = new Map<QueryPlanResult, [Nullable<number>, number]>(
+          state.queryPlanResults
+            .filter((qpr) => {
+              return qpr.system !== baselineSystem && qpr.query === query;
+            })
+            .map((qpr) => {
+              let metricDiff;
+              if (
+                !qpr.benchmarkResult[selectedMetric] ||
+                !baselineResult.benchmarkResult[selectedMetric]
+              ) {
+                metricDiff = null;
+              } else {
+                // null case has been checked
+                const baseLineMetric = baselineResult.benchmarkResult[selectedMetric]!;
+                const otherMetric = qpr.benchmarkResult[selectedMetric]!;
+
+                metricDiff = baseLineMetric / otherMetric - 1;
+              }
+
+              const similarity = qpr.similarity.get(baselineResult)!;
+
+              return [qpr, [metricDiff, similarity]];
+            })
+        );
+        return [query, otherDiffAndSimilarity];
       })
-    }))
-    .map((obj) => ({
-      ...obj,
-      worstDiff: max(
-        obj.otherResults
-          .map((qpr) => {
-            if (
-              !qpr.benchmarkResult[selectedMetric] ||
-              !obj.baselineResult?.benchmarkResult[selectedMetric]
-            ) {
-              return null;
-            } else {
-              // null case has been checked
-              const baseLineMetric = obj.baselineResult.benchmarkResult[selectedMetric]!;
-              const otherMetric = qpr.benchmarkResult[selectedMetric]!;
+    );
 
-              return baseLineMetric / otherMetric - 1;
-            }
-          })
-          .filter((r) => r != null) as number[]
-      )!
-    }))
-    // sort descending by diff
-    .sort((a, b) => b.worstDiff - a.worstDiff);
+    worstResultsPerQuery = new Map(
+      [...otherResultsPerQuery].map(([query, resultsMap]) => {
+        const sortedResults = [...resultsMap]
+          .filter(([qpr, [metricDiff, similarity]]) => metricDiff != null)
+          .sort(([qprA, [metricDiffA, similarityA]], [qprB, [metricDiffB, similarityB]]) => {
+            // positive is bad
+            return metricDiffB! - metricDiffA!;
+          });
 
-  const worstOverallDiff = worstResultsPerQuery[0].worstDiff;
-  const bestOverallDiff = worstResultsPerQuery[worstResultsPerQuery.length - 1].worstDiff;
+        let worstResult: Nullable<[QueryPlanResult, number, number]> = null;
+        if (sortedResults.length > 0) {
+          worstResult = sortedResults[0].flat() as [QueryPlanResult, number, number];
+          if (!bestOverallMetricDiff || worstResult[1] < bestOverallMetricDiff) {
+            bestOverallMetricDiff = worstResult[1];
+          }
+          if (!worstOverallMetricDiff || worstResult[1] > worstOverallMetricDiff) {
+            worstOverallMetricDiff = worstResult[1];
+          }
+        }
+
+        return [query, worstResult];
+      })
+    );
+  }
 
   function QueryComponent(props: {}) {
     const [editorOpen, setEditorOpen] = useState(false);
@@ -120,23 +154,35 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       );
     });
 
-    const QueryItems = worstResultsPerQuery.map((obj) => {
-      const { query, worstDiff } = obj;
+    const QueryItems = [...worstResultsPerQuery].map((entry) => {
+      const [query, maybeWorstResult] = entry;
 
       // if worstOtherDbmsResult is negative, then our time is
       // increased in comparison
       let label = query;
-      let color: any = 'black';
-      if (worstDiff != null) {
-        label += ' (' + (worstDiff < 0 ? '' : '+') + (worstDiff * 100).toFixed(0) + '%)';
-        color =
+
+      let additionalContent = [];
+      if (maybeWorstResult) {
+        const [worstQpr, worstDiff, similarity] = maybeWorstResult;
+
+        const metricDiffSuffix =
+          ' (' + (worstDiff < 0 ? '' : '+') + (worstDiff * 100).toFixed(0) + '%)';
+        const metricColor =
           worstDiff < 0
-            ? betterColorScale(worstDiff / bestOverallDiff)
-            : worseColorScale(worstDiff / worstOverallDiff);
+            ? betterColorScale(worstDiff / bestOverallMetricDiff!)
+            : worseColorScale(worstDiff / worstOverallMetricDiff!);
+        additionalContent.push(<Box color={metricColor}>{metricDiffSuffix}</Box>);
+
+        const similaritySuffix = '(' + (similarity * 100).toFixed(0) + '%)';
+        const similarityColor = similarityColorScale(similarity);
+        additionalContent.push(<Box color={similarityColor}>{similaritySuffix}</Box>);
       }
       return (
         <MenuItem key={query} value={query}>
-          <Box color={color}>{label}</Box>
+          <Stack direction="row" spacing={1}>
+            <Box>{label}</Box>
+            {additionalContent}
+          </Stack>
         </MenuItem>
       );
     });
@@ -242,8 +288,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           addLabel = '(' + (diff < 0 ? '' : '+') + (diff * 100).toFixed(0) + '%)';
           const color =
             diff < 0
-              ? betterColorScale(diff / bestOverallDiff)
-              : worseColorScale(diff / worstOverallDiff);
+              ? betterColorScale(diff / bestOverallMetricDiff!)
+              : worseColorScale(diff / worstOverallMetricDiff!);
         }
 
         function addOrRemoveComp(system: System) {

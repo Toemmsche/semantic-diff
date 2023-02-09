@@ -26,36 +26,70 @@ export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).
     <leaves>
         <TableScan>
             <comparisonValue weight="100">@_table_name</comparisonValue>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </TableScan>
-        <InlineTable></InlineTable>
-        <Unknown></Unknown>
+        <CustomLeaf>
+            <comparisonValue weight="100">@_name</comparisonValue>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </CustomLeaf>
     </leaves>
     <inners>
+        <!-- multi-child nodes -->
         <Join ordered="true">
             <comparisonValue weight="100">@_method</comparisonValue>
             <comparisonValue weight="30" comparisonType="LCS">@_type</comparisonValue>
-            <comparisonValue weight="30" >@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="60">@_exact_cardinality</comparisonValue>
         </Join>
-        <GroupJoin ordered="true"></GroupJoin>
-        <Projection></Projection>
-        <GroupBy></GroupBy>
-        <Select></Select>
-        <Sort></Sort>
-        <Map></Map>
-        <PipelineBreakerScan></PipelineBreakerScan>
-        <Temp></Temp>
-        <EarlyProbe></EarlyProbe>
-        <SetOperation></SetOperation>
-        <Window></Window>
-        <EmptyResult></EmptyResult>
-        <CrossProduct></CrossProduct>
-        <AssertSingle></AssertSingle>
-        <MultiWayJoin ordered="true"></MultiWayJoin>
-        <Gather></Gather>
-        <Hash></Hash>
-        <Limit></Limit>
+        <GroupJoin ordered="true">
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </GroupJoin>
+        <MultiWayJoin ordered="true">
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </MultiWayJoin>
+        <SetOperation>
+            <comparisonValue weight="100">@_type</comparisonValue>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </SetOperation>
+        <CrossProduct>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </CrossProduct>
+
+        <!-- single-child nodes -->
+        <GroupBy>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </GroupBy>
+        <Select>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </Select>
+        <Sort>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </Sort>
+        <Map>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </Map>
+        <Temp>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </Temp>
+        <Window>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </Window>
+        <AssertSingle>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </AssertSingle>
+
+        <!--- DAG edges -->
+        <PipelineBreakerScan>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </PipelineBreakerScan>
+        <EarlyProbe>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </EarlyProbe>
+        <!-- Special Nodes -->
         <Result></Result>
-        <Unknown></Unknown>
+        <CustomInner>
+            <comparisonValue weight="100">@_name</comparisonValue>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </CustomInner>
     </inners>
 </grammar>`
 );

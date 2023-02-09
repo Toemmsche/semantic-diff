@@ -14,7 +14,7 @@ export enum MatchAlgorithm {
   TOP_DOWN,
   BOTTOM_UP,
   SIMPLE,
-  SEMANTIC_DIFF
+  FULL
 }
 
 export enum LayoutAlgorithm {
@@ -137,7 +137,7 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
   initialState: {
     collapsible: false,
     renderDagEdges: false,
-    matchAlgorithm: MatchAlgorithm.SEMANTIC_DIFF,
+    matchAlgorithm: MatchAlgorithm.FULL,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
     edgeType: EdgeType.BEZIER,
     nwayDiff: false
@@ -186,7 +186,7 @@ export function getMatchPipelineForAlgorithm(matchAlgorithm: MatchAlgorithm) {
       return MatchPipeline.bottomUpOnly(defaultDiffOptions);
     case MatchAlgorithm.SIMPLE:
       return MatchPipeline.onlySimpleMatchers(defaultDiffOptions);
-    case MatchAlgorithm.SEMANTIC_DIFF:
+    case MatchAlgorithm.FULL:
       return MatchPipeline.fromMode(defaultDiffOptions);
   }
 }

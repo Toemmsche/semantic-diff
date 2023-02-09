@@ -27,8 +27,8 @@ const matchAlgorithmSliderMarks = [
     label: 'top down & bottom up'
   },
   {
-    value: MatchAlgorithm.SEMANTIC_DIFF,
-    label: 'semantic diff'
+    value: MatchAlgorithm.FULL,
+    label: 'full'
   }
 ];
 

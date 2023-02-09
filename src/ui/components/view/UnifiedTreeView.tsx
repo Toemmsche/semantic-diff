@@ -7,7 +7,7 @@ import useAnimatedNodes from '../useAnimatedNodes';
 import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';
 import CustomUnifiedEdge from './elements/CustomUnifiedEdge';
-import GetDimensionsPortal from './GetDimensions';
+import LayoutWithDimensions from './LayoutWithDimensions';
 
 export interface IUnifiedTreeViewProps {
   unifiedTree: PlanNode;
@@ -38,11 +38,11 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
 
   return (
     <>
-      <GetDimensionsPortal
+      <LayoutWithDimensions
         unifiedTree={unifiedTree}
         setNodes={setNodes}
         setEdges={setEdges}
-        reactFlowInstance={reactFlowInstance}></GetDimensionsPortal>
+        reactFlowInstance={reactFlowInstance}></LayoutWithDimensions>
       <ReactFlow
         zoomOnScroll={false}
         nodes={nodes}

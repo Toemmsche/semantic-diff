@@ -152,7 +152,7 @@ export default class TNode<T> {
   }
 
   size(): number {
-    return 1 + this._children.map((child) => child.size()).reduce(arraySum, 0);
+    return this.toPreOrderUnique().length;
   }
 
   toPreOrderArray(arr: TNode<T>[] = []): TNode<T>[] {
