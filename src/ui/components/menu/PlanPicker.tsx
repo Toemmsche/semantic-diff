@@ -37,6 +37,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [selectedMetric, setSelectedMetric] = useState('total' as ComparisonMetric);
   const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
   const [compSystem, setCompSystem] = useState([] as System[]);
+  const singleCompSystem = compSystem.length === 1 ? compSystem[0] : null;
   const [state, actions] = useQueryPlanState();
   const [nwayDiff] = useNwayDiff();
   const [allLabels] = useAllLabels();
@@ -81,6 +82,10 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     Map<QueryPlanResult, [Nullable<number>, number]>
   > = new Map();
   let worstResultsPerQuery: Map<Query, Nullable<[QueryPlanResult, number, number]>> = new Map();
+  let compResultPerQuery: Map<
+    Query,
+    Nullable<[QueryPlanResult, Nullable<number>, number]>
+  > = new Map();
 
   if (baselineSystem != null) {
     otherResultsPerQuery = new Map(
@@ -121,7 +126,11 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     worstResultsPerQuery = new Map(
       [...otherResultsPerQuery].map(([query, resultsMap]) => {
         const sortedResults = [...resultsMap]
-          .filter(([qpr, [metricDiff, similarity]]) => metricDiff != null)
+          .filter(
+            ([qpr, [metricDiff, similarity]]) =>
+              metricDiff != null &&
+              (singleCompSystem != null ? qpr.system === singleCompSystem : true)
+          )
           .sort(([qprA, [metricDiffA, similarityA]], [qprB, [metricDiffB, similarityB]]) => {
             // positive is bad
             return metricDiffB! - metricDiffA!;
@@ -276,22 +285,6 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       .map((qpr) => {
         const system = qpr.system;
 
-        let addLabel = '(N/A)';
-        if (
-          baseLineQprForSelectedQuery?.benchmarkResult[selectedMetric] &&
-          qpr.benchmarkResult[selectedMetric]
-        ) {
-          const diff =
-            baseLineQprForSelectedQuery.benchmarkResult[selectedMetric]! /
-              qpr.benchmarkResult[selectedMetric]! -
-            1;
-          addLabel = '(' + (diff < 0 ? '' : '+') + (diff * 100).toFixed(0) + '%)';
-          const color =
-            diff < 0
-              ? betterColorScale(diff / bestOverallMetricDiff!)
-              : worseColorScale(diff / worstOverallMetricDiff!);
-        }
-
         function addOrRemoveComp(system: System) {
           if (compSystem.includes(system)) {
             compSystem.splice(compSystem.indexOf(system), 1);
@@ -313,7 +306,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
             sx={{
               borderRadius: '16px'
             }}
-            label={system + ' ' + addLabel}
+            label={system}
             onClick={() => addOrRemoveComp(system)}></Chip>
         );
       });

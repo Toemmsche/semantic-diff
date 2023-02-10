@@ -20,8 +20,8 @@ export class HashMatcher<T> implements IMatcher<T> {
     // Match all nodes of two subtrees.
     const matchFunction = (oldRoot: TNode<T>, newRoot: TNode<T>) => {
       // found a perfect match, match entire subtrees
-      const newPreOrder = newRoot.toPreOrderArray();
-      const oldPreOrder = oldRoot.toPreOrderArray();
+      const newPreOrder = newRoot.toPreOrderUnique();
+      const oldPreOrder = oldRoot.toPreOrderUnique();
 
       // stable sort both arrays because hash may ignore child order of
       // certain nodes

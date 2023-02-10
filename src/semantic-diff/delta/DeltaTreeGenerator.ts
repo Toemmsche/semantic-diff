@@ -29,7 +29,7 @@ export default class DeltaTreeGenerator<T> {
     // The delta tree depicts branches and convergences
 
     // 1st traversal: Pre-order of new (changed) tree
-    const newPreOrder = newTree.toPreOrderArray();
+    const newPreOrder = newTree.toPreOrderUnique();
     for (const newNode of newPreOrder) {
       if (newNode.isMatched()) {
         // New node is matched -> Move, Update, or Nil
@@ -59,7 +59,7 @@ export default class DeltaTreeGenerator<T> {
     const copyOfOld = oldTree.copy();
 
     // 1st traversal: Pre-order of new (changed) tree
-    const newPreOrder = newTree.toPreOrderArray();
+    const newPreOrder = newTree.toPreOrderUnique();
     for (const newNode of newPreOrder) {
       if (newNode.isMatched()) {
         // New node is matched -> Move, Update, or Nil
@@ -83,7 +83,7 @@ export default class DeltaTreeGenerator<T> {
     // The matching and old tree are well-formed in terms of parent-child
     // relationships. However, the children of a node might still be misaligned.
     // This can occur if a node as moved within its parent.
-    for (const oldNode of oldTree.toPreOrderArray()) {
+    for (const oldNode of oldTree.toPreOrderUnique()) {
       if (oldNode.hasInternalOrdering()) {
         this.alignChildren(oldNode);
       }

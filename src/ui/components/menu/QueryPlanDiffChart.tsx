@@ -2,12 +2,18 @@ import { Box, Chip, IconButton, Modal, Stack } from '@mui/material';
 import QueryPlanResult from '../../model/meta/QueryPlanResult';
 import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { useAllLabels, useQueryPlanState } from '../../state/QueryPlanResultStore';
+import {
+  useAllLabels,
+  useQueryPlanState,
+  useUniqueSystems
+} from '../../state/QueryPlanResultStore';
 import { QueryStats } from '@mui/icons-material';
+import { getColorForIndex } from '../view/elements/color';
 
 export default function QueryPlanDiffChart(props: {}) {
   const [allLabels, _] = useAllLabels();
   const initialLabels = ['compilation', 'execution', 'total'];
+  const [availableSystems] = useUniqueSystems();
   const [activeLabels, setActiveLabels] = useState(initialLabels);
   const [qprState, qprActions] = useQueryPlanState();
 
@@ -18,7 +24,13 @@ export default function QueryPlanDiffChart(props: {}) {
   let selectedQprs = [] as QueryPlanResult[];
   if (qprState.resultSelection.length > 0) {
     const selectedQuery = qprState.resultSelection.filter((qpr) => qpr != null)[0]!.query;
-    selectedQprs = qprState.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
+
+    selectedQprs = availableSystems.map(
+      (system) =>
+        qprState.queryPlanResults.find(
+          (qpr) => qpr.query === selectedQuery && qpr.system === system
+        )!
+    );
   }
 
   const chips = [];
@@ -54,7 +66,7 @@ export default function QueryPlanDiffChart(props: {}) {
     }
   };
 
-  const getDataset = (qpr: QueryPlanResult) => {
+  const getDataset = (qpr: QueryPlanResult, index: number) => {
     return {
       label: qpr.system,
       data: activeLabels.map((cat) => {
@@ -64,13 +76,14 @@ export default function QueryPlanDiffChart(props: {}) {
           return val[0];
         }
         return val;
-      })
+      }),
+      backgroundColor: getColorForIndex(index)
     };
   };
 
   const chartData = {
     labels: activeLabels,
-    datasets: selectedQprs.map((qpr) => getDataset(qpr))
+    datasets: selectedQprs.map((qpr, i) => getDataset(qpr, i))
   };
 
   return (

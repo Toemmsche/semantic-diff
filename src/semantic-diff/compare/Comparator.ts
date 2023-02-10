@@ -87,6 +87,9 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
           case ComparisonType.LCS:
             cv = this.compareLcs([...valueA!!], [...valueB!!]);
             break;
+          case ComparisonType.GATE:
+            cv = valueA === valueB ? 0 : 1000000000000000;
+            break;
           default:
             throw new UnimplementedError();
         }
@@ -106,39 +109,34 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
     const radius = this.options.PATH_COMPARE_RANGE;
 
     /*
-         const nodeLeftSlice = nodeA.getSiblings()
-         .slice(Math.max(nodeA.index - radius, 0), nodeA.index)
-         .map(n => this.hashExtractor.get(n));
-         const otherLeftSlice = nodeB.getSiblings()
-         .slice(Math.max(nodeB.index - radius, 0), nodeB.index)
-         .map(n => this.hashExtractor.get(n));
-         const leftCV = this.compareLcs(nodeLeftSlice, otherLeftSlice, 0);
-
-         const nodeRightSlice = nodeA.getSiblings()
-         .slice(nodeA.index + 1, nodeA.index + radius + 1)
-         .map(n => this.hashExtractor.get(n));
-         const otherRightSlice = nodeB.getSiblings()
-         .slice(nodeB.index + 1, nodeB.index + radius + 1)
-         .map(n => this.hashExtractor.get(n));
-         const rightCV = this.compareLcs(nodeRightSlice, otherRightSlice, 0);
-         */
+                 const nodeLeftSlice = nodeA.getSiblings()
+                 .slice(Math.max(nodeA.index - radius, 0), nodeA.index)
+                 .map(n => this.hashExtractor.get(n));
+                 const otherLeftSlice = nodeB.getSiblings()
+                 .slice(Math.max(nodeB.index - radius, 0), nodeB.index)
+                 .map(n => this.hashExtractor.get(n));
+                 const leftCV = this.compareLcs(nodeLeftSlice, otherLeftSlice, 0);
+        
+                 const nodeRightSlice = nodeA.getSiblings()
+                 .slice(nodeA.index + 1, nodeA.index + radius + 1)
+                 .map(n => this.hashExtractor.get(n));
+                 const otherRightSlice = nodeB.getSiblings()
+                 .slice(nodeB.index + 1, nodeB.index + radius + 1)
+                 .map(n => this.hashExtractor.get(n));
+                 const rightCV = this.compareLcs(nodeRightSlice, otherRightSlice, 0);
+                 */
 
     // exclude the compared nodes
-    const nodePathSlice = nodeA
-      .path(radius + 1)
-      .reverse()
-      .slice(1)
-      .map((n: TNode<T>) =>
-        this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label
-      );
-    const otherPathSlice = nodeB
-      .path(radius + 1)
-      .reverse()
-      .slice(1)
-      .map((n: TNode<T>) =>
-        this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label
-      );
-    return this.comparePathLcs(nodePathSlice, otherPathSlice);
+    const slices = [nodeA, nodeB].map((node) =>
+      node
+        .path(radius + 1)
+        .reverse()
+        .slice(1)
+        .map((n: TNode<T>) =>
+          this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label
+        )
+    );
+    return this.comparePathLcs(slices[0], slices[1]);
   }
 
   compareSize(nodeA: TNode<T>, nodeB: TNode<T>): number {

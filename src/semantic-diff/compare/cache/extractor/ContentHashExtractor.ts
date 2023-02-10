@@ -1,24 +1,25 @@
 import TNode from '../../../tree/TNode';
 import { stringHash } from '../../../lib/StringHash';
 import CachingExtractor from './CachingExtractor';
+import { Nullable } from '../../../Types';
+import PropertyExtractor from './PropertyExtractor';
 
 export default class ContentHashExtractor<T> extends CachingExtractor<number, T> {
+  constructor(private readonly propertyExtractor: PropertyExtractor<T>) {
+    super();
+  }
+
   protected computeValue(node: TNode<T>) {
     this.valueMap.set(node, this.contentHash(node));
   }
 
   private contentHash(node: TNode<T>) {
     let content = node.label;
-    // Attribute order is irrelevant
-    const sortedAttrList = [...node.attributes.keys()]
-      // TODO
-      .filter((key) => key !== 'xmlns') // Ignore namespaces
-      .sort();
-    for (const key of sortedAttrList) {
-      content += key + '=' + node.attributes.get(key);
-    }
-    if (node.text != null) {
-      content += node.text;
+    if (!node.isPropertyNode()) {
+      const propertyMap = this.propertyExtractor.get(node);
+      for (const [key, val] of propertyMap) {
+        content += key + '=' + val;
+      }
     }
     return stringHash(content);
   }

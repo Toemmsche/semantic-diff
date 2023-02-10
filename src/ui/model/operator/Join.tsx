@@ -20,8 +20,8 @@ export enum JoinType {
   RIGHT_SEMI = 'rightsemi',
   LEFT_MARK = 'leftmark',
   RIGHT_MARK = 'rightmark',
-  LEFT_ANTI = 'left_anti',
-  RIGHT_ANTI = 'right_anti'
+  LEFT_ANTI = 'leftanti',
+  RIGHT_ANTI = 'rightanti'
 }
 
 const UTF8_JOIN_SYMBOLS = new Map<JoinType, string>([

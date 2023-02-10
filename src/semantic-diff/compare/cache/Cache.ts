@@ -1,16 +1,16 @@
 import ICache from './ICache';
 import TNode from '../../tree/TNode';
 import SizeExtractor from './extractor/SizeExtractor';
-import HashExtractor from './extractor/HashExtractor';
+import TreeHashExtractor from './extractor/TreeHashExtractor';
 import ContentHashExtractor from './extractor/ContentHashExtractor';
 import PropertyExtractor from './extractor/PropertyExtractor';
 import { Nullable } from '../../Types';
 
 export default class Cache<T> implements ICache<T> {
-  private hashExtractor = new HashExtractor();
-  private contentHashExtractor = new ContentHashExtractor();
-  private sizeExtractor = new SizeExtractor();
-  private propertyExtractor = new PropertyExtractor();
+  private readonly propertyExtractor = new PropertyExtractor();
+  private readonly contentHashExtractor = new ContentHashExtractor(this.propertyExtractor);
+  private readonly hashExtractor = new TreeHashExtractor(this.contentHashExtractor);
+  private readonly sizeExtractor = new SizeExtractor();
 
   getHash(node: TNode<T>): number {
     return this.hashExtractor.get(node);

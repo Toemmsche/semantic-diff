@@ -99,28 +99,6 @@ export default class TNode<T> {
     return this.origin.sourceIndex;
   }
 
-  accessProperty(path: string): Nullable<string> {
-    // We assume that descending according to the path is always unambiguous
-    // TODO performance improvements
-    const pathNodes = path.split('/');
-    let node: Nullable<TNode<T>> = this;
-    for (const pathNode of pathNodes) {
-      // Termination conditions
-      if (pathNode === '#text' || pathNode === '') {
-        return node.text;
-      }
-      if (pathNode.startsWith('@_')) {
-        const attributeName = pathNode.replace('@_', '');
-        return node.attributes.get(attributeName);
-      }
-      node = node._children.find((child) => child.label === pathNode);
-      if (!node) {
-        return null;
-      }
-    }
-    return node.text;
-  }
-
   copy(includeChildren = true): TNode<T> {
     const dataCopy = (this.data as IData & ICopyable<T>).copy();
     // grammar node stays the same
@@ -155,14 +133,6 @@ export default class TNode<T> {
     return this.toPreOrderUnique().length;
   }
 
-  toPreOrderArray(arr: TNode<T>[] = []): TNode<T>[] {
-    arr.push(this);
-    for (const child of this._children) {
-      child.toPreOrderArray(arr);
-    }
-    return arr;
-  }
-
   toPreOrderUnique(nodeSet = new Set<TNode<T>>()): TNode<T>[] {
     // early return
     if (nodeSet.has(this)) return Array.from(nodeSet);
@@ -174,14 +144,6 @@ export default class TNode<T> {
     }
 
     return Array.from(nodeSet);
-  }
-
-  toPostOrderArray(arr: TNode<T>[] = []): TNode<T>[] {
-    for (const child of this._children) {
-      child.toPostOrderArray(arr);
-    }
-    arr.push(this);
-    return arr;
   }
 
   toPostOrderUnique(nodeSet = new Set<TNode<T>>()): TNode<T>[] {
@@ -245,11 +207,11 @@ export default class TNode<T> {
   }
 
   nonPropertyNodes(): TNode<T>[] {
-    return this.toPreOrderArray().filter((node) => !node.isPropertyNode());
+    return this.toPreOrderUnique().filter((node) => !node.isPropertyNode());
   }
 
   leaves(): TNode<T>[] {
-    return this.toPreOrderArray().filter((node) => node.isLeaf());
+    return this.toPreOrderUnique().filter((node) => node.isLeaf());
   }
 
   contentEquals(other: TNode<T>): boolean {
@@ -321,7 +283,7 @@ export default class TNode<T> {
 
   getSingleMatchingMap(): Map<TNode<T>, TNode<T>> {
     return new Map(
-      this.toPreOrderArray()
+      this.toPreOrderUnique()
         .filter((node) => node.isMatched())
         .map((node) => [node, node.getSingleMatch()])
     );

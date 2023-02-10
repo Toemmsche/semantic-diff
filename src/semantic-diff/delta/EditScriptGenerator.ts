@@ -15,7 +15,7 @@ export class EditScriptGenerator<T> {
     this.editScript = new EditScript(undefined, undefined);
 
     // 1st traversal: Pre-order of new (changed) tree
-    const newPreOrder = newTree.toPreOrderArray();
+    const newPreOrder = newTree.toPreOrderUnique();
     for (const newNode of newPreOrder) {
       if (newNode.isMatched()) {
         // New node is matched -> Move, Update, or Nil
@@ -36,7 +36,7 @@ export class EditScriptGenerator<T> {
       }
     }
 
-    const oldPreOrder = oldTree.toPreOrderArray();
+    const oldPreOrder = oldTree.toPreOrderUnique();
     for (let i = 0; i < oldPreOrder.length; i++) {
       const oldNode = oldPreOrder[i];
       if (!oldNode.isMatched()) {
@@ -51,7 +51,7 @@ export class EditScriptGenerator<T> {
     // The matching and old tree are well-formed in terms of parent-child
     // relationships. However, the children of a node might still be misaligned.
     // This can occur if a node as moved within its parent.
-    for (const oldNode of oldTree.toPreOrderArray()) {
+    for (const oldNode of oldTree.toPreOrderUnique()) {
       if (this.options.EXACT_EDIT_SCRIPT || oldNode.hasInternalOrdering()) {
         this.#alignChildren(oldNode);
       }

@@ -2,10 +2,15 @@ import CachingExtractor from './CachingExtractor';
 import { getPrimes } from '../../../lib/PrimeGenerator';
 import TNode from '../../../tree/TNode';
 import { stringHash } from '../../../lib/StringHash';
+import ContentHashExtractor from './ContentHashExtractor';
 
-export default class HashExtractor<T> extends CachingExtractor<number, T> {
+export default class TreeHashExtractor<T> extends CachingExtractor<number, T> {
+  constructor(private readonly contentHashExtractor: ContentHashExtractor<T>) {
+    super();
+  }
+
   protected computeValue(node: TNode<T>): void {
-    this.valueMap.set(node, this.contentHash(node) + this.childHash(node));
+    this.valueMap.set(node, this.contentHashExtractor.get(node) + this.childHash(node));
   }
 
   private childHash(node: TNode<T>) {
@@ -26,21 +31,5 @@ export default class HashExtractor<T> extends CachingExtractor<number, T> {
         .reduce((prev, curr) => prev + curr, 0);
     }
     return childHash;
-  }
-
-  private contentHash(node: TNode<T>) {
-    let content = node.label;
-    // Attribute order is irrelevant
-    const sortedAttrList = [...node.attributes.keys()]
-      // TODO
-      .filter((key) => key !== 'xmlns') // Ignore namespaces
-      .sort();
-    for (const key of sortedAttrList) {
-      content += key + '=' + node.attributes.get(key);
-    }
-    if (node.text != null) {
-      content += node.text;
-    }
-    return stringHash(content);
   }
 }

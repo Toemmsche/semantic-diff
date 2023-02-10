@@ -99,8 +99,8 @@ export class MatchPipeline<T> {
   }
 
   private verifyMatching(oldTree: TNode<T>, newTree: TNode<T>): boolean {
-    const oldNodeSet = new Set(oldTree.toPreOrderArray());
-    const newNodeSet = new Set(newTree.toPreOrderArray());
+    const oldNodeSet = new Set(oldTree.toPreOrderUnique());
+    const newNodeSet = new Set(newTree.toPreOrderUnique());
 
     for (const oldNode of oldNodeSet) {
       if (!oldNode.verifySingleMatching()) return false;

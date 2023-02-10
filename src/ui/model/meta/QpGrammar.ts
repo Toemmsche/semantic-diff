@@ -36,8 +36,8 @@ export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).
     <inners>
         <!-- multi-child nodes -->
         <Join ordered="true">
-            <comparisonValue weight="100">@_method</comparisonValue>
-            <comparisonValue weight="30" comparisonType="LCS">@_type</comparisonValue>
+            <comparisonValue weight="100" comparisonType="GATE">@_method</comparisonValue>
+            <comparisonValue weight="30" comparisonType="GATE">@_type</comparisonValue>
             <comparisonValue weight="60">@_exact_cardinality</comparisonValue>
         </Join>
         <GroupJoin ordered="true">
@@ -64,18 +64,12 @@ export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).
         <Sort>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </Sort>
-        <Map>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
-        </Map>
         <Temp>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </Temp>
         <Window>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </Window>
-        <AssertSingle>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
-        </AssertSingle>
 
         <!--- DAG edges -->
         <PipelineBreakerScan>
