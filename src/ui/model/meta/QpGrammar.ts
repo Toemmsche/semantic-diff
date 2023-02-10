@@ -1,4 +1,4 @@
-import { defaultDiffOptions, Grammar, GrammarBrowserSerDes } from '../../../semantic-diff/index';
+import { defaultDiffOptions, Grammar, GrammarXmlSerDes } from '../../../semantic-diff/index';
 
 // TODO
 // SetOperation method, example
@@ -20,7 +20,7 @@ import { defaultDiffOptions, Grammar, GrammarBrowserSerDes } from '../../../sema
 // Hash example
 // Materialize Example,
 // Investigate unknowns -> check cli
-export const QP_GRAMMAR: Grammar = new GrammarBrowserSerDes(defaultDiffOptions).parseFromString(
+export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).parseFromString(
   `
 <grammar>
     <leaves>

@@ -27,3 +27,6 @@ export function getTextContentWithoutChildren(xmlDom: Element): string | undefin
   }
   return res;
 }
+
+export const RUNNING_IN_BROWSER = typeof window != 'undefined';
+console.log('running in browser?', RUNNING_IN_BROWSER);

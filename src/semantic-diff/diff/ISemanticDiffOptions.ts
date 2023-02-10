@@ -1,7 +1,7 @@
 import IEditScriptOptions from '../delta/IEditScriptOptions';
 import ICompareOptions from '../compare/ICompareOptions';
 import IMatchOptions from '../match/IMatchOptions';
-import ISerDesOptions from '../io/ISerDesOptions';
+import ISerDesOptions from '../io/options/ISerDesOptions';
 
 export default interface ISemanticDiffOptions
   extends ICompareOptions,
@@ -37,5 +37,5 @@ export const defaultDiffOptions = {
   JX_ATTRS_KEY: '_attrs',
   JX_CHILDREN_KEY: '_children',
   JX_TEXT_KEY: '_text',
-  JX_LABEL_KEY: '_key'
+  JX_LABEL_KEY: '_label'
 };

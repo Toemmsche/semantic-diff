@@ -17,7 +17,9 @@ export default function computeSimilarity(queryPlanResults: QueryPlanResult[]): 
     qprs.forEach((first, i) => {
       qprs.slice(i + 1).forEach((second) => {
         const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
-        const plans = [first, second].map((qpr) => planSerdes.parseFromString(qpr.queryPlanXml));
+        const plans = [first, second].map((qpr) =>
+          planSerdes.transformParsedJsonObj(qpr.queryPlan)
+        );
 
         // use semantic diff
         MatchPipeline.fromMode(defaultDiffOptions).execute(

@@ -39,7 +39,8 @@ export default function QueryPlanDiff() {
         if (!qpr) {
           return null;
         }
-        const plan = planSerdes.parseFromString(qpr.queryPlanXml, true);
+        const plan = planSerdes.transformParsedJsonObj(qpr.queryPlan, true);
+        console.log('plan', plan);
         if (renderDagEdges) {
           PipelineBreakerScan.handlePipelineBreakerScans(plan);
           EarlyProbe.handleEarlyProbes(plan);

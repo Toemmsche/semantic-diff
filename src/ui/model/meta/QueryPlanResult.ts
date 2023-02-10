@@ -1,5 +1,6 @@
 import { Dataset, Query, System } from './types';
 import BenchmarkResult from './BenchmarkResult';
+import { PlanNode } from '../operator/PlanData';
 
 export default interface QueryPlanResult {
   // Metadata
@@ -10,7 +11,7 @@ export default interface QueryPlanResult {
 
   // Result state
   benchmarkResult: BenchmarkResult;
-  queryPlanXml: string;
+  queryPlan: PlanNode;
 
   // plan similarity
   similarity: Map<QueryPlanResult, number>;

@@ -1,26 +1,37 @@
-import SerDes from '../SerDes';
-import TNode, { TNodeBuilder } from '../../tree/TNode';
+import SerDes from './SerDes';
+import TNode, { TNodeBuilder } from '../tree/TNode';
+import xmldom from '@xmldom/xmldom';
 import vkbeautify from 'vkbeautify';
-import { getElementChildren, getTextContentWithoutChildren } from '../../Util';
-import ISerDesOptions from '../ISerDesOptions';
-import Grammar from '../../grammar/Grammar';
-import XmlData from '../../data/XmlData';
+import { getElementChildren, getTextContentWithoutChildren, RUNNING_IN_BROWSER } from '../Util';
+import ISerDesOptions from './options/ISerDesOptions';
+import Grammar from '../grammar/Grammar';
+import { Nullable } from '../Types';
 
-export default class TNodeBrowserSerDes extends SerDes<TNode<XmlData>> {
-  public constructor(protected grammar: Grammar, protected options: ISerDesOptions) {
+export default abstract class TNodeXMLSerDes<T> extends SerDes<TNode<T>> {
+  public constructor(private grammar: Grammar, private options: ISerDesOptions) {
     super();
   }
 
-  public override buildString(node: TNode<XmlData>): string {
-    const ownerDocument = new DOMImplementation().createDocument(null, null);
-    const xmlString = new XMLSerializer().serializeToString(this.buildXmlDom(ownerDocument, node));
+  protected abstract getData(
+    tagName: string,
+    text: Nullable<string>,
+    attributes: Map<string, string>
+  ): T;
+
+  public override buildString(node: TNode<T>): string {
+    const ownerDocument = (
+      RUNNING_IN_BROWSER ? new DOMImplementation() : new xmldom.DOMImplementation()
+    ).createDocument(null, null);
+    const xmlString = (
+      RUNNING_IN_BROWSER ? new XMLSerializer() : new xmldom.XMLSerializer()
+    ).serializeToString(this.buildXmlDom(ownerDocument, node));
     if (this.options.PRETTY_XML) {
       return vkbeautify.xml(xmlString);
     }
     return xmlString;
   }
 
-  public buildXmlDom(ownerDocument: any, node: TNode<XmlData>): any {
+  public buildXmlDom(ownerDocument: any, node: TNode<T>): any {
     const xmlElement = ownerDocument.createElement(node.label);
     if (node.isRoot()) {
       // TODO namespace
@@ -41,7 +52,7 @@ export default class TNodeBrowserSerDes extends SerDes<TNode<XmlData>> {
     return xmlElement;
   }
 
-  public parseXmlDom(xmlElement: Element, includeChildren = true): TNode<XmlData> {
+  public parseXmlDom(xmlElement: Element, includeChildren = true): TNode<T> {
     const tagName = xmlElement.localName;
 
     // parse attributes
@@ -66,8 +77,8 @@ export default class TNodeBrowserSerDes extends SerDes<TNode<XmlData>> {
     // TODO remove logging
     // console.log(`Detected ${tagName} as ${grammarNode?.type}`);
 
-    const builder = new TNodeBuilder<XmlData>()
-      .data(new XmlData(tagName, text, attributes))
+    const builder = new TNodeBuilder<T>()
+      .data(this.getData(tagName, text, attributes))
       .children(children);
 
     if (grammarNode) {
@@ -77,8 +88,10 @@ export default class TNodeBrowserSerDes extends SerDes<TNode<XmlData>> {
     return builder.build();
   }
 
-  public override parseFromString(xml: string, includeChildren: boolean = true): TNode<XmlData> {
-    const root = new DOMParser().parseFromString(xml, 'text/xml').childNodes.item(0) as Element; // assume single root node as an element
+  public override parseFromString(xml: string, includeChildren: boolean = true): TNode<T> {
+    const root = (RUNNING_IN_BROWSER ? new DOMParser() : new xmldom.DOMParser())
+      .parseFromString(xml, 'text/xml')
+      .childNodes.item(0) as Element; // assume single root node as an element
     return this.parseXmlDom(root);
   }
 }
