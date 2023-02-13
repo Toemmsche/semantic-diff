@@ -233,9 +233,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
                 <Box padding={4} bgcolor="white">
                   <Editor
                     height="80vh"
-                    width="100vh"
-                    defaultLanguage="sql"
-                    defaultValue={baseLineQprForSelectedQuery?.queryText}
+                    width="70vw"
+                    language="sql"
+                    value={baseLineQprForSelectedQuery?.queryText}
                     options={{
                       readOnly: true
                     }}

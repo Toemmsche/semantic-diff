@@ -37,6 +37,10 @@ export class PlanData extends XmlData {
     return parseInt(this.attributes.get('exact_cardinality')!);
   }
 
+  get systemRepresentation(): string {
+    return this.attributes.get('system_representation')!;
+  }
+
   component(): Function {
     return RenderPlanNode;
   }

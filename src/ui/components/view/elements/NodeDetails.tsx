@@ -1,24 +1,36 @@
 import React from 'react';
-import { PlanData, PlanNode } from '../../../model/operator/PlanData';
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { useQueryPlanState } from '../../../state/QueryPlanResultStore';
+import { PlanNode } from '../../../model/operator/PlanData';
+import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import SystemRepresentation from './SystemRepresentation';
+import { getColorForIndex } from './color';
 
 // choose non-nullable props since we would use a regular details viewer
 // otherwise
 export default function NodeDetails(props: { planNodes: PlanNode[] }) {
   const { planNodes } = props;
 
-  // Generate table for all properties
-  const allKeys = [...new Set(planNodes.flatMap((n) => [...n.attributes.keys()]))];
+  // Generate table for all properties (except system_representation)
+  const allKeys = [...new Set(planNodes.flatMap((n) => [...n.attributes.keys()]))].filter(
+    (key) => key !== 'system_representation'
+  );
 
   const DetailTableRows = allKeys.map((key) => {
-    const TableCells = planNodes.map((n, i) => (
-      <TableCell key={i}>{n.attributes.get(key)}</TableCell>
-    ));
+    const TableCells = planNodes.map((n, i) => {
+      const color = n.attributes.has(key) ? getColorForIndex(n.origin.sourceIndex) : 'grey';
+      return (
+        <TableCell
+          key={i}
+          style={{
+            color: color
+          }}>
+          {n.attributes.get(key) ?? 'N/A'}
+        </TableCell>
+      );
+    });
 
     return (
       <TableRow key={key}>
-        <TableCell key="header" sx={{ fontWeight: 'bold' }}>
+        <TableCell key="header" style={{ fontWeight: 'bold' }}>
           {key}
         </TableCell>
         {TableCells}
@@ -27,18 +39,30 @@ export default function NodeDetails(props: { planNodes: PlanNode[] }) {
   });
 
   const HeaderCells = planNodes.map((n) => (
-    <TableCell key={n.origin.debugName}>{n.origin.debugName}</TableCell>
+    <TableCell
+      key={n.origin.debugName}
+      style={{
+        fontWeight: 'bold',
+        color: getColorForIndex(n.origin.sourceIndex)
+      }}>
+      {n.origin.debugName}
+    </TableCell>
   ));
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell></TableCell>
-          {HeaderCells}
-        </TableRow>
-      </TableHead>
-      <TableBody>{DetailTableRows}</TableBody>
-    </Table>
+    <Stack direction="column" alignItems="center">
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell></TableCell>
+            {HeaderCells}
+          </TableRow>
+        </TableHead>
+        <TableBody>{DetailTableRows}</TableBody>
+      </Table>
+      <Box marginTop={2} marginBottom={2}>
+        <SystemRepresentation planNodes={planNodes}></SystemRepresentation>
+      </Box>
+    </Stack>
   );
 }
