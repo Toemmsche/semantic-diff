@@ -2,7 +2,7 @@ import React from 'react';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import SystemRepresentation from './SystemRepresentation';
-import { getColorForIndex } from './color';
+import { getTextColorForIndex } from './color';
 
 // choose non-nullable props since we would use a regular details viewer
 // otherwise
@@ -16,7 +16,7 @@ export default function NodeDetails(props: { planNodes: PlanNode[] }) {
 
   const DetailTableRows = allKeys.map((key) => {
     const TableCells = planNodes.map((n, i) => {
-      const color = n.attributes.has(key) ? getColorForIndex(n.origin.sourceIndex) : 'grey';
+      const color = n.attributes.has(key) ? getTextColorForIndex(n.origin.sourceIndex) : 'grey';
       return (
         <TableCell
           key={i}
@@ -42,8 +42,9 @@ export default function NodeDetails(props: { planNodes: PlanNode[] }) {
     <TableCell
       key={n.origin.debugName}
       style={{
+        opacity: 100,
         fontWeight: 'bold',
-        color: getColorForIndex(n.origin.sourceIndex)
+        color: getTextColorForIndex(n.origin.sourceIndex)
       }}>
       {n.origin.debugName}
     </TableCell>

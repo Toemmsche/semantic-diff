@@ -1,0 +1,214 @@
+[
+  {
+    "system": "dummy",
+    "query": "dummy",
+    "dataset": "dummy",
+    "benchmarkResult": {
+      "total": 1.0,
+      "execution": 1.0,
+      "compilation": 1.0
+    },
+    "queryPlan": {
+      "_label": "Result",
+      "_attrs": {
+      },
+      "_children": [
+        {
+          "_label": "TableScan",
+          "_attrs": {
+            "table_name": "MyTable"
+          },
+          "_children": []
+        },
+        {
+          "_label": "InlineTable",
+          "_attrs": {
+          },
+          "_children": []
+        },
+        {
+          "_label": "Join",
+          "_attrs": {
+            "method": "hash",
+            "type": "inner"
+          },
+          "_children": [
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "bnl",
+                "type": "leftsemi"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "nl",
+                "type": "rightsemi"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "merge",
+                "type": "leftanti"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "indexnl",
+                "type": "rightanti"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "hash",
+                "type": "leftouter"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "hash",
+                "type": "rightouter"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "hash",
+                "type": "fullouter"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "hash",
+                "type": "leftmark"
+              },
+              "_children": []
+            },
+            {
+              "_label": "Join",
+              "_attrs": {
+                "method": "hash",
+                "type": "rightmark"
+              },
+              "_children": []
+            }
+          ]
+        },
+        {
+          "_label": "SetOperation",
+          "_attrs": {
+            "type": "unionall"
+          },
+          "_children": [
+            {
+              "_label": "SetOperation",
+              "_attrs": {
+                "type": "union"
+              },
+              "_children": []
+            },
+            {
+              "_label": "SetOperation",
+              "_attrs": {
+                "type": "intersectall"
+              },
+              "_children": []
+            },
+            {
+              "_label": "SetOperation",
+              "_attrs": {
+                "type": "intersect"
+              },
+              "_children": []
+            },
+            {
+              "_label": "SetOperation",
+              "_attrs": {
+                "type": "exceptall"
+              },
+              "_children": []
+            },
+            {
+              "_label": "SetOperation",
+              "_attrs": {
+                "type": "except"
+              },
+              "_children": []
+            }
+          ]
+        },
+        {
+          "_label": "GroupJoin",
+          "_attrs": {
+            "method": "hash",
+            "type": "inner"
+          },
+          "_children": []
+        },
+        {
+          "_label": "GroupBy",
+          "_attrs": {
+            "method": "hash"
+          },
+          "_children": []
+        },
+        {
+          "_label": "Select",
+          "_attrs": {
+          },
+          "_children": []
+        },
+        {
+          "_label": "PipelineBreakerScan",
+          "_attrs": {
+          },
+          "_children": [
+            {
+              "_label": "Temp",
+              "_attrs": {
+              },
+              "_children": []
+            }
+          ]
+        },
+        {
+          "_label": "Sort",
+          "_attrs": {
+          },
+          "_children": []
+        },
+        {
+          "_label": "MultiwayJoin",
+          "_attrs": {
+          },
+          "_children": []
+        },
+        {
+          "_label": "EarlyProbe",
+          "_attrs": {
+          },
+          "_children": []
+        },
+        {
+          "_label": "CrossProduct",
+          "_attrs": {
+          },
+          "_children": []
+        }
+      ]
+    }
+  }
+]

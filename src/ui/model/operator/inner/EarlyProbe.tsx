@@ -1,4 +1,7 @@
-import { PlanData, PlanNode, RenderPlanNode } from './PlanData';
+import { PlanData, PlanNode } from '../PlanData';
+import { Box, Stack } from '@mui/material';
+import { Colorize } from '@mui/icons-material';
+import React from 'react';
 
 export class EarlyProbe extends PlanData {
   public static LABEL = 'EarlyProbe';
@@ -7,8 +10,13 @@ export class EarlyProbe extends PlanData {
     return this.attributes.get('source')!;
   }
 
-  component(): Function {
-    return RenderPlanNode;
+  render(): any {
+    return (
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Colorize />
+        <Box height="min-content">EARLY PROBE</Box>
+      </Stack>
+    );
   }
 
   public static isEarlyProbe(data: PlanData): data is EarlyProbe {

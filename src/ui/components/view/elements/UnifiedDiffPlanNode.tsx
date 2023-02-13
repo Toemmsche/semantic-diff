@@ -7,7 +7,7 @@ import { ExpandMore } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
 import { NODE_BORDER_RADIUS, NODE_ELEVATION, NODE_PADDING } from './dimensions';
 import NodeDetails from './NodeDetails';
-import { getColorForIndex, getColorForSubset } from './color';
+import { getColorForIndex } from './color';
 
 export interface IUnifiedDiffProps {
   data: {
@@ -29,9 +29,6 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
   const [parameters] = useParameterState();
 
   const metaPlanData = planNode.getMetaNode().data;
-
-  // child component
-  let Component = metaPlanData.component();
 
   let groupSize = planNode.getGroupSourceIndices().length;
 
@@ -67,7 +64,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
         <Handle type="target" position={Position.Top} style={{ opacity: '0' }} />
         <Box padding={NODE_PADDING}>
           <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
-            <Component data={metaPlanData} />
+            {metaPlanData.render()}
             {hoverActive &&
               parameters.collapsible &&
               !planNode.isLeaf() &&

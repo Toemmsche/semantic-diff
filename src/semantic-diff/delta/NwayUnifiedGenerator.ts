@@ -1,6 +1,6 @@
 import TNode from '../tree/TNode';
 import ISemanticDiffOptions from '../diff/ISemanticDiffOptions';
-import GroupBy from '../../ui/model/operator/GroupBy';
+import GroupBy from '../../ui/model/operator/inner/GroupBy';
 
 export const enum Origin {
   OLD = 'old',

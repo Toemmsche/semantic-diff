@@ -5,7 +5,6 @@ import ElkJsLayouter from '../components/view/layout/ElkJsLayouter';
 import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
 import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
 import { defaultDiffOptions } from '../../semantic-diff/index';
-import { PlanData } from '../model/operator/PlanData';
 import IAsyncLayouter from '../components/view/layout/IAsyncLayouter';
 import IBlockingLayouter from '../components/view/layout/IBlockingLayouter';
 

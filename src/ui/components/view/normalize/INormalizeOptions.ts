@@ -1,24 +1,23 @@
-import {PlanNode} from "../../../model/operator/PlanData";
-
+import { PlanNode } from '../../../model/operator/PlanData';
 
 export default interface INormalizeOptions {
-    filter: (planNode: PlanNode) => boolean,
-    computeData: (planNode: PlanNode) => any;
-    computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => any;
+  filter: (planNode: PlanNode) => boolean;
+  computeData: (planNode: PlanNode) => any;
+  computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => any;
 }
 
 export const defaultNormalizeOptions = {
-    filter: (planNode: PlanNode) => {
-        return true;
-    },
-    computeData: (planNode: PlanNode) => {
-        return planNode.data
-    },
+  filter: (planNode: PlanNode) => {
+    return true;
+  },
+  computeData: (planNode: PlanNode) => {
+    return planNode.data;
+  },
 
-    computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => {
-        return {
-            parentPlanData: parentPlanNode.data,
-            childPlanData: childPlanNode.data
-        }
-    }
-}
+  computeEdgeData: (parentPlanNode: PlanNode, childPlanNode: PlanNode) => {
+    return {
+      parentPlanData: parentPlanNode.data,
+      childPlanData: childPlanNode.data
+    };
+  }
+};

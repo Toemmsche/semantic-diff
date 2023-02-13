@@ -10,11 +10,12 @@ import {
 } from 'reactflow';
 import { PlanNode } from '../../../model/operator/PlanData';
 import { EdgeType, useParameterState } from '../../../state/ParameterStore';
-import { EarlyProbe } from '../../../model/operator/EarlyProbe';
+import { EarlyProbe } from '../../../model/operator/inner/EarlyProbe';
 import { getColorForIndex } from './color';
 import { css, keyframes } from '@emotion/react/macro';
 import { DASHARRAY_GAP } from './dimensions';
-import { PipelineBreakerScan } from '../../../model/operator/PipelineBreakerScan';
+import { PipelineBreakerScan } from '../../../model/operator/inner/PipelineBreakerScan';
+import { Nullable } from '../../../../semantic-diff/Types';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
@@ -128,7 +129,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
       // just average
       return [(curr + cardinality) / 2, curr === cardinality && allEqual];
     },
-    [cardinalities[0], true] as [number | null, boolean]
+    [cardinalities[0], true] as [Nullable<number>, boolean]
   );
 
   const isEarlyProbeEdge =

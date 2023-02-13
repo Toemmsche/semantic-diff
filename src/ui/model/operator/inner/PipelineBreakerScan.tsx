@@ -1,10 +1,8 @@
-import { PlanData, PlanNode } from './PlanData';
-import { Box } from '@mui/material';
+import { PlanData, PlanNode } from '../PlanData';
+import { Box, Stack } from '@mui/material';
 import React from 'react';
 
-export function RenderPipelineBreakerScan(props: {}) {
-  return <Box>PIPELINEBREAKERSCAN</Box>;
-}
+const UTF8_STACK = '☷';
 
 export class PipelineBreakerScan extends PlanData {
   public static LABEL = 'PipelineBreakerScan';
@@ -13,12 +11,17 @@ export class PipelineBreakerScan extends PlanData {
     return this.attributes.get('scanned_id')!;
   }
 
-  component(): Function {
-    return RenderPipelineBreakerScan;
-  }
-
   static isPipelineBreakerScan(data: PlanData): data is PipelineBreakerScan {
     return data.label === PipelineBreakerScan.LABEL;
+  }
+
+  render(): any {
+    return (
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Box>{UTF8_STACK}</Box>
+        <Box>PIPELINE BREAKER SCAN</Box>
+      </Stack>
+    );
   }
 
   public static handlePipelineBreakerScans(tree: PlanNode) {

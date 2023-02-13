@@ -7,6 +7,11 @@ export function getColorForIndex(index: number): string {
   return COLORS[index];
 }
 
+export function getTextColorForIndex(index: number) {
+  const color = getColorForIndex(index);
+  return color.substring(0, 7);
+}
+
 export function getColorForSubset(subset: number[] | Set<number>, maxLength: number = 3): string {
   const arr = subset instanceof Set ? [...subset] : subset;
   if (arr.length === 0) {

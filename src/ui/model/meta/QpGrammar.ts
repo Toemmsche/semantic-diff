@@ -28,6 +28,9 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
             <comparisonValue weight="100">@_table_name</comparisonValue>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </TableScan>
+        <InlineTable>
+             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+        </InlineTable>
         <CustomLeaf>
             <comparisonValue weight="100">@_name</comparisonValue>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>

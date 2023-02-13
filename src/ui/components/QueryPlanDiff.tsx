@@ -13,8 +13,8 @@ import {
 } from '../state/ParameterStore';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
 import FloatingMenu from './menu/FloatingMenu';
-import { PipelineBreakerScan } from '../model/operator/PipelineBreakerScan';
-import { EarlyProbe } from '../model/operator/EarlyProbe';
+import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
+import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
 import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator';
 import Origin from '../../semantic-diff/tree/Origin';
 import UnionFind from '../../semantic-diff/lib/UnionFind';

@@ -50,6 +50,7 @@
     "@xmldom/xmldom": "^0.8.6",
     "animejs": "^3.2.1",
     "chart.js": "^4.1.1",
+    "color": "^4.2.3",
     "d3-hierarchy": "^3.1.2",
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.0.0",
@@ -92,6 +93,7 @@
   },
   "devDependencies": {
     "@types/animejs": "^3.1.7",
+    "@types/color": "^3.0.3",
     "@types/dagre-d3": "^0.6.3",
     "@types/styled-components": "^5.1.26",
     "@types/uuid": "^9.0.0",
