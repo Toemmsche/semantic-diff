@@ -309,7 +309,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
     return (
       <Stack
-        maxWidth="20vw"
+        maxWidth="25vw"
         key="second"
         direction="row"
         alignItems="center"

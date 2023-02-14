@@ -37,7 +37,7 @@ export default function NodeRepresentation(props: INodeRepresentationProps) {
         }}
         open={open}
         onClose={() => setOpen(false)}>
-        <Stack padding={4} bgcolor="white" direction="column">
+        <Stack padding={4} bgcolor="white" direction="column" spacing={2}>
           <Stack direction="row" flexWrap="wrap" spacing={1}>
             {chips}
           </Stack>

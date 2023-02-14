@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import ReactFlow, { useEdgesState, useReactFlow } from 'reactflow';
+import ReactFlow, { MiniMap, useEdgesState, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { PlanNode } from '../../model/operator/PlanData';
-import RefreshLayout from './layout/RefreshLayout';
 import useAnimatedNodes from '../useAnimatedNodes';
 import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';
@@ -44,12 +43,14 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
         setEdges={setEdges}
         reactFlowInstance={reactFlowInstance}></LayoutWithDimensions>
       <ReactFlow
-        zoomOnScroll={false}
+        zoomOnScroll
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
         // @ts-ignore
-        edgeTypes={edgeTypes}></ReactFlow>
+        edgeTypes={edgeTypes}>
+        <MiniMap zoomable pannable></MiniMap>
+      </ReactFlow>
       <Legend></Legend>
     </>
   );

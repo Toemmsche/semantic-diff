@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import React from 'react';
 import { useQueryPlanState } from '../../state/QueryPlanResultStore';
 import { PlanData } from '../../model/operator/PlanData';
@@ -32,13 +32,15 @@ export default function Legend(props: {}) {
       const planNode = new TNode<PlanData>(planData, null);
       planNode.origin = new Origin(index, index, system);
       return (
-        <UnifiedDiffPlanNode
-          data={{
-            planNode,
-            hide: () => {},
-            expand: () => {}
-          }}
-        />
+        <Box width="max-content">
+          <UnifiedDiffPlanNode
+            data={{
+              planNode,
+              hide: () => {},
+              expand: () => {}
+            }}
+          />
+        </Box>
       );
     });
   return (
@@ -46,8 +48,8 @@ export default function Legend(props: {}) {
       direction="column"
       sx={{
         position: 'absolute',
-        bottom: 30,
-        right: 20
+        bottom: 100,
+        left: 20
       }}
       spacing={2}>
       {Boxes}
