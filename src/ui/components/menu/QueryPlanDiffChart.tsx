@@ -9,6 +9,7 @@ import {
 } from '../../state/QueryPlanResultStore';
 import { QueryStats } from '@mui/icons-material';
 import { getColorForIndex } from '../view/elements/color';
+import { Nullable } from '../../../semantic-diff/Types';
 
 export default function QueryPlanDiffChart(props: {}) {
   const [allLabels, _] = useAllLabels();
@@ -21,18 +22,16 @@ export default function QueryPlanDiffChart(props: {}) {
 
   // TODO get the selected query some other way
 
-  let selectedQprs = [] as QueryPlanResult[];
+  let selectedQprs = [] as Nullable<QueryPlanResult>[];
   if (qprState.resultSelection.length > 0) {
     const selectedQuery = qprState.resultSelection.filter((qpr) => qpr != null)[0]?.query;
 
     if (selectedQuery) {
-      selectedQprs = availableSystems
-        .map((system) =>
-          qprState.queryPlanResults.find(
-            (qpr) => qpr.query === selectedQuery && qpr.system === system
-          )
+      selectedQprs = availableSystems.map((system) =>
+        qprState.queryPlanResults.find(
+          (qpr) => qpr.query === selectedQuery && qpr.system === system
         )
-        .filter((qpr) => qpr != null) as QueryPlanResult[];
+      );
     }
   }
 
@@ -69,7 +68,10 @@ export default function QueryPlanDiffChart(props: {}) {
     }
   };
 
-  const getDataset = (qpr: QueryPlanResult, index: number) => {
+  const getDataset = (qpr: Nullable<QueryPlanResult>, index: number) => {
+    if (qpr == null) {
+      return null;
+    }
     return {
       label: qpr.system,
       data: activeLabels.map((cat) => {
@@ -86,7 +88,7 @@ export default function QueryPlanDiffChart(props: {}) {
 
   const chartData = {
     labels: activeLabels,
-    datasets: selectedQprs.map((qpr, i) => getDataset(qpr, i))
+    datasets: selectedQprs.map((qpr, i) => getDataset(qpr, i)).filter((ds) => ds != null) as any[]
   };
 
   return (
