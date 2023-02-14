@@ -26,14 +26,14 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
     <leaves>
         <TableScan>
             <comparisonValue comparisonType="GATE">@_table_name</comparisonValue>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </TableScan>
         <InlineTable>
-             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </InlineTable>
         <CustomLeaf>
             <comparisonValue comparisonType="GATE">@_name</comparisonValue>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </CustomLeaf>
     </leaves>
     <inners>
@@ -41,51 +41,51 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         <Join ordered="true">
             <comparisonValue comparisonType="GATE">@_method</comparisonValue>
             <comparisonValue comparisonType="GATE">@_type</comparisonValue>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </Join>
         <GroupJoin ordered="true">
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </GroupJoin>
         <MultiWayJoin ordered="true">
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </MultiWayJoin>
         <SetOperation>
             <comparisonValue comparisonType="GATE">@_type</comparisonValue>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </SetOperation>
         <CrossProduct>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </CrossProduct>
 
         <!-- single-child nodes -->
         <GroupBy>
             <comparisonValue weight="80">@_method</comparisonValue>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </GroupBy>
         <Select>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </Select>
         <Sort>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </Sort>
         <!-- Temp always has zero-cardinality -->
         <Temp></Temp>
         <Window>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </Window>
 
         <!--- DAG edges -->
         <PipelineBreakerScan>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </PipelineBreakerScan>
         <EarlyProbe>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </EarlyProbe>
         <!-- Special Nodes -->
         <Result></Result>
         <CustomInner>
             <comparisonValue comparisonType="GATE">@_name</comparisonValue>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </CustomInner>
     </inners>
 </grammar>`
