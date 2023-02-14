@@ -139,13 +139,15 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     [cardinalities[0], true] as [Nullable<number>, boolean]
   );
 
+  const gap = 6;
+  // signal "weaker" edges
+  let totalBlock = 20;
+
   // just use a constant, this is only used for the edge width on screen
   if (!showEdgeLabel) {
-    avgCardinality = 10;
+    avgCardinality = 5;
+    totalBlock = 6;
   }
-
-  const gap = 6;
-  const totalBlock = 20;
 
   const groupSize = edgeGroupSourceIndices.length;
   const blockSize = totalBlock / groupSize;

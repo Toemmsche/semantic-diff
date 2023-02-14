@@ -19,7 +19,8 @@ export default function FloatingMenu(props: {}) {
           style={{
             background:
               'linear-gradient(0deg, rgba(189,189,189,1) 0%, rgba(255,255,255,1) 5%, rgba(255,255,255,1) 95%, rgba(189,189,189,1) 100%)',
-            boxShadow: '0px 0px 8px black'
+            boxShadow: '0px 0px 8px black',
+            zIndex: 1000
           }}>
           <Stack
             direction="row"

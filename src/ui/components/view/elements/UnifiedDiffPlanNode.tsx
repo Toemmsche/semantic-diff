@@ -38,8 +38,9 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
       .getGroupSourceIndices()
       .map((sourceIndex, j) => {
         const color = getColorForIndex(sourceIndex);
-        const start = Math.floor((j * 100) / groupSize);
-        const end = Math.floor(((j + 1) * 100) / groupSize);
+        // apply minimal smnoothing
+        const start = Math.floor((j * 100) / groupSize) + 1;
+        const end = Math.floor(((j + 1) * 100) / groupSize) - 1;
         return `${color} ${start}%, ${color} ${end}%`;
       })
       .join(', ') +

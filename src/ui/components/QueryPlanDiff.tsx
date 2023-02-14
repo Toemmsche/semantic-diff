@@ -11,17 +11,25 @@ import {
   useMatchAlgorithm
 } from '../state/ParameterStore';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
-import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
-import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
 import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator';
 import Origin from '../../semantic-diff/tree/Origin';
 import UnionFind from '../../semantic-diff/lib/UnionFind';
 import { hasDuplicates } from '../../semantic-diff/lib/ArrayUtil';
 import { ReactFlowProvider } from 'reactflow';
+import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
+import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
 
-/**
- * Root Component for QueryPlan diff view
- */
+// dunno where to place this
+export function treatDagEdges(plan: PlanNode, dagEdgeTreatment: DagEdgeTreatment) {
+  if (dagEdgeTreatment > DagEdgeTreatment.IGNORE) {
+    PipelineBreakerScan.handlePipelineBreakerScans(
+      plan,
+      dagEdgeTreatment === DagEdgeTreatment.COPY_SUBTREE
+    );
+    EarlyProbe.handleEarlyProbes(plan);
+  }
+}
+
 export default function QueryPlanDiff() {
   const [state] = useQueryPlanState();
   const [dagEdgeTreatment] = useDagEdgeTreatment();
@@ -38,14 +46,7 @@ export default function QueryPlanDiff() {
           return null;
         }
         const plan = planSerdes.transformParsedJsonObj(qpr.queryPlan, true);
-
-        if (dagEdgeTreatment > DagEdgeTreatment.IGNORE) {
-          PipelineBreakerScan.handlePipelineBreakerScans(
-            plan,
-            dagEdgeTreatment === DagEdgeTreatment.COPY_SUBTREE
-          );
-          EarlyProbe.handleEarlyProbes(plan);
-        }
+        treatDagEdges(plan, dagEdgeTreatment);
         plan
           .toPreOrderUnique()
           .forEach((n) => (n.origin = new Origin(i, workingIndex, qpr.system)));

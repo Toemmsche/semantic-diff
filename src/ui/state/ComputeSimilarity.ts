@@ -3,8 +3,13 @@ import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff/index';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
+import { DagEdgeTreatment } from './ParameterStore';
+import { treatDagEdges } from '../components/QueryPlanDiff';
 
-export default function computeSimilarity(queryPlanResults: QueryPlanResult[]): void {
+export default function computeSimilarity(
+  queryPlanResults: QueryPlanResult[],
+  dagEdgeTreatment: DagEdgeTreatment
+): void {
   console.time('compute_sim');
 
   // compute similarities
@@ -17,9 +22,11 @@ export default function computeSimilarity(queryPlanResults: QueryPlanResult[]): 
     qprs.forEach((first, i) => {
       qprs.slice(i + 1).forEach((second) => {
         const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
-        const plans = [first, second].map((qpr) =>
-          planSerdes.transformParsedJsonObj(qpr.queryPlan)
-        );
+        const plans = [first, second].map((qpr) => {
+          const plan = planSerdes.transformParsedJsonObj(qpr.queryPlan);
+          treatDagEdges(plan, dagEdgeTreatment);
+          return plan;
+        });
 
         // use semantic diff
         MatchPipeline.fromMode(defaultDiffOptions).execute(

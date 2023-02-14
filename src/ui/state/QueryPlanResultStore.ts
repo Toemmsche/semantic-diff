@@ -7,6 +7,7 @@ import { Nullable } from '../../semantic-diff/Types';
 import { ComparisonMetric } from '../model/meta/BenchmarkResult';
 import { System } from '../model/meta/types';
 import computeSimilarity from './ComputeSimilarity';
+import { DagEdgeTreatment } from './ParameterStore';
 
 export interface IQueryPlanResultsState {
   queryPlanResults: QueryPlanResultCollection;
@@ -23,7 +24,7 @@ const actions = {
         defaultDiffOptions
       ).queryPlanResultCollectionFromJson(text);
 
-      computeSimilarity(queryPlanResults);
+      computeSimilarity(queryPlanResults, DagEdgeTreatment.COPY_SUBTREE);
 
       // TODO verify that all system have all queries or handle this in planpicker
       setState({
@@ -42,14 +43,9 @@ const actions = {
     }
 };
 
-const initialPlans = new PlanNodeBrowserSerDes(
-  QP_GRAMMAR,
-  defaultDiffOptions
-).queryPlanResultCollectionFromJson(batchPlans);
-computeSimilarity(initialPlans);
 const Store = createStore<IQueryPlanResultsState, typeof actions>({
   initialState: {
-    queryPlanResults: initialPlans,
+    queryPlanResults: [],
     resultSelection: []
   },
   actions
