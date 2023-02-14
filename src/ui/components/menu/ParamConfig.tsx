@@ -112,7 +112,7 @@ export default function ParamConfig() {
   const [parameters, parameterActions] = useParameterState();
 
   return (
-    <Stack direction="row" width="15vw" height="100%">
+    <Stack direction="row" width="20vw" height="100%">
       <Stack marginRight="auto" direction="row" height="100%" justifyContent="space-between">
         <DiscreteSliderPicker<MatchAlgorithm>
           orientation="vertical"

@@ -1,9 +1,11 @@
 body {
-  min-width: 100vw;
-  min-height: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
+    overflow: hidden;
 
-  overflow: hidden;
+    padding: 0;
+    margin: 0;
 
-  font-family: Roboto;
+    font-family: Roboto;
 }
 

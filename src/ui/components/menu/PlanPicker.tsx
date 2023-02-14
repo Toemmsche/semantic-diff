@@ -308,7 +308,13 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       });
 
     return (
-      <Stack key="second" direction="row" alignItems="center" spacing={2}>
+      <Stack
+        maxWidth="20vw"
+        key="second"
+        direction="row"
+        alignItems="center"
+        gap={1}
+        flexWrap="wrap">
         {CompCandidateItems}
       </Stack>
     );
