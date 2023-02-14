@@ -11,7 +11,7 @@ import {
 import { PlanNode } from '../../../model/operator/PlanData';
 import { EdgeType, useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/inner/EarlyProbe';
-import { getColorForIndex } from './color';
+import { getColorForIndex, getGradientForIndexGroup } from './color';
 import { css, keyframes } from '@emotion/react/macro';
 import { PipelineBreakerScan } from '../../../model/operator/inner/PipelineBreakerScan';
 import { Nullable } from '../../../../semantic-diff/Types';
@@ -75,8 +75,6 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
 
   const [parameters] = useParameterState();
 
-  const [childPlanData, parentPlanData] = [childPlanNode.data, parentPlanNode.data];
-
   let edgePath: string | undefined, labelX, labelY;
   switch (parameters.edgeType) {
     case EdgeType.BEZIER:
@@ -112,7 +110,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   const edgeGroupSourceIndices: number[] = [];
   let cardinalities = [];
   let showEdgeLabel = true;
-  const coloredLabels = [];
+  const indexedLabels = [] as [number, string][];
   for (const participant of childPlanNode.getMatchGroup()) {
     // The edge exists in the tree this participant originally belonged to if the participant is in the child group and its parent is in the parent group
     let edgeExists = parentPlanNode.getMatchGroup().includes(participant.getParent());
@@ -126,15 +124,17 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     if (edgeExists) {
       edgeGroupSourceIndices.push(participant.sourceIndex);
       cardinalities.push(participant.data.exactCardinality);
-    }
-    if (parameters.labelBuildAndProbe) {
-      const color = getColorForIndex(participant.sourceIndex);
-      if (Join.isBuildEdge(parentPlanNode, participant)) {
-        coloredLabels.push([color, 'BUILD']);
-      } else if (Join.isProbeEdge(parentPlanNode, participant)) {
-        coloredLabels.push([color, 'PROBE']);
-      } else if (Join.isIndexLookupEdge(parentPlanNode, participant)) {
-        coloredLabels.push([color, 'INDEX']);
+      if (parameters.labelBuildAndProbe) {
+        if (Join.isBuildEdge(parentPlanNode, participant)) {
+          indexedLabels.push([participant.sourceIndex, 'BUILD']);
+        } else if (Join.isProbeEdge(parentPlanNode, participant)) {
+          indexedLabels.push([participant.sourceIndex, 'PROBE']);
+        } else if (Join.isIndexLookupEdge(parentPlanNode, participant)) {
+          indexedLabels.push([participant.sourceIndex, 'INDEX']);
+        }
+      }
+      if (indexedLabels.length > 1) {
+        console.log(indexedLabels, childPlanNode, participant, edgeExists);
       }
     }
   }
@@ -195,16 +195,36 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     );
   });
 
-  const EdgeLabels = coloredLabels.map(([color, label], i) => {
-    return (
-      <>
-        <Box color={color} fontSize={10}>
-          {label}
+  let EdgeLabels;
+  if (indexedLabels.length > 0) {
+    if (new Set(indexedLabels.map(([_, label]) => label)).size > 1) {
+      EdgeLabels = indexedLabels.map(([index, label], j) => {
+        return (
+          <>
+            <Box color={getColorForIndex(index)} fontSize={10}>
+              {label}
+            </Box>
+            <Box fontSize={10}>{j < indexedLabels.length - 1 ? '/' : ''}</Box>
+          </>
+        );
+      });
+    } else {
+      // simply use a gradient
+      EdgeLabels = (
+        <Box
+          style={{
+            background: getGradientForIndexGroup(indexedLabels.map(([index, _]) => index))
+          }}
+          sx={{
+            color: 'transparent',
+            '-webkit-background-clip': 'text !important'
+          }}
+          fontSize={10}>
+          {indexedLabels[0][1]}
         </Box>
-        <Box fontSize={10}>{i < coloredLabels.length - 1 ? '/' : ''}</Box>
-      </>
-    );
-  });
+      );
+    }
+  }
 
   return (
     <>

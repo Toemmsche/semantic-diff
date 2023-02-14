@@ -90,18 +90,14 @@ export default class Join extends PlanData {
       (Join.isJoin(parentPlanData) && parentPlanData.method === JoinMethod.HASH_JOIN) ||
       GroupJoin.isGroupJoin(parentPlanData)
     ) {
-      return child
-        .getMatchGroup()
-        .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 0);
+      return parent.getMatchGroup().includes(child.getParent()) && child.getIndex() === 0;
     }
   }
 
   static isProbeEdge(parent: PlanNode, child: PlanNode) {
     const parentPlanData = parent.data;
     if (Join.isJoin(parentPlanData) && parentPlanData.method === JoinMethod.HASH_JOIN) {
-      return child
-        .getMatchGroup()
-        .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 1);
+      return parent.getMatchGroup().includes(child.getParent()) && child.getIndex() === 1;
     }
   }
 
@@ -111,9 +107,7 @@ export default class Join extends PlanData {
       Join.isJoin(parentPlanData) &&
       parentPlanData.method === JoinMethod.INDEX_NESTED_LOOP_JOIN
     ) {
-      return child
-        .getMatchGroup()
-        .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 1);
+      return parent.getMatchGroup().includes(child.getParent()) && child.getIndex() === 1;
     }
   }
 

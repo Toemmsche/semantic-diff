@@ -6,7 +6,7 @@ import { Box, IconButton, Paper, Popover, Stack } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
 import NodeDetails from './NodeDetails';
-import { getColorForIndex } from './color';
+import { getGradientForIndexGroup } from './color';
 
 export interface IUnifiedDiffProps {
   data: {
@@ -64,22 +64,8 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
 
   const metaPlanData = planNode.getMetaNode().data;
 
-  let groupSize = planNode.getGroupSourceIndices().length;
+  let background = getGradientForIndexGroup(planNode.getGroupSourceIndices());
 
-  // this will become a linear gradient
-  let background =
-    'linear-gradient(to right, ' +
-    planNode
-      .getGroupSourceIndices()
-      .map((sourceIndex, j) => {
-        const color = getColorForIndex(sourceIndex);
-        // apply minimal smnoothing
-        const start = Math.floor((j * 100) / groupSize) + 1;
-        const end = Math.floor(((j + 1) * 100) / groupSize) - 1;
-        return `${color} ${start}%, ${color} ${end}%`;
-      })
-      .join(', ') +
-    ')';
   return (
     <Paper elevation={3}>
       <Box

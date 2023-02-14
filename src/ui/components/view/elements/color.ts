@@ -1,5 +1,4 @@
 import { schemeTableau10 as d3Scheme } from 'd3-scale-chromatic';
-import { powerSet } from '../Legend';
 
 const COLORS: readonly string[] = d3Scheme.map((color) => color.substring(0, 7) + 'c0');
 
@@ -12,15 +11,19 @@ export function getTextColorForIndex(index: number) {
   return color.substring(0, 7);
 }
 
-export function getColorForSubset(subset: number[] | Set<number>, maxLength: number = 3): string {
-  const arr = subset instanceof Set ? [...subset] : subset;
-  if (arr.length === 0) {
-    throw new Error('empty_subset_color');
-  }
-  const sortedString = arr.sort().join('');
-  const index = powerSet(Array.from(Array(maxLength).keys()))
-    .map((s) => s.sort().join(''))
-    .indexOf(sortedString);
-  // We never reach here with an empty subset
-  return getColorForIndex(index - 1);
+export function getGradientForIndexGroup(indices: number[]): string {
+  const groupSize = indices.length;
+  return (
+    'linear-gradient(to right, ' +
+    indices
+      .map((i, j) => {
+        const color = getColorForIndex(i);
+        // apply minimal smnoothing
+        const start = Math.floor((j * 100) / groupSize) + 1;
+        const end = Math.floor(((j + 1) * 100) / groupSize) - 1;
+        return `${color} ${start}%, ${color} ${end}%`;
+      })
+      .join(', ') +
+    ')'
+  );
 }
