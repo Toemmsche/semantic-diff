@@ -31,7 +31,7 @@ export default class DefaultNormalizer implements INormalizer {
 
       nodes.push(normalizedNode as Node);
 
-      planNode.children.filter(options.filter).forEach((child) => {
+      planNode.children.filter(options.filter).forEach((child, i) => {
         const source = nodeId;
         const target = `${planIndex}-${child.data.id}`;
         const normalizedEdge = {
@@ -39,7 +39,9 @@ export default class DefaultNormalizer implements INormalizer {
           target,
           id: `${planIndex}-${source}-${target}`,
           type: 'customEdge',
-          data: options.computeEdgeData(planNode, child)
+          data: options.computeEdgeData(planNode, child),
+          targetHandle: 'topHandle',
+          sourceHandle: 'bottomHandle'
         };
         edges.push(normalizedEdge);
 

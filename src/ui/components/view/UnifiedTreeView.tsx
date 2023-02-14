@@ -49,7 +49,7 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
         nodeTypes={nodeTypes}
         // @ts-ignore
         edgeTypes={edgeTypes}>
-        <MiniMap zoomable pannable></MiniMap>
+        <MiniMap zoomable pannable nodeColor="darkgrey"></MiniMap>
       </ReactFlow>
       <Legend></Legend>
     </>

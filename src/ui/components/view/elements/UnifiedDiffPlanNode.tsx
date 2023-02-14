@@ -61,7 +61,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
           if (!detailsAnchorEl) setDetailsAnchorEl(nodeRef.current);
         }}
         onMouseLeave={() => setHoverActive(false)}>
-        <Handle type="target" position={Position.Top} style={{ opacity: '0' }} />
+        <Handle type="target" id="topHandle" position={Position.Top} style={{ opacity: 0 }} />
         <Box padding={1}>
           <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
             {metaPlanData.render()}
@@ -96,7 +96,15 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
             </Popover>
           </Stack>
         </Box>
-        <Handle type="source" position={Position.Bottom} style={{ opacity: '0' }} />
+
+        <Handle
+          type="source"
+          id="bottomHandle"
+          position={Position.Bottom}
+          style={{
+            opacity: 0
+          }}
+        />
       </Box>
     </Paper>
   );
