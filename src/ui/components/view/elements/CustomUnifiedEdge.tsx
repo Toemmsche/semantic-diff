@@ -112,6 +112,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
   const edgeGroupSourceIndices: number[] = [];
   let cardinalities = [];
   let showEdgeLabel = true;
+  const coloredLabels = [];
   for (const participant of childPlanNode.getMatchGroup()) {
     // The edge exists in the tree this participant originally belonged to if the participant is in the child group and its parent is in the parent group
     let edgeExists = parentPlanNode.getMatchGroup().includes(participant.getParent());
@@ -125,6 +126,16 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     if (edgeExists) {
       edgeGroupSourceIndices.push(participant.sourceIndex);
       cardinalities.push(participant.data.exactCardinality);
+    }
+    if (parameters.labelBuildAndProbe) {
+      const color = getColorForIndex(participant.sourceIndex);
+      if (Join.isBuildEdge(parentPlanNode, participant)) {
+        coloredLabels.push([color, 'BUILD']);
+      } else if (Join.isProbeEdge(parentPlanNode, participant)) {
+        coloredLabels.push([color, 'PROBE']);
+      } else if (Join.isIndexLookupEdge(parentPlanNode, participant)) {
+        coloredLabels.push([color, 'INDEX']);
+      }
     }
   }
 
@@ -184,20 +195,16 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     );
   });
 
-  let edgeLabel = '';
-  if (parameters.labelBuildAndProbe) {
-    const labels = [];
-    if (Join.isBuildEdge(parentPlanNode, childPlanNode)) {
-      labels.push('BUILD');
-    }
-    if (Join.isProbeEdge(parentPlanNode, childPlanNode)) {
-      labels.push('PROBE');
-    }
-    if (Join.isIndexLookupEdge(parentPlanNode, childPlanNode)) {
-      labels.push('INDEX');
-    }
-    edgeLabel = labels.join('/');
-  }
+  const EdgeLabels = coloredLabels.map(([color, label], i) => {
+    return (
+      <>
+        <Box color={color} fontSize={10}>
+          {label}
+        </Box>
+        <Box fontSize={10}>{i < coloredLabels.length - 1 ? '/' : ''}</Box>
+      </>
+    );
+  });
 
   return (
     <>
@@ -220,9 +227,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
               borderColor: 'black',
               padding: 4
             }}>
-            <Box color="grey" fontSize={10}>
-              {edgeLabel}
-            </Box>
+            <Stack direction="row">{EdgeLabels}</Stack>
             <Box>
               {avgCardinality != null
                 ? (allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)
