@@ -43,6 +43,7 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
         setEdges={setEdges}
         reactFlowInstance={reactFlowInstance}></LayoutWithDimensions>
       <ReactFlow
+        nodesConnectable={false}
         zoomOnScroll
         nodes={nodes}
         edges={edges}
