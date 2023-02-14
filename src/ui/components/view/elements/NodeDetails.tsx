@@ -61,7 +61,7 @@ export default function NodeDetails(props: { planNodes: PlanNode[] }) {
         </TableHead>
         <TableBody>{DetailTableRows}</TableBody>
       </Table>
-      <Box marginTop={2} marginBottom={2}>
+      <Box margin={2}>
         <SystemRepresentation planNodes={planNodes}></SystemRepresentation>
       </Box>
     </Stack>
