@@ -276,11 +276,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   }
 
   function CompComponent(props: {}) {
-    const CompCandidateItems = qprForSelectedQuery
-      .filter((qpr) => qpr != baseLineQprForSelectedQuery)
-      .map((qpr) => {
-        const system = qpr.system;
-
+    const CompCandidateItems = availableSystems
+      .filter((s) => s !== baselineSystem)
+      .map((system) => {
         function addOrRemoveComp(system: System) {
           if (compSystem.includes(system)) {
             compSystem.splice(compSystem.indexOf(system), 1);

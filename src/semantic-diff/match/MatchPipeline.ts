@@ -56,6 +56,8 @@ export class MatchPipeline<T> {
         ...options,
         WITH_COMMONALITY: true
       }),
+      new TopDownMatcher(options),
+      new BottomUpMatcher(options),
       new SandwichMatcher(options),
       new PropertyMatcher()
     ]);

@@ -10,8 +10,14 @@ export default class TopDownMatcher<T> implements IMatcher<T> {
   match(oldTree: TNode<T>, newTree: TNode<T>, comparator: IComparator<T>): void {
     // simple top down matching
     const matchRecursive = (oldNode: TNode<T>, newNode: TNode<T>) => {
-      if (comparator.compareContent(oldNode, newNode) < this.options.COMPARISON_THRESHOLD) {
+      if (
+        !oldNode.isMatched() &&
+        !newNode.isMatched() &&
+        comparator.compareContent(oldNode, newNode) < this.options.COMPARISON_THRESHOLD
+      ) {
         oldNode.matchTo(newNode);
+      }
+      if (oldNode.isMatchedTo(newNode)) {
         for (
           let i = 0;
           i < [oldNode.children.length, newNode.children.length].reduce(arrayMin);

@@ -35,7 +35,7 @@ export class SandwichMatcher<T> implements IMatcher<T> {
             !match.getParent().isMatched() &&
             match.getParent().getParent() === parentMatch
           ) {
-            const CV = comparator.compare(newNode, match.getParent());
+            const CV = comparator.compareContent(newNode, match.getParent());
             if (CV < minCV) {
               minCVNode = match.getParent();
               minCV = CV;

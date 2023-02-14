@@ -111,22 +111,22 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
 
   const edgeGroupSourceIndices: number[] = [];
   let cardinalities = [];
+  let showEdgeLabel = true;
   for (const participant of childPlanNode.getMatchGroup()) {
     // The edge exists in the tree this participant originally belonged to if the participant is in the child group and its parent is in the parent group
-    const edgeExists =
-      parentPlanNode.getMatchGroup().includes(participant.getParent()) ||
-      PipelineBreakerScan.isPipelineBreakerScanEdge(parentPlanNode, childPlanNode) ||
-      EarlyProbe.isEarlyProbeEdge(parentPlanNode, childPlanNode);
+    let edgeExists = parentPlanNode.getMatchGroup().includes(participant.getParent());
+    if (
+      PipelineBreakerScan.isPipelineBreakerScanEdge(parentPlanNode, participant) ||
+      EarlyProbe.isEarlyProbeEdge(parentPlanNode, participant)
+    ) {
+      showEdgeLabel = false;
+      edgeExists = true;
+    }
     if (edgeExists) {
       edgeGroupSourceIndices.push(participant.sourceIndex);
       cardinalities.push(participant.data.exactCardinality);
     }
   }
-
-  const showEdgeLabel =
-    !(
-      EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source
-    ) && !PipelineBreakerScan.isPipelineBreakerScan(parentPlanData);
 
   let [avgCardinality, allCardinalitiesEqual] = cardinalities.reduce(
     ([curr, allEqual], cardinality) => {

@@ -69,8 +69,6 @@ export default function computeSimilarity(
         );
         first.similarity.set(second, similarity);
         second.similarity.set(first, similarity);
-
-        console.log(commonalities, weights);
       });
     });
   });

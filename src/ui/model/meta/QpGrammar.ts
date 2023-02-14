@@ -68,9 +68,8 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         <Sort>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </Sort>
-        <Temp>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
-        </Temp>
+        <!-- Temp always has zero-cardinality -->
+        <Temp></Temp>
         <Window>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </Window>

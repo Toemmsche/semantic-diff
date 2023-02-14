@@ -1,6 +1,7 @@
 import { PlanData, PlanNode } from '../PlanData';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
+import { GroupJoin } from './GroupJoin';
 
 export enum JoinMethod {
   HASH_JOIN = 'hash',
@@ -85,7 +86,10 @@ export default class Join extends PlanData {
 
   static isBuildEdge(parent: PlanNode, child: PlanNode) {
     const parentPlanData = parent.data;
-    if (Join.isJoin(parentPlanData) && parentPlanData.method === JoinMethod.HASH_JOIN) {
+    if (
+      (Join.isJoin(parentPlanData) && parentPlanData.method === JoinMethod.HASH_JOIN) ||
+      GroupJoin.isGroupJoin(parentPlanData)
+    ) {
       return child
         .getMatchGroup()
         .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 0);
