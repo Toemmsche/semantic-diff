@@ -13,7 +13,6 @@ import { EdgeType, useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/inner/EarlyProbe';
 import { getColorForIndex } from './color';
 import { css, keyframes } from '@emotion/react/macro';
-import { DASHARRAY_GAP } from './dimensions';
 import { PipelineBreakerScan } from '../../../model/operator/inner/PipelineBreakerScan';
 import { Nullable } from '../../../../semantic-diff/Types';
 import Join from '../../../model/operator/inner/Join';
@@ -123,7 +122,13 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
       cardinalities.push(participant.data.exactCardinality);
     }
   }
-  const [avgCardinality, allCardinalitiesEqual] = cardinalities.reduce(
+
+  const showEdgeLabel =
+    !(
+      EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source
+    ) && !PipelineBreakerScan.isPipelineBreakerScan(parentPlanData);
+
+  let [avgCardinality, allCardinalitiesEqual] = cardinalities.reduce(
     ([curr, allEqual], cardinality) => {
       if (curr == null || !roughlyEqual(curr, cardinality)) {
         return [null, false];
@@ -134,20 +139,25 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     [cardinalities[0], true] as [Nullable<number>, boolean]
   );
 
-  const isEarlyProbeEdge =
-    EarlyProbe.isEarlyProbe(childPlanData) && parentPlanData.operatorId === childPlanData.source;
+  // just use a constant, this is only used for the edge width on screen
+  if (!showEdgeLabel) {
+    avgCardinality = 10;
+  }
 
-  const groupSize = edgeGroupSourceIndices.length + 1;
-  const actualGap = DASHARRAY_GAP / groupSize;
+  const gap = 6;
+  const totalBlock = 20;
+
+  const groupSize = edgeGroupSourceIndices.length;
+  const blockSize = totalBlock / groupSize;
   const paths = edgeGroupSourceIndices.map((sourceIndex, j) => {
     const color = getColorForIndex(sourceIndex);
 
     const myAnim = keyframes`
       0% {
-        stroke-dashoffset: ${actualGap * j + groupSize * actualGap};
+        stroke-dashoffset: ${blockSize * j + totalBlock + gap};
       }
       100% {
-        stroke-dashoffset: ${actualGap * j};
+        stroke-dashoffset: ${blockSize * j};
       }
     `;
 
@@ -163,10 +173,10 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
             Math.log2(avgCardinality != null ? (avgCardinality === 0 ? 1 : avgCardinality) : 10) +
             1,
           stroke: color,
-          strokeDasharray: `${actualGap}, ${(groupSize - 1) * actualGap}`
+          strokeDasharray: `${blockSize}, ${gap + (groupSize - 1) * blockSize}` // the remaining gap
         }}
         css={css`
-          animation: ${myAnim} 0.5s linear infinite;
+          animation: ${myAnim} 1s linear reverse infinite;
         `}
       />
     );
@@ -181,13 +191,16 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     if (Join.isProbeEdge(parentPlanNode, childPlanNode)) {
       labels.push('PROBE');
     }
+    if (Join.isIndexLookupEdge(parentPlanNode, childPlanNode)) {
+      labels.push('INDEX');
+    }
     edgeLabel = labels.join('/');
   }
 
   return (
     <>
       {paths}
-      {!isEarlyProbeEdge && (
+      {showEdgeLabel && (
         <EdgeLabelRenderer>
           <Stack
             direction="column"

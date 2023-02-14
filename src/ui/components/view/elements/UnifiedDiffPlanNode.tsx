@@ -5,7 +5,6 @@ import { useParameterState } from '../../../state/ParameterStore';
 import { Box, IconButton, Paper, Popover, Stack } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
-import { NODE_BORDER_RADIUS, NODE_ELEVATION, NODE_PADDING } from './dimensions';
 import NodeDetails from './NodeDetails';
 import { getColorForIndex } from './color';
 
@@ -46,10 +45,10 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
       .join(', ') +
     ')';
   return (
-    <Paper elevation={NODE_ELEVATION}>
+    <Paper elevation={3}>
       <Box
         ref={nodeRef}
-        borderRadius={NODE_BORDER_RADIUS}
+        borderRadius={1}
         sx={{
           background: background,
           borderStyle: planNode.isLeaf() ? 'dotted' : 'none',
@@ -62,7 +61,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
         }}
         onMouseLeave={() => setHoverActive(false)}>
         <Handle type="target" position={Position.Top} style={{ opacity: '0' }} />
-        <Box padding={NODE_PADDING}>
+        <Box padding={1}>
           <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
             {metaPlanData.render()}
             {hoverActive &&

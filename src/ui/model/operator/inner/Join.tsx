@@ -101,6 +101,18 @@ export default class Join extends PlanData {
     }
   }
 
+  static isIndexLookupEdge(parent: PlanNode, child: PlanNode) {
+    const parentPlanData = parent.data;
+    if (
+      Join.isJoin(parentPlanData) &&
+      parentPlanData.method === JoinMethod.INDEX_NESTED_LOOP_JOIN
+    ) {
+      return child
+        .getMatchGroup()
+        .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 1);
+    }
+  }
+
   get method(): JoinMethod {
     return this.attributes.get('method')! as JoinMethod;
   }

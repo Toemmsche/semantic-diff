@@ -1,14 +1,10 @@
-import { Paper, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import React from 'react';
 import { useQueryPlanState } from '../../state/QueryPlanResultStore';
-import {
-  NODE_BORDER_RADIUS,
-  NODE_ELEVATION,
-  NODE_HEIGHT,
-  NODE_PADDING,
-  NODE_WIDTH
-} from './elements/dimensions';
-import { getColorForIndex } from './elements/color';
+import { PlanData } from '../../model/operator/PlanData';
+import { TNode } from '../../../semantic-diff/index';
+import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
+import Origin from '../../../semantic-diff/tree/Origin';
 
 export function powerSet<T>(arr: T[]): T[][] {
   return arr.reduce(
@@ -31,24 +27,18 @@ export default function Legend(props: {}) {
       if (!qprState.resultSelection[index]) {
         return <></>;
       }
-      const color = getColorForIndex(index);
-      const innerText = qprState.resultSelection[index]!.system;
+      const system = qprState.resultSelection[index]!.system;
+      const planData = new PlanData(system, null, new Map());
+      const planNode = new TNode<PlanData>(planData, null);
+      planNode.origin = new Origin(index, index, system);
       return (
-        <Paper elevation={NODE_ELEVATION}>
-          <Stack
-            key={index}
-            width={NODE_WIDTH}
-            height={NODE_HEIGHT}
-            bgcolor={color}
-            borderRadius={NODE_BORDER_RADIUS}
-            padding={NODE_PADDING}
-            textAlign="center"
-            direction="column"
-            justifyContent="center"
-            fontWeight={800}>
-            {innerText}
-          </Stack>
-        </Paper>
+        <UnifiedDiffPlanNode
+          data={{
+            planNode,
+            hide: () => {},
+            expand: () => {}
+          }}
+        />
       );
     });
   return (
@@ -56,8 +46,8 @@ export default function Legend(props: {}) {
       direction="column"
       sx={{
         position: 'absolute',
-        bottom: NODE_HEIGHT / 2,
-        right: NODE_WIDTH / 4
+        bottom: 30,
+        right: 20
       }}
       spacing={2}>
       {Boxes}

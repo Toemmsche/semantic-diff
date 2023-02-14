@@ -49,7 +49,7 @@ export class PlanData extends XmlData implements ICopyable<PlanData> {
   }
 
   render(): any {
-    return <Box>{this.operatorName.toUpperCase()}</Box>;
+    return <Box>{this.label}</Box>;
   }
 
   copy(): PlanData {

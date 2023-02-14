@@ -36,10 +36,10 @@ export class PipelineBreakerScan extends PlanData {
 
       tree
         .toPreOrderUnique()
-        .filter((n) => n.data.operatorId === scannedId && !node.children.some((c) => c === n))
+        .filter((n) => n.data.operatorId === scannedId && !node.children.includes(n))
         .forEach((scannedNode) => {
           if (useCopy) {
-            node.appendChildExtra(scannedNode.copy());
+            node.appendChild(scannedNode.copy());
           } else {
             // form a true DAG edge
             node.appendChildExtra(scannedNode);
