@@ -23,14 +23,17 @@ export default function QueryPlanDiffChart(props: {}) {
 
   let selectedQprs = [] as QueryPlanResult[];
   if (qprState.resultSelection.length > 0) {
-    const selectedQuery = qprState.resultSelection.filter((qpr) => qpr != null)[0]!.query;
+    const selectedQuery = qprState.resultSelection.filter((qpr) => qpr != null)[0]?.query;
 
-    selectedQprs = availableSystems.map(
-      (system) =>
-        qprState.queryPlanResults.find(
-          (qpr) => qpr.query === selectedQuery && qpr.system === system
-        )!
-    );
+    if (selectedQuery) {
+      selectedQprs = availableSystems
+        .map((system) =>
+          qprState.queryPlanResults.find(
+            (qpr) => qpr.query === selectedQuery && qpr.system === system
+          )
+        )
+        .filter((qpr) => qpr != null) as QueryPlanResult[];
+    }
   }
 
   const chips = [];
