@@ -170,8 +170,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           ' (' + (worstDiff < 0 ? '' : '+') + (worstDiff * 100).toFixed(0) + '%)';
         const metricColor =
           worstDiff < 0
-            ? betterColorScale(worstDiff / bestOverallMetricDiff!)
-            : worseColorScale(worstDiff / worstOverallMetricDiff!);
+            ? // take sqrt to avoid some grey colors
+              betterColorScale(Math.sqrt(worstDiff / bestOverallMetricDiff!))
+            : worseColorScale(Math.sqrt(worstDiff / worstOverallMetricDiff!));
         additionalContent.push(
           <Box key="metricDiff" color={metricColor}>
             {metricDiffSuffix}
