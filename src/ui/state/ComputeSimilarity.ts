@@ -59,7 +59,7 @@ export default function computeSimilarity(
             const commonality = common / Math.max(firstSet.size, secondSet.size);
 
             commonalities.push(commonality);
-            weights.push(avgCardinality);
+            weights.push(avgCardinality === 0 ? 1 : Math.log2(avgCardinality));
           });
 
         let similarity = new Comparator(defaultDiffOptions).weightedAverage(

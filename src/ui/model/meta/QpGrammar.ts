@@ -25,23 +25,23 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
 <grammar>
     <leaves>
         <TableScan>
-            <comparisonValue weight="100">@_table_name</comparisonValue>
+            <comparisonValue comparisonType="GATE">@_table_name</comparisonValue>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </TableScan>
         <InlineTable>
              <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </InlineTable>
         <CustomLeaf>
-            <comparisonValue weight="100">@_name</comparisonValue>
+            <comparisonValue comparisonType="GATE">@_name</comparisonValue>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </CustomLeaf>
     </leaves>
     <inners>
         <!-- multi-child nodes -->
         <Join ordered="true">
-            <comparisonValue weight="100" comparisonType="GATE">@_method</comparisonValue>
-            <comparisonValue weight="30" comparisonType="GATE">@_type</comparisonValue>
-            <comparisonValue weight="60">@_exact_cardinality</comparisonValue>
+            <comparisonValue comparisonType="GATE">@_method</comparisonValue>
+            <comparisonValue comparisonType="GATE">@_type</comparisonValue>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </Join>
         <GroupJoin ordered="true">
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
@@ -50,7 +50,7 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </MultiWayJoin>
         <SetOperation>
-            <comparisonValue weight="100">@_type</comparisonValue>
+            <comparisonValue comparisonType="GATE">@_type</comparisonValue>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </SetOperation>
         <CrossProduct>
@@ -59,8 +59,8 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
 
         <!-- single-child nodes -->
         <GroupBy>
-            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
             <comparisonValue weight="80">@_method</comparisonValue>
+            <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </GroupBy>
         <Select>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
@@ -84,7 +84,7 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         <!-- Special Nodes -->
         <Result></Result>
         <CustomInner>
-            <comparisonValue weight="100">@_name</comparisonValue>
+            <comparisonValue comparisonType="GATE">@_name</comparisonValue>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
         </CustomInner>
     </inners>

@@ -5,7 +5,6 @@ import { PlanNode } from '../operator/PlanData';
 export default interface QueryPlanResult {
   // Metadata
   system: System;
-  dataset: Dataset;
   query: Query;
   queryText: string;
 

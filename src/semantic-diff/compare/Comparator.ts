@@ -89,7 +89,7 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
             cv = this.compareLcs([...valueA!!], [...valueB!!]);
             break;
           case ComparisonType.GATE:
-            cv = valueA === valueB ? 0 : 1000000000000000;
+            cv = valueA === valueB ? 0 : Infinity;
             break;
           default:
             throw new UnimplementedError();
