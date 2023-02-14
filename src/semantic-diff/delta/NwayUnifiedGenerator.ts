@@ -77,7 +77,7 @@ export default class NwayUnifiedGenerator<T> {
 
         // lower act index
         tree.toPreOrderUnique().forEach((n) => {
-          // align indices
+          // align working indices
           n.workingIndex = tree.workingIndex;
         });
 
