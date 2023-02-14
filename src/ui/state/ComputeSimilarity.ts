@@ -56,10 +56,14 @@ export default function computeSimilarity(
 
             let avgCardinality =
               (n.data.exactCardinality + n.getSingleMatch().data.exactCardinality) / 2;
-            const commonality = common / Math.max(firstSet.size, secondSet.size);
+            const maxSize = Math.max(firstSet.size, secondSet.size);
+            const commonality = common / maxSize;
 
             commonalities.push(commonality);
-            weights.push(avgCardinality === 0 ? 1 : Math.log2(avgCardinality));
+            // weighted by size of tree (=number of operators) and importance of operators (=cardinality)
+            weights.push(
+              (avgCardinality === 0 ? 1 : Math.log2(avgCardinality)) * Math.log2(maxSize)
+            );
           });
 
         let similarity = new Comparator(defaultDiffOptions).weightedAverage(

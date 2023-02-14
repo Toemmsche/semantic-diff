@@ -56,6 +56,10 @@ export class MatchPipeline<T> {
         ...options,
         WITH_COMMONALITY: true
       }),
+      new PathMatcher({
+        ...options,
+        WITH_COMMONALITY: false
+      }),
       new TopDownMatcher(options),
       new BottomUpMatcher(options),
       new SandwichMatcher(options),
