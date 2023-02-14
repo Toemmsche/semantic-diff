@@ -17,7 +17,7 @@ import {
   useUniqueSystems
 } from '../../state/QueryPlanResultStore';
 import { Nullable } from '../../../semantic-diff/Types';
-import { Query, System } from '../../model/meta/types';
+import { Query, System } from '../../model/meta/QueryPlanResult';
 import { scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';

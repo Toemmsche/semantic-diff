@@ -5,7 +5,7 @@ import QueryPlanResult, { QueryPlanResultCollection } from '../model/meta/QueryP
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { Nullable } from '../../semantic-diff/Types';
 import { ComparisonMetric } from '../model/meta/BenchmarkResult';
-import { System } from '../model/meta/types';
+import { System } from '../model/meta/QueryPlanResult';
 import computeSimilarity from './ComputeSimilarity';
 import { DagEdgeTreatment } from './ParameterStore';
 

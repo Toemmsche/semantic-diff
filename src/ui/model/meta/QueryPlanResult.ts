@@ -1,6 +1,8 @@
-import { Dataset, Query, System } from './types';
 import BenchmarkResult from './BenchmarkResult';
 import { PlanNode } from '../operator/PlanData';
+
+export type System = string;
+export type Query = string;
 
 export default interface QueryPlanResult {
   // Metadata

@@ -12,11 +12,13 @@ import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import { Box } from '@mui/material';
 import { useCollapsible, useLayouter } from '../../state/ParameterStore';
 
+export type Dimensions = [number, number];
+
 function normalizeAndLayout(
   unifiedTree: PlanNode,
   expandedNodes: PlanNode[],
   setExpandedNodes: (planNodes: PlanNode[]) => any,
-  dimensions: Map<PlanNode, [number, number]>,
+  dimensions: Map<PlanNode, Dimensions>,
   collapsible: boolean,
   layouter: IBlockingLayouter | IAsyncLayouter,
   setNodes: (nodes: Node[]) => any,
@@ -71,7 +73,7 @@ function normalizeAndLayout(
 
 export interface IDocumentingRendererProps<T> {
   item: T;
-  dimensions: Map<T, [number, number]>;
+  dimensions: Map<T, Dimensions>;
   callback: (item: T, width: number, height: number) => void;
   renderFunc: (item: T) => any;
 }
@@ -148,7 +150,7 @@ export default function LayoutWithDimensions(props: ILayoutWithDimensionProps) {
   const [expandedNodes, setExpandedNodes] = useState([] as PlanNode[]);
   const [collapsible] = useCollapsible();
   const [layouter] = useLayouter();
-  const [dimensions, setDimensions] = useState(new Map<PlanNode, [number, number]>());
+  const [dimensions, setDimensions] = useState(new Map<PlanNode, Dimensions>());
   const dimensionsComplete = dimensions.size === expandedNodes.length;
 
   useEffect(() => {
