@@ -1,4 +1,4 @@
-import { PlanData } from '../PlanData';
+import { PlanData, PlanNode } from '../PlanData';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 
@@ -77,6 +77,28 @@ export default class Join extends PlanData {
         <Box>{joinName}</Box>
       </Stack>
     );
+  }
+
+  static isJoin(data: PlanData): data is Join {
+    return data.label === Join.LABEL;
+  }
+
+  static isBuildEdge(parent: PlanNode, child: PlanNode) {
+    const parentPlanData = parent.data;
+    if (Join.isJoin(parentPlanData) && parentPlanData.method === JoinMethod.HASH_JOIN) {
+      return child
+        .getMatchGroup()
+        .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 0);
+    }
+  }
+
+  static isProbeEdge(parent: PlanNode, child: PlanNode) {
+    const parentPlanData = parent.data;
+    if (Join.isJoin(parentPlanData) && parentPlanData.method === JoinMethod.HASH_JOIN) {
+      return child
+        .getMatchGroup()
+        .some((n) => parent.getMatchGroup().includes(n.getParent()) && n.getIndex() === 1);
+    }
   }
 
   get method(): JoinMethod {

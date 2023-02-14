@@ -35,8 +35,9 @@ export interface IParameterState {
   matchAlgorithm: MatchAlgorithm;
   layoutAlgorithm: LayoutAlgorithm;
   edgeType: EdgeType;
-
   nwayDiff: boolean;
+
+  labelBuildAndProbe: boolean;
 }
 
 export const helpers = {
@@ -130,6 +131,13 @@ const actions = {
       setState({
         nwayDiff: nwayDiff
       });
+    },
+  setLabelBuildAndProbe:
+    (labelBuildAndProbe: boolean): Action<IParameterState> =>
+    ({ setState, getState }) => {
+      setState({
+        labelBuildAndProbe: labelBuildAndProbe
+      });
     }
 };
 const ParameterStore = createStore<IParameterState, typeof actions>({
@@ -139,7 +147,8 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
     matchAlgorithm: MatchAlgorithm.FULL,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
     edgeType: EdgeType.BEZIER,
-    nwayDiff: false
+    nwayDiff: false,
+    labelBuildAndProbe: true
   },
   actions
 });

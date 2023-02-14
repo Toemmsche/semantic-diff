@@ -97,6 +97,16 @@ const nwayDiffSliderMarks = [
     label: 'n-way diff (exp)'
   }
 ];
+const labelBuildAndProbeSliderMarks = [
+  {
+    value: false,
+    label: 'no labelling'
+  },
+  {
+    value: true,
+    label: 'label build & probe'
+  }
+];
 
 export default function ParamConfig() {
   const [parameters, parameterActions] = useParameterState();
@@ -151,6 +161,12 @@ export default function ParamConfig() {
             disabled: !helpers.isNwayDiffPossible(parameters, lv.value)
           }))}
           onChange={parameterActions.setNwayDiff}
+        />
+        <DiscreteSliderPicker<boolean>
+          orientation="vertical"
+          defaultValue={parameters.labelBuildAndProbe}
+          labeledValues={labelBuildAndProbeSliderMarks}
+          onChange={parameterActions.setLabelBuildAndProbe}
         />
       </Stack>
     </Stack>

@@ -16,6 +16,8 @@ import { css, keyframes } from '@emotion/react/macro';
 import { DASHARRAY_GAP } from './dimensions';
 import { PipelineBreakerScan } from '../../../model/operator/inner/PipelineBreakerScan';
 import { Nullable } from '../../../../semantic-diff/Types';
+import Join from '../../../model/operator/inner/Join';
+import { Box, Stack } from '@mui/material';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
@@ -156,8 +158,7 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
         d={edgePath}
         markerEnd={markerEnd}
         style={{
-          ...style,
-          // log(0) === inf
+          ...style, // log(0) === inf
           strokeWidth:
             Math.log2(avgCardinality != null ? (avgCardinality === 0 ? 1 : avgCardinality) : 10) +
             1,
@@ -171,12 +172,27 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
     );
   });
 
+  let edgeLabel = '';
+  if (parameters.labelBuildAndProbe) {
+    const labels = [];
+    if (Join.isBuildEdge(parentPlanNode, childPlanNode)) {
+      labels.push('BUILD');
+    }
+    if (Join.isProbeEdge(parentPlanNode, childPlanNode)) {
+      labels.push('PROBE');
+    }
+    edgeLabel = labels.join('/');
+  }
+
   return (
     <>
       {paths}
       {!isEarlyProbeEdge && (
         <EdgeLabelRenderer>
-          <div
+          <Stack
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
             style={{
               position: 'absolute',
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
@@ -189,10 +205,15 @@ export default function CustomUnifiedEdge(props: EdgeProps) {
               borderColor: 'black',
               padding: 4
             }}>
-            {avgCardinality != null
-              ? (allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)
-              : '???'}
-          </div>
+            <Box color="grey" fontSize={10}>
+              {edgeLabel}
+            </Box>
+            <Box>
+              {avgCardinality != null
+                ? (allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)
+                : '???'}
+            </Box>
+          </Stack>
         </EdgeLabelRenderer>
       )}
     </>
