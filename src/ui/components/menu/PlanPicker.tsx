@@ -30,14 +30,13 @@ export interface IQueryPlanResultDiffProps {}
 // Color scales for results that are better / worse
 const betterColorScale = d3ScaleLinear<string>().domain([1, 0]).range(['#00bb00', '#808080']); // green
 const worseColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#808080', '#ff0000']); //red
-const similarityColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#000000', '#FFD700']); // black to gold
+const similarityColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#000000', '#F6BE00']); // black to gold
 
 export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [baselineSystem, setBaselineSystem] = useState(undefined as Nullable<System>);
   const [selectedMetric, setSelectedMetric] = useState('total' as ComparisonMetric);
   const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
   const [compSystem, setCompSystem] = useState([] as System[]);
-  const singleCompSystem = compSystem.length === 1 ? compSystem[0] : null;
   const [state, actions] = useQueryPlanState();
   const [nwayDiff] = useNwayDiff();
   const [allLabels] = useAllLabels();
@@ -82,10 +81,6 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     Map<QueryPlanResult, [Nullable<number>, number]>
   > = new Map();
   let worstResultsPerQuery: Map<Query, Nullable<[QueryPlanResult, number, number]>> = new Map();
-  let compResultPerQuery: Map<
-    Query,
-    Nullable<[QueryPlanResult, Nullable<number>, number]>
-  > = new Map();
 
   if (baselineSystem != null) {
     otherResultsPerQuery = new Map(
@@ -128,8 +123,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         const sortedResults = [...resultsMap]
           .filter(
             ([qpr, [metricDiff, similarity]]) =>
-              metricDiff != null &&
-              (singleCompSystem != null ? qpr.system === singleCompSystem : true)
+              metricDiff != null && (compSystem.length > 0 ? compSystem.includes(qpr.system) : true)
           )
           .sort(([qprA, [metricDiffA, similarityA]], [qprB, [metricDiffB, similarityB]]) => {
             // positive is bad
@@ -185,6 +179,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
         const similaritySuffix = '(' + (similarity * 100).toFixed(0) + '%)';
         const similarityColor = similarityColorScale(similarity);
         additionalContent.push(<Box color={similarityColor}>{similaritySuffix}</Box>);
+
+        additionalContent.push(<Box color="blue">vs. {worstQpr.system}</Box>);
       }
       return (
         <MenuItem key={query} value={query}>
