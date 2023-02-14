@@ -56,7 +56,7 @@ export default function Legend(props: {}) {
       direction="column"
       sx={{
         position: 'absolute',
-        bottom: 2 * NODE_HEIGHT,
+        bottom: NODE_HEIGHT / 2,
         right: NODE_WIDTH / 4
       }}
       spacing={2}>

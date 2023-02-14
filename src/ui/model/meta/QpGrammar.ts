@@ -60,6 +60,7 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         <!-- single-child nodes -->
         <GroupBy>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>
+            <comparisonValue weight="80">@_method</comparisonValue>
         </GroupBy>
         <Select>
             <comparisonValue weight="30">@_exact_cardinality</comparisonValue>

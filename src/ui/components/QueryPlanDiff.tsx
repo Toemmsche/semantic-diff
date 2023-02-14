@@ -100,13 +100,12 @@ export default function QueryPlanDiff() {
         return;
       }
 
-      if (matchArr.some((node) => matchSet))
-        matchArr.forEach((firstNode, i) => {
-          matchArr.slice(i + 1).forEach((secondNode) => {
-            // ensures complete matching
-            firstNode.matchTo(secondNode);
-          });
+      matchArr.forEach((firstNode, i) => {
+        matchArr.slice(i + 1).forEach((secondNode) => {
+          // ensures complete matching
+          firstNode.matchTo(secondNode);
         });
+      });
     });
 
     unifiedTree = new NwayUnifiedGenerator<PlanData>(defaultDiffOptions).generate(plans);

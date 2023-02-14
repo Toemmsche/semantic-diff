@@ -30,13 +30,13 @@ export class EarlyProbe extends PlanData {
         return;
       }
       if (!node.data.source) {
-        throw new Error('EearlyProbe is missing source');
+        throw new Error('EarlyProbe is missing source');
       }
       const source = node.data.source;
 
       tree
         .toPreOrderUnique()
-        .filter((p) => p.data.operatorId === source && !p.children.some((c) => c === node))
+        .filter((p) => p.data.operatorId === source && !p.children.includes(node))
         .forEach((sourceNode) => {
           sourceNode.appendChildExtra(node);
         });

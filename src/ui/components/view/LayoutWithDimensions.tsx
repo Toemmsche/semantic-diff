@@ -30,7 +30,7 @@ function normalizeAndLayout(
     0,
     dimensions,
     {
-      filter: (planNode: PlanNode) => expandedNodes.some((pn) => pn === planNode),
+      filter: (planNode: PlanNode) => expandedNodes.includes(planNode),
       computeData: (planNode: PlanNode) => {
         return {
           hide: () => {

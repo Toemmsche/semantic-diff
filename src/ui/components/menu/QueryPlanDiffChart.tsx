@@ -35,7 +35,7 @@ export default function QueryPlanDiffChart(props: {}) {
 
   const chips = [];
   for (const label of allLabels) {
-    if (activeLabels.some((l) => l === label)) {
+    if (activeLabels.includes(label)) {
       chips.push(
         <Chip
           key={label}
