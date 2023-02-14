@@ -89,9 +89,10 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
             cv = this.compareLcs([...valueA!!], [...valueB!!]);
             break;
           case ComparisonType.GATE:
-            cv = valueA === valueB ? 0 : Infinity;
+            if (valueA !== valueB) {
+              return 1.0;
+            }
             break;
-
           case ComparisonType.NUMERIC:
             if (valueA == null || valueB == null) {
               // assume best case
@@ -101,7 +102,11 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
             const large = Math.max(parseInt(valueA), parseInt(valueB));
             const small = Math.min(parseInt(valueA), parseInt(valueB));
 
-            cv = 1 - small / large;
+            if (large === 0) {
+              cv = 0;
+            } else {
+              cv = 1 - small / large;
+            }
             break;
           default:
             throw new UnimplementedError();
@@ -157,6 +162,7 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
         weightSum += adjustedWeight;
       }
     }
+
     if (weightSum === 0) return defaultValue;
     return itemSum / weightSum;
   }
