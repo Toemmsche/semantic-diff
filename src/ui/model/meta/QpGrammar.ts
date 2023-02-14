@@ -49,11 +49,11 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         <MultiWayJoin ordered="true">
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </MultiWayJoin>
-        <SetOperation>
+        <SetOperation ordered="true">
             <comparisonValue comparisonType="GATE">@_type</comparisonValue>
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </SetOperation>
-        <CrossProduct>
+        <CrossProduct ordered="true">
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </CrossProduct>
 
@@ -83,7 +83,7 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         </EarlyProbe>
         <!-- Special Nodes -->
         <Result></Result>
-        <CustomInner>
+        <CustomInner ordered="true">
             <comparisonValue comparisonType="GATE">@_name</comparisonValue>
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </CustomInner>

@@ -133,11 +133,10 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
         .reverse()
         .slice(1)
         .map(
-          (
-            n: TNode<T> // Always consider position !
-          ) =>
+          (n: TNode<T>) =>
             (this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label) +
-            (!n.isRoot() ? n.getIndex().toString() : '')
+            // Consider position if ordered
+            (!n.isRoot() && n.grammarNode?.ordered ? n.getIndex().toString() : '')
         )
     );
     return this.comparePathLcs(slices[0], slices[1]);
