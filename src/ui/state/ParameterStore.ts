@@ -45,8 +45,7 @@ export const helpers = {
     if (renderDagEdges) {
       return (
         state.layoutAlgorithm !== LayoutAlgorithm.D3_HIERARCHY &&
-        state.layoutAlgorithm !== LayoutAlgorithm.ELK_JS_MRTREE &&
-        !state.nwayDiff
+        state.layoutAlgorithm !== LayoutAlgorithm.ELK_JS_MRTREE
       );
     }
     return true;
@@ -70,9 +69,6 @@ export const helpers = {
     return true;
   },
   isNwayDiffPossible(state: IParameterState, nwayDiff: boolean) {
-    if (nwayDiff) {
-      return !state.renderDagEdges;
-    }
     return true;
   }
 };
