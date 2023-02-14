@@ -24,7 +24,7 @@ export class PipelineBreakerScan extends PlanData {
     );
   }
 
-  public static handlePipelineBreakerScans(tree: PlanNode) {
+  public static handlePipelineBreakerScans(tree: PlanNode, useCopy = false) {
     tree.toPreOrderUnique().forEach((node) => {
       if (!PipelineBreakerScan.isPipelineBreakerScan(node.data)) {
         return;
@@ -38,7 +38,12 @@ export class PipelineBreakerScan extends PlanData {
         .toPreOrderUnique()
         .filter((n) => n.data.operatorId === scannedId && !node.children.some((c) => c === n))
         .forEach((scannedNode) => {
-          node.appendChildExtra(scannedNode);
+          if (useCopy) {
+            node.appendChildExtra(scannedNode.copy());
+          } else {
+            // form a true DAG edge
+            node.appendChildExtra(scannedNode);
+          }
         });
     });
   }

@@ -1,6 +1,7 @@
 import { Stack } from '@mui/material';
 import React from 'react';
 import {
+  DagEdgeTreatment,
   EdgeType,
   helpers,
   LayoutAlgorithm,
@@ -70,21 +71,25 @@ const edgeTypeSliderMarks = [
 const collapsibleSliderMarks = [
   {
     value: false,
-    label: 'no expand & collapse'
+    label: 'show whole tree'
   },
   {
     value: true,
     label: 'expand & collapse'
   }
 ];
-const renderDagEdgesSliderMarks = [
+const dagEdgeTreatmentSliderMarks = [
   {
-    value: false,
-    label: 'no DAG edges'
+    value: DagEdgeTreatment.IGNORE,
+    label: 'ignore DAG edges'
   },
   {
-    value: true,
-    label: 'render DAG edges'
+    value: DagEdgeTreatment.COPY_SUBTREE,
+    label: 'copy subtrees'
+  },
+  {
+    value: DagEdgeTreatment.FULL_DAG,
+    label: 'full DAG edges'
   }
 ];
 const nwayDiffSliderMarks = [
@@ -144,14 +149,14 @@ export default function ParamConfig() {
           labeledValues={collapsibleSliderMarks}
           onChange={parameterActions.setCollapsible}
         />
-        <DiscreteSliderPicker<boolean>
+        <DiscreteSliderPicker<DagEdgeTreatment>
           orientation="vertical"
-          defaultValue={parameters.renderDagEdges}
-          labeledValues={renderDagEdgesSliderMarks.map((lv) => ({
+          defaultValue={parameters.dagEdgeTreatment}
+          labeledValues={dagEdgeTreatmentSliderMarks.map((lv) => ({
             ...lv,
-            disabled: !helpers.isRenderDagEdgesPossible(parameters, lv.value)
+            disabled: !helpers.isDageEdgeTreatmentPossible(parameters, lv.value)
           }))}
-          onChange={parameterActions.setRenderDagEdges}
+          onChange={parameterActions.setDagEdgeTreatment}
         />
         <DiscreteSliderPicker<boolean>
           orientation="vertical"

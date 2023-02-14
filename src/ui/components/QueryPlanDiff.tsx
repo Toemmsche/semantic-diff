@@ -3,15 +3,14 @@ import { UnifiedTreeView } from './view/UnifiedTreeView';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import { PlanData, PlanNode } from '../model/operator/PlanData';
-import { Stack } from '@mui/material';
 import { useQueryPlanState } from '../state/QueryPlanResultStore';
 import {
+  DagEdgeTreatment,
   getMatchPipelineForAlgorithm,
-  useMatchAlgorithm,
-  useRenderDagEdges
+  useDagEdgeTreatment,
+  useMatchAlgorithm
 } from '../state/ParameterStore';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
-import FloatingMenu from './menu/FloatingMenu';
 import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
 import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
 import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator';
@@ -25,7 +24,7 @@ import { ReactFlowProvider } from 'reactflow';
  */
 export default function QueryPlanDiff() {
   const [state] = useQueryPlanState();
-  const [renderDagEdges] = useRenderDagEdges();
+  const [dagEdgeTreatment] = useDagEdgeTreatment();
   const [matchAlgorithm] = useMatchAlgorithm();
 
   let GraphView;
@@ -39,8 +38,12 @@ export default function QueryPlanDiff() {
           return null;
         }
         const plan = planSerdes.transformParsedJsonObj(qpr.queryPlan, true);
-        if (renderDagEdges) {
-          PipelineBreakerScan.handlePipelineBreakerScans(plan);
+
+        if (dagEdgeTreatment > DagEdgeTreatment.IGNORE) {
+          PipelineBreakerScan.handlePipelineBreakerScans(
+            plan,
+            dagEdgeTreatment === DagEdgeTreatment.COPY_SUBTREE
+          );
           EarlyProbe.handleEarlyProbes(plan);
         }
         plan
@@ -115,10 +118,5 @@ export default function QueryPlanDiff() {
     GraphView = <></>;
   }
 
-  return (
-    <Stack direction="column" height="inherit" width="inherit">
-      <FloatingMenu></FloatingMenu>
-      <ReactFlowProvider>{GraphView}</ReactFlowProvider>
-    </Stack>
-  );
+  return <ReactFlowProvider>{GraphView}</ReactFlowProvider>;
 }

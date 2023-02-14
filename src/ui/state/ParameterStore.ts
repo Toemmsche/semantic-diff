@@ -29,20 +29,25 @@ export enum EdgeType {
   SMOOTH_STEP
 }
 
+export enum DagEdgeTreatment {
+  IGNORE,
+  COPY_SUBTREE,
+  FULL_DAG
+}
+
 export interface IParameterState {
   collapsible: boolean;
-  renderDagEdges: boolean;
+  dagEdgeTreatment: DagEdgeTreatment;
   matchAlgorithm: MatchAlgorithm;
   layoutAlgorithm: LayoutAlgorithm;
   edgeType: EdgeType;
   nwayDiff: boolean;
-
   labelBuildAndProbe: boolean;
 }
 
 export const helpers = {
-  isRenderDagEdgesPossible(state: IParameterState, renderDagEdges: boolean) {
-    if (renderDagEdges) {
+  isDageEdgeTreatmentPossible(state: IParameterState, dagEdgeTreatment: DagEdgeTreatment) {
+    if (dagEdgeTreatment === DagEdgeTreatment.FULL_DAG) {
       return (
         state.layoutAlgorithm !== LayoutAlgorithm.D3_HIERARCHY &&
         state.layoutAlgorithm !== LayoutAlgorithm.ELK_JS_MRTREE
@@ -64,7 +69,10 @@ export const helpers = {
       layoutAlgorithm === LayoutAlgorithm.D3_HIERARCHY ||
       layoutAlgorithm === LayoutAlgorithm.ELK_JS_MRTREE
     ) {
-      return !state.renderDagEdges && state.matchAlgorithm < MatchAlgorithm.BOTTOM_UP;
+      return (
+        state.dagEdgeTreatment !== DagEdgeTreatment.FULL_DAG &&
+        state.matchAlgorithm < MatchAlgorithm.BOTTOM_UP
+      );
     }
     return true;
   },
@@ -81,14 +89,14 @@ const actions = {
         collapsible
       });
     },
-  setRenderDagEdges:
-    (renderDagEdges: boolean): Action<IParameterState> =>
+  setDagEdgeTreatment:
+    (dagEdgeTreatment: DagEdgeTreatment): Action<IParameterState> =>
     ({ setState, getState }) => {
-      if (!helpers.isRenderDagEdgesPossible(getState(), renderDagEdges)) {
+      if (!helpers.isDageEdgeTreatmentPossible(getState(), dagEdgeTreatment)) {
         throw new Error('Illegal state transition');
       }
       setState({
-        renderDagEdges
+        dagEdgeTreatment: dagEdgeTreatment
       });
     },
   setMatchAlgorithm:
@@ -139,7 +147,7 @@ const actions = {
 const ParameterStore = createStore<IParameterState, typeof actions>({
   initialState: {
     collapsible: false,
-    renderDagEdges: false,
+    dagEdgeTreatment: DagEdgeTreatment.IGNORE,
     matchAlgorithm: MatchAlgorithm.FULL,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
     edgeType: EdgeType.BEZIER,
@@ -157,8 +165,8 @@ export const useCollapsible = createHook(ParameterStore, {
 export const useMatchAlgorithm = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.matchAlgorithm
 });
-export const useRenderDagEdges = createHook(ParameterStore, {
-  selector: (state: IParameterState) => state.renderDagEdges
+export const useDagEdgeTreatment = createHook(ParameterStore, {
+  selector: (state: IParameterState) => state.dagEdgeTreatment
 });
 export const useNwayDiff = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.nwayDiff

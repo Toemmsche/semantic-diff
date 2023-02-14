@@ -3,7 +3,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import QueryPlanDiff from './ui/components/QueryPlanDiff';
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import {
   BarElement,
   CategoryScale,
@@ -16,15 +16,17 @@ import {
 } from 'chart.js';
 import FloatingMenu from './ui/components/menu/FloatingMenu';
 import LayoutWithDimensions from './ui/components/view/LayoutWithDimensions';
+import { ReactFlowProvider } from 'reactflow';
 
 // @ts-ignore
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors);
 
 function App() {
   return (
-    <Box width="100vw" height="100vh">
-      <QueryPlanDiff></QueryPlanDiff>
-    </Box>
+    <Stack direction="column" height="100vh" width="100vw">
+      <FloatingMenu></FloatingMenu>
+      <QueryPlanDiff />
+    </Stack>
   );
 }
 
