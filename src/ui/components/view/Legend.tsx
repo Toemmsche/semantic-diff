@@ -36,8 +36,8 @@ export default function Legend(props: {}) {
           <UnifiedDiffPlanNode
             data={{
               planNode,
-              hide: () => {},
-              expand: () => {}
+              expandedNodes: [planNode],
+              setExpandedNodes: (nodes) => {}
             }}
           />
         </Box>

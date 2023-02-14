@@ -33,18 +33,8 @@ function normalizeAndLayout(
       filter: (planNode: PlanNode) => expandedNodes.includes(planNode),
       computeData: (planNode: PlanNode) => {
         return {
-          hide: () => {
-            // all descendants
-            const descendants = new Set(planNode.toPreOrderUnique());
-            descendants.delete(planNode);
-            setExpandedNodes(expandedNodes.filter((n) => !descendants.has(n)));
-          },
-          expand: () => {
-            setExpandedNodes([
-              ...expandedNodes, // TODO what about duplicates
-              ...planNode.children
-            ]);
-          },
+          expandedNodes: expandedNodes,
+          setExpandedNodes: setExpandedNodes,
           planNode: planNode
         };
       },
@@ -139,8 +129,8 @@ function renderPlanNode(planNode: PlanNode) {
     <UnifiedDiffPlanNode
       data={{
         // dummy input for collapse / expand
-        hide: () => {},
-        expand: () => {},
+        expandedNodes: [planNode],
+        setExpandedNodes: (nodes) => {},
         planNode: planNode
       }}></UnifiedDiffPlanNode>
   );
@@ -162,12 +152,8 @@ export default function LayoutWithDimensions(props: ILayoutWithDimensionProps) {
   const dimensionsComplete = dimensions.size === expandedNodes.length;
 
   useEffect(() => {
-    if (collapsible) {
-      setExpandedNodes([unifiedTree]);
-    } else {
-      setExpandedNodes(unifiedTree.toPreOrderUnique());
-    }
-  }, [unifiedTree, collapsible]);
+    setExpandedNodes(unifiedTree.toPreOrderUnique());
+  }, [collapsible, unifiedTree]);
 
   const tellDimensions = useMemo(
     () => (item: PlanNode, width: number, height: number) => {
@@ -195,7 +181,7 @@ export default function LayoutWithDimensions(props: ILayoutWithDimensionProps) {
   console.log('rerender get dim');
 
   useEffect(() => {
-    console.log('resetting dimensions due to new tree...');
+    console.log('resetting dimensions due to new tree...', expandedNodes);
     setDimensions(new Map());
   }, [unifiedTree, expandedNodes, collapsible, layouter]);
 
