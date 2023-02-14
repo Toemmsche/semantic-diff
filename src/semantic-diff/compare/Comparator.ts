@@ -121,32 +121,18 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
   comparePosition(nodeA: TNode<T>, nodeB: TNode<T>): number {
     const radius = this.options.PATH_COMPARE_RANGE;
 
-    /*
-                     const nodeLeftSlice = nodeA.getSiblings()
-                     .slice(Math.max(nodeA.index - radius, 0), nodeA.index)
-                     .map(n => this.hashExtractor.get(n));
-                     const otherLeftSlice = nodeB.getSiblings()
-                     .slice(Math.max(nodeB.index - radius, 0), nodeB.index)
-                     .map(n => this.hashExtractor.get(n));
-                     const leftCV = this.compareLcs(nodeLeftSlice, otherLeftSlice, 0);
-            
-                     const nodeRightSlice = nodeA.getSiblings()
-                     .slice(nodeA.index + 1, nodeA.index + radius + 1)
-                     .map(n => this.hashExtractor.get(n));
-                     const otherRightSlice = nodeB.getSiblings()
-                     .slice(nodeB.index + 1, nodeB.index + radius + 1)
-                     .map(n => this.hashExtractor.get(n));
-                     const rightCV = this.compareLcs(nodeRightSlice, otherRightSlice, 0);
-                     */
-
     // exclude the compared nodes
     const slices = [nodeA, nodeB].map((node) =>
       node
         .path(radius + 1)
         .reverse()
         .slice(1)
-        .map((n: TNode<T>) =>
-          this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label
+        .map(
+          (
+            n: TNode<T> // Always consider position !
+          ) =>
+            (this.options.USE_CONTENT_HASH_FOR_PATH_COMPARISON ? this.getContentHash(n) : n.label) +
+            (!n.isRoot() ? n.getIndex().toString() : '')
         )
     );
     return this.comparePathLcs(slices[0], slices[1]);
