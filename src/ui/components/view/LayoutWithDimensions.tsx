@@ -189,6 +189,7 @@ export default function LayoutWithDimensions(props: ILayoutWithDimensionProps) {
 
   const comps = expandedNodes.map((item, i) => (
     <DocumentingRenderer
+      key={i}
       item={item}
       dimensions={dimensions}
       callback={tellDimensions}

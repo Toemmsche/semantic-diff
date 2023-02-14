@@ -65,8 +65,6 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     }
   }, [nwayDiff]);
 
-  const qprForSelectedQuery = state.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
-
   const baseLineQprForSelectedQuery = state.queryPlanResults.find(
     (qpr) => qpr.query === selectedQuery && qpr.system === baselineSystem
   );
@@ -174,18 +172,30 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           worstDiff < 0
             ? betterColorScale(worstDiff / bestOverallMetricDiff!)
             : worseColorScale(worstDiff / worstOverallMetricDiff!);
-        additionalContent.push(<Box color={metricColor}>{metricDiffSuffix}</Box>);
+        additionalContent.push(
+          <Box key="metricDiff" color={metricColor}>
+            {metricDiffSuffix}
+          </Box>
+        );
 
         const similaritySuffix = '(' + (similarity * 100).toFixed(0) + '%)';
         const similarityColor = similarityColorScale(similarity);
-        additionalContent.push(<Box color={similarityColor}>{similaritySuffix}</Box>);
+        additionalContent.push(
+          <Box key="similarity" color={similarityColor}>
+            {similaritySuffix}
+          </Box>
+        );
 
-        additionalContent.push(<Box color="blue">vs. {worstQpr.system}</Box>);
+        additionalContent.push(
+          <Box key="vs" color="blue">
+            vs. {worstQpr.system}
+          </Box>
+        );
       }
       return (
         <MenuItem key={query} value={query}>
           <Stack direction="row" spacing={1}>
-            <Box>{label}</Box>
+            <Box key="label">{label}</Box>
             {additionalContent}
           </Stack>
         </MenuItem>

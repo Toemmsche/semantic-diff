@@ -32,7 +32,7 @@ export default function Legend(props: {}) {
       const planNode = new TNode<PlanData>(planData, null);
       planNode.origin = new Origin(index, index, system);
       return (
-        <Box width="max-content">
+        <Box key={system} width="max-content">
           <UnifiedDiffPlanNode
             data={{
               planNode,
