@@ -56,10 +56,6 @@ export class MatchPipeline<T> {
         ...options,
         WITH_COMMONALITY: true
       }),
-      new PathMatcher({
-        ...options,
-        WITH_COMMONALITY: false
-      }),
       new TopDownMatcher(options),
       new BottomUpMatcher(options),
       new SandwichMatcher(options),
@@ -74,6 +70,7 @@ export class MatchPipeline<T> {
   static bottomUpOnly(options: IMatchOptions) {
     return new MatchPipeline([
       new FixedMatcher(),
+      new HashMatcher(),
       new SimilarityMatcher(options),
       new BottomUpMatcher(options)
     ]);
@@ -82,6 +79,7 @@ export class MatchPipeline<T> {
   static onlySimpleMatchers(options: IMatchOptions) {
     return new MatchPipeline([
       new FixedMatcher(),
+      new HashMatcher(),
       new TopDownMatcher(options),
       new SimilarityMatcher(options),
       new BottomUpMatcher(options)

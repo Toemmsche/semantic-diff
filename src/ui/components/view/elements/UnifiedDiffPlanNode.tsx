@@ -73,7 +73,7 @@ export default function UnifiedDiffPlanNode(props: IUnifiedDiffProps) {
         borderRadius={1}
         sx={{
           background: background,
-          borderStyle: planNode.isLeaf() ? 'dotted' : 'none',
+          borderStyle: planNode.isLeaf() ? 'solid' : 'none',
           filter: hoverActive ? 'brightness(50%)' : undefined,
           opacity: !hasExpanded ? 0.6 : 1
         }}
