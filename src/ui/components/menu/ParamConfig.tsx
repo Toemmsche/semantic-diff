@@ -99,7 +99,7 @@ const nwayDiffSliderMarks = [
   },
   {
     value: true,
-    label: 'n-way diff (exp)'
+    label: 'n-way diff'
   }
 ];
 const labelBuildAndProbeSliderMarks = [
