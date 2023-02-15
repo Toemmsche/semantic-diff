@@ -148,7 +148,7 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
   initialState: {
     collapsible: false,
     dagEdgeTreatment: DagEdgeTreatment.IGNORE,
-    matchAlgorithm: MatchAlgorithm.FULL,
+    matchAlgorithm: MatchAlgorithm.NONE,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
     edgeType: EdgeType.BEZIER,
     nwayDiff: false,
