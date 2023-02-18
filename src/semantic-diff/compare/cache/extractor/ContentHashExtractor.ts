@@ -1,7 +1,6 @@
 import TNode from '../../../tree/TNode';
 import { stringHash } from '../../../lib/StringHash';
 import CachingExtractor from './CachingExtractor';
-import { Nullable } from '../../../Types';
 import PropertyExtractor from './PropertyExtractor';
 
 export default class ContentHashExtractor<T> extends CachingExtractor<number, T> {
@@ -16,8 +15,22 @@ export default class ContentHashExtractor<T> extends CachingExtractor<number, T>
   private contentHash(node: TNode<T>) {
     let content = node.label;
     if (!node.isPropertyNode()) {
-      const propertyMap = this.propertyExtractor.get(node);
-      for (const [key, val] of propertyMap) {
+      const sortedPropertyEntries = [...this.propertyExtractor.get(node)].sort(([a, b], [c, d]) => {
+        const firstComp = a.localeCompare(c);
+        if (firstComp !== 0) {
+          return firstComp;
+        }
+        if (b == null && d == null) {
+          return 0;
+        } else if (b == null) {
+          return -1;
+        } else if (d == null) {
+          return 1;
+        } else {
+          return b.localeCompare(d);
+        }
+      });
+      for (const [key, val] of sortedPropertyEntries) {
         content += key + '=' + val;
       }
     }

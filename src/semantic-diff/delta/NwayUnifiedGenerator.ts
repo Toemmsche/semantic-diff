@@ -12,7 +12,8 @@ export default class NwayUnifiedGenerator<T> {
   constructor(private options: ISemanticDiffOptions) {}
 
   converge(tree: TNode<T>) {
-    tree.toPreOrderUnique().forEach((node) => {
+    tree.toPreOrderUnique()
+        .forEach((node) => {
       for (let i = 0; i < node.children.length; i++) {
         if (node.childAt(i).getAdjacentLowerMatch() != null) {
           // do not clear parent
@@ -35,14 +36,12 @@ export default class NwayUnifiedGenerator<T> {
               // have to add any unmatched children
               !child.getAdjacentLowerMatch() ||
               // or those that were moved between this and the next higher tree
-              // ...either to a node not matched between the trees
-              !child.getAdjacentLowerMatch()!.getParent() || // ...or to a different node that IS matched between the trees
               child.getAdjacentLowerMatch()!.getParent() != node
             );
           });
 
-          // TODO  this is dogshit
-          // push nodes interleaved
+          // TODO is there a simpler method?
+          // merge child lists interleaved
           let k = 0;
           for (let i = 0; i < node.children.length && k < filteredMatchChildren.length; i++) {
             if (node.children.indexOf(filteredMatchChildren[k]) !== -1) {
@@ -64,6 +63,10 @@ export default class NwayUnifiedGenerator<T> {
   }
 
   generate(trees: TNode<T>[]): TNode<T> {
+    if (trees.length === 1) {
+      return trees[0];
+    }
+
     // Turn tree into DAG by reusing nodes
     this.converge(trees[trees.length - 1]);
 
