@@ -1,5 +1,4 @@
 import GrammarNode from '../grammar/GrammarNode';
-import { arraySum } from '../Util';
 import IData from '../data/IData';
 import ICopyable from '../data/ICopyable';
 import NodeType from '../grammar/NodeType';
@@ -53,7 +52,8 @@ export default class TNode<T> {
   public constructor(
     public data: T, // state fully modifiable for now
     public readonly grammarNode: Nullable<GrammarNode>
-  ) {}
+  ) {
+  }
 
   /* TODO remove these */
 
@@ -113,9 +113,9 @@ export default class TNode<T> {
   xPath(): string {
     // discard root node
     return this.path()
-      .slice(1)
-      .map((node) => node._index)
-      .join('/');
+               .slice(1)
+               .map((node) => node._index)
+               .join('/');
   }
 
   path(limit?: number) {
@@ -257,6 +257,12 @@ export default class TNode<T> {
     if (this.isMatchedTo(other)) {
       return false;
     }
+    // if the set contains two nodes from the same tree, do not match at all
+    if (other.sourceIndex >= 0 &&
+        (other.sourceIndex === this.sourceIndex || this.getGroupSourceIndices().includes(other.sourceIndex))) {
+      console.warn('match_set_same_tree');
+      return false;
+    }
     // TODO ensure a complete matching
     this._matches.push(other);
     other._matches.push(this);
@@ -284,8 +290,8 @@ export default class TNode<T> {
   getSingleMatchingMap(): Map<TNode<T>, TNode<T>> {
     return new Map(
       this.toPreOrderUnique()
-        .filter((node) => node.isMatched())
-        .map((node) => [node, node.getSingleMatch()])
+          .filter((node) => node.isMatched())
+          .map((node) => [node, node.getSingleMatch()])
     );
   }
 
@@ -308,8 +314,8 @@ export default class TNode<T> {
 
   getGroupSourceIndices(): number[] {
     return this.getMatchGroup()
-      .map((n) => n.sourceIndex)
-      .sort();
+               .map((n) => n.sourceIndex)
+               .sort();
   }
 
   getMetaNode(): TNode<T> {

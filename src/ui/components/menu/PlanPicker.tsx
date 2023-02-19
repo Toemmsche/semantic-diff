@@ -1,31 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Chip,
-  Divider,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Modal,
-  Select,
-  Stack
-} from '@mui/material';
-import {
-  useAllLabels,
-  useQueryPlanState,
-  useUniqueSystems
-} from '../../state/QueryPlanResultStore';
+import { Box, Chip, Divider, FormControl, IconButton, InputLabel, MenuItem, Modal, Select, Stack } from '@mui/material';
+import { useAllLabels, useQueryPlanState, useUniqueSystems } from '../../state/QueryPlanResultStore';
 import { Nullable } from '../../../semantic-diff/Types';
-import { Query, System } from '../../model/meta/QueryPlanResult';
+import QueryPlanResult, { Query, System } from '../../model/meta/QueryPlanResult';
 import { scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
 import { ComparisonMetric } from '../../model/meta/BenchmarkResult';
-import { useNwayDiff } from '../../state/ParameterStore';
-import QueryPlanResult from '../../model/meta/QueryPlanResult';
 
-export interface IQueryPlanResultDiffProps {}
+export interface IQueryPlanResultDiffProps {
+}
 
 // Color scales for results that are better / worse
 const betterColorScale = d3ScaleLinear<string>().domain([1, 0]).range(['#00bb00', '#808080']); // green
@@ -38,7 +22,6 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [selectedQuery, setSelectedQuery] = useState(undefined as Nullable<Query>);
   const [compSystem, setCompSystem] = useState([] as System[]);
   const [state, actions] = useQueryPlanState();
-  const [nwayDiff] = useNwayDiff();
   const [allLabels] = useAllLabels();
   const [availableSystems] = useUniqueSystems();
 
@@ -47,23 +30,16 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       actions.setResultSelection(
         availableSystems.map((system) =>
           [baselineSystem, ...compSystem].includes(system)
-            ? state.queryPlanResults.find(
-                (qpr) => qpr.system === system && qpr.query === selectedQuery
-              )!
-            : null
+          ? state.queryPlanResults.find(
+            (qpr) => qpr.system === system && qpr.query === selectedQuery
+          )!
+          : null
         )
       );
     } else {
       actions.setResultSelection([]);
     }
   }, [baselineSystem, selectedQuery, compSystem]);
-
-  useEffect(() => {
-    // reset selection if n-way diff is disabled
-    if (!nwayDiff && compSystem.length > 0) {
-      setCompSystem([]);
-    }
-  }, [nwayDiff]);
 
   const baseLineQprForSelectedQuery = state.queryPlanResults.find(
     (qpr) => qpr.query === selectedQuery && qpr.system === baselineSystem
@@ -74,10 +50,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
   let worstOverallMetricDiff: Nullable<number> = null;
   let bestOverallMetricDiff: Nullable<number> = null;
-  let otherResultsPerQuery: Map<
-    Query,
-    Map<QueryPlanResult, [Nullable<number>, number]>
-  > = new Map();
+  let otherResultsPerQuery: Map<Query,
+    Map<QueryPlanResult, [Nullable<number>, number]>> = new Map();
   let worstResultsPerQuery: Map<Query, Nullable<[QueryPlanResult, number, number]>> = new Map();
 
   if (baselineSystem != null) {
@@ -89,28 +63,28 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
         const otherDiffAndSimilarity = new Map<QueryPlanResult, [Nullable<number>, number]>(
           state.queryPlanResults
-            .filter((qpr) => {
-              return qpr.system !== baselineSystem && qpr.query === query;
-            })
-            .map((qpr) => {
-              let metricDiff;
-              if (
-                !qpr.benchmarkResult[selectedMetric] ||
-                !baselineResult.benchmarkResult[selectedMetric]
-              ) {
-                metricDiff = null;
-              } else {
-                // null case has been checked
-                const baseLineMetric = baselineResult.benchmarkResult[selectedMetric]!;
-                const otherMetric = qpr.benchmarkResult[selectedMetric]!;
+               .filter((qpr) => {
+                 return qpr.system !== baselineSystem && qpr.query === query;
+               })
+               .map((qpr) => {
+                 let metricDiff;
+                 if (
+                   !qpr.benchmarkResult[selectedMetric] ||
+                   !baselineResult.benchmarkResult[selectedMetric]
+                 ) {
+                   metricDiff = null;
+                 } else {
+                   // null case has been checked
+                   const baseLineMetric = baselineResult.benchmarkResult[selectedMetric]!;
+                   const otherMetric = qpr.benchmarkResult[selectedMetric]!;
 
-                metricDiff = baseLineMetric / otherMetric - 1;
-              }
+                   metricDiff = baseLineMetric / otherMetric - 1;
+                 }
 
-              const similarity = qpr.similarity.get(baselineResult)!;
+                 const similarity = qpr.similarity.get(baselineResult)!;
 
-              return [qpr, [metricDiff, similarity]];
-            })
+                 return [qpr, [metricDiff, similarity]];
+               })
         );
         return [query, otherDiffAndSimilarity];
       })
@@ -170,9 +144,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
           ' (' + (worstDiff < 0 ? '' : '+') + (worstDiff * 100).toFixed(0) + '%)';
         const metricColor =
           worstDiff < 0
-            ? // take sqrt to avoid some grey colors
-              betterColorScale(Math.sqrt(worstDiff / bestOverallMetricDiff!))
-            : worseColorScale(Math.sqrt(worstDiff / worstOverallMetricDiff!));
+          ? // take sqrt to avoid some grey colors
+          betterColorScale(Math.sqrt(worstDiff / bestOverallMetricDiff!))
+          : worseColorScale(Math.sqrt(worstDiff / worstOverallMetricDiff!));
         additionalContent.push(
           <Box key="metricDiff" color={metricColor}>
             {metricDiffSuffix}
@@ -295,12 +269,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
             compSystem.splice(compSystem.indexOf(system), 1);
             // ensure that object identity changes
             setCompSystem(compSystem.slice());
-          } else if (compSystem.length == 0 || nwayDiff) {
-            // only allow multi selection if n-way diff is enabled
-            setCompSystem([...compSystem, system]);
           } else {
-            // compbDbms.length === 1
-            setCompSystem([system]);
+            // n-way diff is the default
+            setCompSystem([...compSystem, system]);
           }
         }
 

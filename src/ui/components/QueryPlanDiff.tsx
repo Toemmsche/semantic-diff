@@ -97,13 +97,6 @@ export default function QueryPlanDiff() {
 
     rootMatchSets.forEach((matchSet) => {
       const matchArr = [...matchSet];
-
-      // if the set contains two nodes from the same tree, do not match at all
-      if (hasDuplicates(matchArr.map((node) => node.sourceIndex))) {
-        console.warn('match_set_same_tree');
-        return;
-      }
-
       matchArr.forEach((firstNode, i) => {
         matchArr.slice(i + 1).forEach((secondNode) => {
           // ensures complete matching

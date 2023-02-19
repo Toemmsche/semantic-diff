@@ -92,16 +92,6 @@ const dagEdgeTreatmentSliderMarks = [
     label: 'full DAG edges'
   }
 ];
-const nwayDiffSliderMarks = [
-  {
-    value: false,
-    label: '2-way diff'
-  },
-  {
-    value: true,
-    label: 'n-way diff'
-  }
-];
 const labelBuildAndProbeSliderMarks = [
   {
     value: false,
@@ -157,15 +147,6 @@ export default function ParamConfig() {
             disabled: !helpers.isDageEdgeTreatmentPossible(parameters, lv.value)
           }))}
           onChange={parameterActions.setDagEdgeTreatment}
-        />
-        <DiscreteSliderPicker<boolean>
-          orientation="vertical"
-          defaultValue={parameters.nwayDiff}
-          labeledValues={nwayDiffSliderMarks.map((lv) => ({
-            ...lv,
-            disabled: !helpers.isNwayDiffPossible(parameters, lv.value)
-          }))}
-          onChange={parameterActions.setNwayDiff}
         />
         <DiscreteSliderPicker<boolean>
           orientation="vertical"

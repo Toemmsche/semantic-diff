@@ -41,7 +41,6 @@ export interface IParameterState {
   matchAlgorithm: MatchAlgorithm;
   layoutAlgorithm: LayoutAlgorithm;
   edgeType: EdgeType;
-  nwayDiff: boolean;
   labelBuildAndProbe: boolean;
 }
 
@@ -126,16 +125,6 @@ const actions = {
         edgeType
       });
     },
-  setNwayDiff:
-    (nwayDiff: boolean): Action<IParameterState> =>
-    ({ setState, getState }) => {
-      if (!helpers.isNwayDiffPossible(getState(), nwayDiff)) {
-        throw new Error('Illegal state transition');
-      }
-      setState({
-        nwayDiff: nwayDiff
-      });
-    },
   setLabelBuildAndProbe:
     (labelBuildAndProbe: boolean): Action<IParameterState> =>
     ({ setState, getState }) => {
@@ -151,7 +140,6 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
     matchAlgorithm: MatchAlgorithm.NONE,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
     edgeType: EdgeType.BEZIER,
-    nwayDiff: false,
     labelBuildAndProbe: true
   },
   actions
@@ -167,9 +155,6 @@ export const useMatchAlgorithm = createHook(ParameterStore, {
 });
 export const useDagEdgeTreatment = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.dagEdgeTreatment
-});
-export const useNwayDiff = createHook(ParameterStore, {
-  selector: (state: IParameterState) => state.nwayDiff
 });
 
 export const useLayouter = createHook(ParameterStore, {
