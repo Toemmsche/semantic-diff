@@ -9,7 +9,7 @@ import {
   getStraightPath
 } from 'reactflow';
 import { PlanNode } from '../../../model/operator/PlanData';
-import { EdgeType, useParameterState } from '../../../state/ParameterStore';
+import { useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/inner/EarlyProbe';
 import { getColorForIndex, getGradientForIndexGroup } from './color';
 import { css, keyframes } from '@emotion/react/macro';
@@ -17,6 +17,7 @@ import { PipelineBreakerScan } from '../../../model/operator/inner/PipelineBreak
 import { Nullable } from '../../../../semantic-diff/Types';
 import Join from '../../../model/operator/inner/Join';
 import { Box, Stack } from '@mui/material';
+import { EdgeType } from '../../../state/Parameters';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;

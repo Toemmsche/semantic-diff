@@ -5,7 +5,6 @@ import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import { PlanData, PlanNode } from '../model/operator/PlanData';
 import { useQueryPlanState } from '../state/QueryPlanResultStore';
 import {
-  DagEdgeTreatment,
   getMatchPipelineForAlgorithm,
   useDagEdgeTreatment,
   useMatchAlgorithm
@@ -14,21 +13,8 @@ import { Comparator } from '../../semantic-diff/compare/Comparator';
 import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator';
 import Origin from '../../semantic-diff/tree/Origin';
 import UnionFind from '../../semantic-diff/lib/UnionFind';
-import { hasDuplicates } from '../../semantic-diff/lib/ArrayUtil';
 import { ReactFlowProvider } from 'reactflow';
-import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
-import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
-
-// dunno where to place this
-export function treatDagEdges(plan: PlanNode, dagEdgeTreatment: DagEdgeTreatment) {
-  if (dagEdgeTreatment > DagEdgeTreatment.IGNORE) {
-    PipelineBreakerScan.handlePipelineBreakerScans(
-      plan,
-      dagEdgeTreatment === DagEdgeTreatment.COPY_SUBTREE
-    );
-    EarlyProbe.handleEarlyProbes(plan);
-  }
-}
+import { treatDagEdges } from '../state/ComputeSimilarity';
 
 export default function QueryPlanDiff() {
   const [state] = useQueryPlanState();

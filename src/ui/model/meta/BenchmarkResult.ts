@@ -20,5 +20,26 @@ export default interface BenchmarkResult {
   scale?: number;
 }
 
+export enum ComparisonSemantic {
+  GREATER_IS_BETTER,
+  LOWER_IS_BETTER
+}
+
+export function compareAgainstBaseline(
+  compMetric: number,
+  baselineMetric: number,
+  comparisonSemantic: ComparisonSemantic = ComparisonSemantic.LOWER_IS_BETTER
+) {
+  if (comparisonSemantic === ComparisonSemantic.LOWER_IS_BETTER) {
+    if (baselineMetric < compMetric) {
+      return compMetric / baselineMetric - 1;
+    } else {
+      return -(baselineMetric / compMetric - 1);
+    }
+  } else {
+    throw new Error('not implemented');
+  }
+}
+
 // only allow number types
 export type ComparisonMetric = keyof BenchmarkResult;

@@ -101,7 +101,9 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
             }
             const large = Math.max(parseInt(valueA), parseInt(valueB));
             const small = Math.min(parseInt(valueA), parseInt(valueB));
-
+            if (small === 0) {
+              return 0;
+            }
             if (large === 0) {
               cv = 0;
             } else {

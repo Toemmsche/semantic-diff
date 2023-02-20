@@ -1,20 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Chip, Divider, FormControl, IconButton, InputLabel, MenuItem, Modal, Select, Stack } from '@mui/material';
-import { useAllLabels, useQueryPlanState, useUniqueSystems } from '../../state/QueryPlanResultStore';
+import {
+  Box,
+  Chip,
+  Divider,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  Stack
+} from '@mui/material';
+import {
+  useAllLabels,
+  useQueryPlanState,
+  useUniqueSystems
+} from '../../state/QueryPlanResultStore';
 import { Nullable } from '../../../semantic-diff/Types';
 import QueryPlanResult, { Query, System } from '../../model/meta/QueryPlanResult';
 import { scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
-import { ComparisonMetric } from '../../model/meta/BenchmarkResult';
+import {
+  compareAgainstBaseline,
+  ComparisonMetric,
+  ComparisonSemantic
+} from '../../model/meta/BenchmarkResult';
+import { diffColorScale, similarityColorScale } from '../view/elements/color';
 
-export interface IQueryPlanResultDiffProps {
-}
-
-// Color scales for results that are better / worse
-const betterColorScale = d3ScaleLinear<string>().domain([1, 0]).range(['#00bb00', '#808080']); // green
-const worseColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#808080', '#ff0000']); //red
-const similarityColorScale = d3ScaleLinear<string>().domain([0, 1]).range(['#000000', '#F6BE00']); // black to gold
+export interface IQueryPlanResultDiffProps {}
 
 export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [baselineSystem, setBaselineSystem] = useState(undefined as Nullable<System>);
@@ -30,10 +44,10 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       actions.setResultSelection(
         availableSystems.map((system) =>
           [baselineSystem, ...compSystem].includes(system)
-          ? state.queryPlanResults.find(
-            (qpr) => qpr.system === system && qpr.query === selectedQuery
-          )!
-          : null
+            ? state.queryPlanResults.find(
+                (qpr) => qpr.system === system && qpr.query === selectedQuery
+              )!
+            : null
         )
       );
     } else {
@@ -50,8 +64,10 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
   let worstOverallMetricDiff: Nullable<number> = null;
   let bestOverallMetricDiff: Nullable<number> = null;
-  let otherResultsPerQuery: Map<Query,
-    Map<QueryPlanResult, [Nullable<number>, number]>> = new Map();
+  let otherResultsPerQuery: Map<
+    Query,
+    Map<QueryPlanResult, [Nullable<number>, number]>
+  > = new Map();
   let worstResultsPerQuery: Map<Query, Nullable<[QueryPlanResult, number, number]>> = new Map();
 
   if (baselineSystem != null) {
@@ -63,28 +79,29 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
 
         const otherDiffAndSimilarity = new Map<QueryPlanResult, [Nullable<number>, number]>(
           state.queryPlanResults
-               .filter((qpr) => {
-                 return qpr.system !== baselineSystem && qpr.query === query;
-               })
-               .map((qpr) => {
-                 let metricDiff;
-                 if (
-                   !qpr.benchmarkResult[selectedMetric] ||
-                   !baselineResult.benchmarkResult[selectedMetric]
-                 ) {
-                   metricDiff = null;
-                 } else {
-                   // null case has been checked
-                   const baseLineMetric = baselineResult.benchmarkResult[selectedMetric]!;
-                   const otherMetric = qpr.benchmarkResult[selectedMetric]!;
+            .filter((qpr) => {
+              return qpr.system !== baselineSystem && qpr.query === query;
+            })
+            .map((qpr) => {
+              let metricDiff;
+              if (
+                !qpr.benchmarkResult[selectedMetric] ||
+                !baselineResult.benchmarkResult[selectedMetric]
+              ) {
+                metricDiff = null;
+              } else {
+                metricDiff = compareAgainstBaseline(
+                  qpr.benchmarkResult[selectedMetric]!,
+                  baselineResult.benchmarkResult[selectedMetric]!,
+                  // just default to lower is better for now
+                  ComparisonSemantic.LOWER_IS_BETTER
+                );
+              }
 
-                   metricDiff = baseLineMetric / otherMetric - 1;
-                 }
+              const similarity = qpr.similarity.get(baselineResult)!;
 
-                 const similarity = qpr.similarity.get(baselineResult)!;
-
-                 return [qpr, [metricDiff, similarity]];
-               })
+              return [qpr, [metricDiff, similarity]];
+            })
         );
         return [query, otherDiffAndSimilarity];
       })
@@ -98,8 +115,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
               metricDiff != null && (compSystem.length > 0 ? compSystem.includes(qpr.system) : true)
           )
           .sort(([qprA, [metricDiffA, similarityA]], [qprB, [metricDiffB, similarityB]]) => {
-            // positive is bad
-            return metricDiffB! - metricDiffA!;
+            // positive is good
+            return metricDiffA! - metricDiffB!;
           });
 
         let worstResult: Nullable<[QueryPlanResult, number, number]> = null;
@@ -140,13 +157,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       if (maybeWorstResult) {
         const [worstQpr, worstDiff, similarity] = maybeWorstResult;
 
-        const metricDiffSuffix =
-          ' (' + (worstDiff < 0 ? '' : '+') + (worstDiff * 100).toFixed(0) + '%)';
-        const metricColor =
-          worstDiff < 0
-          ? // take sqrt to avoid some grey colors
-          betterColorScale(Math.sqrt(worstDiff / bestOverallMetricDiff!))
-          : worseColorScale(Math.sqrt(worstDiff / worstOverallMetricDiff!));
+        const metricDiffSuffix = ' (' + (worstDiff * 100).toFixed(0) + '%)';
+        const metricColor = diffColorScale(worstDiff);
         additionalContent.push(
           <Box key="metricDiff" color={metricColor}>
             {metricDiffSuffix}

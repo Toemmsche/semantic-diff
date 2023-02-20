@@ -3,11 +3,10 @@ import React from 'react';
 import {
   DagEdgeTreatment,
   EdgeType,
-  helpers,
   LayoutAlgorithm,
-  MatchAlgorithm,
-  useParameterState
-} from '../../state/ParameterStore';
+  MatchAlgorithm
+} from '../../state/Parameters';
+import { helpers, useParameterState } from '../../state/ParameterStore';
 import DiscreteSliderPicker from './DiscreteSlider';
 
 const matchAlgorithmSliderMarks = [

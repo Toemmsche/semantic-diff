@@ -21,8 +21,7 @@ import { defaultDiffOptions, Grammar, GrammarXmlSerDes } from '../../../semantic
 // Materialize Example,
 // Investigate unknowns -> check cli
 export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).parseFromString(
-  `
-<grammar>
+  `<grammar>
     <leaves>
         <TableScan>
             <comparisonValue comparisonType="GATE">@_table_name</comparisonValue>

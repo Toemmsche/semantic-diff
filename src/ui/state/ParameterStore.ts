@@ -7,33 +7,7 @@ import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
 import { defaultDiffOptions } from '../../semantic-diff/index';
 import IAsyncLayouter from '../components/view/layout/IAsyncLayouter';
 import IBlockingLayouter from '../components/view/layout/IBlockingLayouter';
-
-export enum MatchAlgorithm {
-  NONE,
-  TOP_DOWN,
-  BOTTOM_UP,
-  SIMPLE,
-  FULL
-}
-
-export enum LayoutAlgorithm {
-  DAGRE,
-  D3_HIERARCHY,
-  ELK_JS_LAYERED,
-  ELK_JS_MRTREE
-}
-
-export enum EdgeType {
-  BEZIER,
-  STRAIGHT,
-  SMOOTH_STEP
-}
-
-export enum DagEdgeTreatment {
-  IGNORE,
-  COPY_SUBTREE,
-  FULL_DAG
-}
+import { DagEdgeTreatment, EdgeType, LayoutAlgorithm, MatchAlgorithm } from './Parameters';
 
 export interface IParameterState {
   collapsible: boolean;

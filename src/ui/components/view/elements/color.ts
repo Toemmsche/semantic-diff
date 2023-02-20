@@ -1,4 +1,5 @@
 import { schemeTableau10 as d3Scheme } from 'd3-scale-chromatic';
+import { scaleLinear as d3ScaleLinear } from 'd3';
 
 const COLORS: readonly string[] = d3Scheme.map((color) => color.substring(0, 7) + 'c0');
 
@@ -27,3 +28,11 @@ export function getGradientForIndexGroup(indices: number[]): string {
     ')'
   );
 }
+
+// Color scales for results that are better / worse
+export const diffColorScale = d3ScaleLinear<string>()
+  .domain([-1, 0, 1])
+  .range(['#ff0000', '#808080', '#00bb00']); // green
+export const similarityColorScale = d3ScaleLinear<string>()
+  .domain([0, 1])
+  .range(['#000000', '#F6BE00']); // black to gold

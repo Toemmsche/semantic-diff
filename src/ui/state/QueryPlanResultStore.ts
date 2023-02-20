@@ -7,7 +7,7 @@ import { Nullable } from '../../semantic-diff/Types';
 import { ComparisonMetric } from '../model/meta/BenchmarkResult';
 import { System } from '../model/meta/QueryPlanResult';
 import computeSimilarity from './ComputeSimilarity';
-import { DagEdgeTreatment } from './ParameterStore';
+import { DagEdgeTreatment } from './Parameters';
 
 export interface IQueryPlanResultsState {
   queryPlanResults: QueryPlanResultCollection;
