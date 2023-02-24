@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 import { useQueryPlanState } from '../../state/QueryPlanResultStore';
-import { PlanData } from '../../model/operator/PlanData';
+import { Operator } from '../../model/operator/Operator';
 import { TNode } from '../../../semantic-diff/index';
 import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Origin from '../../../semantic-diff/tree/Origin';
@@ -28,8 +28,8 @@ export default function Legend(props: {}) {
         return <></>;
       }
       const system = qprState.resultSelection[index]!.system;
-      const planData = new PlanData(system, null, new Map());
-      const planNode = new TNode<PlanData>(planData, null);
+      const planData = new Operator(system, null, new Map());
+      const planNode = new TNode<Operator>(planData, null);
       planNode.origin = new Origin(index, index, system);
       return (
         <Box key={system} width="max-content">

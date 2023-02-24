@@ -1,9 +1,9 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import React from 'react';
 import { Box, Stack } from '@mui/material';
 import { MoreHoriz } from '@mui/icons-material';
 
-export class MultiwayJoin extends PlanData {
+export class MultiwayJoin extends Operator {
   public static LABEL = 'MultiwayJoin';
 
   render(): any {

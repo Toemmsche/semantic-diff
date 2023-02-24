@@ -1,4 +1,4 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 
@@ -27,7 +27,7 @@ export function getSetOperationSymbolForType(type: SetOperationType) {
   return '???';
 }
 
-export default class SetOperation extends PlanData {
+export default class SetOperation extends Operator {
   public static LABEL = 'SetOperation';
 
   get type(): SetOperationType {

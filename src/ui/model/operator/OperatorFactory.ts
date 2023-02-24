@@ -16,14 +16,14 @@ import { Temp } from './inner/Temp';
 import { Window } from './inner/Window';
 import { CustomInner } from './inner/CustomInner';
 import { CustomLeaf } from './leaf/CustomLeaf';
-import { PlanData } from './PlanData';
+import { Operator } from './Operator';
 
-export default class PlanDataFactory {
+export default class OperatorFactory {
   public static create(
     label: string,
     text: Nullable<string>,
     attributes: Map<string, string>
-  ): PlanData {
+  ): Operator {
     switch (label) {
       case Result.LABEL:
         return new Result(label, text, attributes);
@@ -60,7 +60,7 @@ export default class PlanDataFactory {
       case CustomLeaf.LABEL:
         return new CustomLeaf(label, text, attributes);
       default:
-        return new PlanData(label, text, attributes);
+        return new Operator(label, text, attributes);
     }
   }
 }

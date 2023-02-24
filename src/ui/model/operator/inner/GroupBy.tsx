@@ -1,10 +1,10 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 
 export const UTF8_LARGE_GAMMA = 'Γ';
 
-export default class GroupBy extends PlanData {
+export default class GroupBy extends Operator {
   public static LABEL = 'GroupBy';
 
   render(): any {

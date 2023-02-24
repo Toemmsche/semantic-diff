@@ -1,9 +1,9 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import React from 'react';
 import { Box, Stack } from '@mui/material';
 import { AccessTime, ViewColumn } from '@mui/icons-material';
 
-export class Window extends PlanData {
+export class Window extends Operator {
   public static LABEL = 'Window';
 
   render(): any {

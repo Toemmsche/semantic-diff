@@ -1,9 +1,9 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 import { FilterList } from '@mui/icons-material';
 
-export default class Sort extends PlanData {
+export default class Sort extends Operator {
   public static LABEL = 'Sort';
 
   render(): any {

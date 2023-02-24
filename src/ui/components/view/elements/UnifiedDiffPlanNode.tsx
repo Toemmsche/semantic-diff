@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { PlanNode } from '../../../model/operator/PlanData';
+import { PlanNode } from '../../../model/operator/Operator';
 import { Handle, Position } from 'reactflow';
 import { useParameterState } from '../../../state/ParameterStore';
 import { Box, IconButton, Paper, Popover, Stack } from '@mui/material';

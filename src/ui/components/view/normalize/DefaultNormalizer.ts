@@ -1,5 +1,5 @@
 import { Edge, Node } from 'reactflow';
-import { PlanData, PlanNode } from '../../../model/operator/PlanData';
+import { Operator, PlanNode } from '../../../model/operator/Operator';
 import INormalizeOptions, { defaultNormalizeOptions } from './INormalizeOptions';
 import INormalizer from './INormalizer';
 
@@ -9,7 +9,7 @@ export default class DefaultNormalizer implements INormalizer {
     planIndex: number,
     dimensions: Map<PlanNode, [number, number]>,
     options: INormalizeOptions = defaultNormalizeOptions
-  ): [Node<PlanData>[], Edge[]] {
+  ): [Node<Operator>[], Edge[]] {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 

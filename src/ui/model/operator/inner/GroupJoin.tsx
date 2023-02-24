@@ -1,4 +1,4 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import React from 'react';
 import { Box, Stack } from '@mui/material';
 import { JoinMethod, JoinType } from './Join';
@@ -9,7 +9,7 @@ export function RenderGroupJoin(props: { data: GroupJoin }) {
   const { data: groupJoinData } = props;
 }
 
-export class GroupJoin extends PlanData {
+export class GroupJoin extends Operator {
   public static LABEL = 'GroupJoin';
 
   get joinType(): JoinType {
@@ -20,7 +20,7 @@ export class GroupJoin extends PlanData {
     return this.attributes.get('method')! as JoinMethod;
   }
 
-  static isGroupJoin(data: PlanData): data is GroupJoin {
+  static isGroupJoin(data: Operator): data is GroupJoin {
     return data.label === GroupJoin.LABEL;
   }
 

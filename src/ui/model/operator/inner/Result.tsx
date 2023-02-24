@@ -1,9 +1,9 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import React from 'react';
 import { ClearAll } from '@mui/icons-material';
 import { Box, Stack } from '@mui/material';
 
-export class Result extends PlanData {
+export class Result extends Operator {
   public static readonly LABEL = 'Result';
 
   render(): any {

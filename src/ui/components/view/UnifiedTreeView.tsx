@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import ReactFlow, { MiniMap, useEdgesState, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { PlanNode } from '../../model/operator/PlanData';
+import { PlanNode } from '../../model/operator/Operator';
 import useAnimatedNodes from '../useAnimatedNodes';
 import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
 import Legend from './Legend';

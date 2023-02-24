@@ -1,7 +1,7 @@
 import { Edge, Node } from 'reactflow';
 import dagre from 'dagre';
 import React from 'react';
-import { PlanData } from '../../../model/operator/PlanData';
+import { Operator } from '../../../model/operator/Operator';
 import IBlockingLayouter from './IBlockingLayouter';
 import { LayoutDirection, TreeLayoutOptions } from './ITreeLayoutOptions';
 
@@ -12,7 +12,7 @@ export default class DagreLayouter implements IBlockingLayouter {
    * @param edges
    * @param options
    */
-  public treeLayout(nodes: Node<PlanData>[], edges: Edge[], options: TreeLayoutOptions): Node[] {
+  public treeLayout(nodes: Node<Operator>[], edges: Edge[], options: TreeLayoutOptions): Node[] {
     const dagreGraphOptions: any = {
       nodesep: options.nodeSep,
       ranksep: options.rankSep

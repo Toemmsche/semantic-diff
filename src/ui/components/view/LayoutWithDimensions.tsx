@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import IAsyncLayouter from './layout/IAsyncLayouter';
 import IBlockingLayouter from './layout/IBlockingLayouter';
-import { PlanNode } from '../../model/operator/PlanData';
+import { PlanNode } from '../../model/operator/Operator';
 import DefaultNormalizer from './normalize/DefaultNormalizer';
 import { ICustomUnifiedEdgeData } from './elements/CustomUnifiedEdge';
 import { defaultTreeLayoutOptions } from './layout/ITreeLayoutOptions';

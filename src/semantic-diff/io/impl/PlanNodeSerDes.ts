@@ -1,17 +1,17 @@
-import { PlanData } from '../../../ui/model/operator/PlanData';
+import { Operator } from '../../../ui/model/operator/Operator';
 import { Nullable } from '../../Types';
 import { QueryPlanResultCollection } from '../../../ui/model/meta/QueryPlanResult';
 import TNodeJsonSerDes from '../TNodeJsonSerDes';
-import PlanDataFactory from '../../../ui/model/operator/PlanDataFactory';
+import OperatorFactory from '../../../ui/model/operator/OperatorFactory';
 
 // use JSOn as the new default
-export default class PlanNodeSerDes extends TNodeJsonSerDes<PlanData> {
+export default class PlanNodeSerDes extends TNodeJsonSerDes<Operator> {
   protected getData(
     tagName: string,
     text: Nullable<string>,
     attributes: Map<string, string>
-  ): PlanData {
-    return PlanDataFactory.create(tagName, text, attributes);
+  ): Operator {
+    return OperatorFactory.create(tagName, text, attributes);
   }
 
   public queryPlanResultCollectionFromJson(jsontext: string): QueryPlanResultCollection {

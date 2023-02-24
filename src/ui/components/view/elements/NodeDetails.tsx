@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlanNode } from '../../../model/operator/PlanData';
+import { PlanNode } from '../../../model/operator/Operator';
 import { Box, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import SystemRepresentation from './SystemRepresentation';
 import { getTextColorForIndex } from './color';

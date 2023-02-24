@@ -4,7 +4,7 @@ import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff/i
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
 import { DagEdgeTreatment } from './Parameters';
-import { PlanData, PlanNode } from '../model/operator/PlanData';
+import { Operator, PlanNode } from '../model/operator/Operator';
 import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
 import { sum } from 'd3';
 import Join, { JoinMethod } from '../model/operator/inner/Join';
@@ -172,7 +172,7 @@ export function cmm(
   const scanDiscountFactor = 0.2;
   const indexLookupFactor = 2;
 
-  function getCardinality(planData: PlanData): number {
+  function getCardinality(planData: Operator): number {
     if (useEstimates) {
       return planData.estimatedCardinality;
     } else {

@@ -2,7 +2,7 @@ import React from 'react';
 import { UnifiedTreeView } from './view/UnifiedTreeView';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
-import { PlanData, PlanNode } from '../model/operator/PlanData';
+import { Operator, PlanNode } from '../model/operator/Operator';
 import { useQueryPlanState } from '../state/QueryPlanResultStore';
 import {
   getMatchPipelineForAlgorithm,
@@ -91,7 +91,7 @@ export default function QueryPlanDiff() {
       });
     });
 
-    unifiedTree = new NwayUnifiedGenerator<PlanData>(defaultDiffOptions).generate(plans);
+    unifiedTree = new NwayUnifiedGenerator<Operator>(defaultDiffOptions).generate(plans);
 
     GraphView = <UnifiedTreeView unifiedTree={unifiedTree} />;
   } else {

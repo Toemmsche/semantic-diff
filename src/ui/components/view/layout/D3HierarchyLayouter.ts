@@ -1,11 +1,11 @@
 import IBlockingLayouter from './IBlockingLayouter';
-import { PlanData } from '../../../model/operator/PlanData';
+import { Operator } from '../../../model/operator/Operator';
 import { Edge, Node } from 'reactflow';
 import { hierarchy as d3Hierarchy, tree as d3Tree } from 'd3-hierarchy';
 import { TreeLayoutOptions } from './ITreeLayoutOptions';
 
 export default class D3HierarchyLayouter implements IBlockingLayouter {
-  treeLayout(nodes: Node<PlanData>[], edges: Edge<any>[], options: TreeLayoutOptions): Node<any>[] {
+  treeLayout(nodes: Node<Operator>[], edges: Edge<any>[], options: TreeLayoutOptions): Node<any>[] {
     // early return if there are no nodes to be layouted
     if (nodes.length === 0) {
       return nodes;

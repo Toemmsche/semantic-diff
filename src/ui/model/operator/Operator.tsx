@@ -21,12 +21,12 @@ import { Window } from './inner/Window';
 import { CustomInner } from './inner/CustomInner';
 import { CustomLeaf } from './leaf/CustomLeaf';
 import ICopyable from '../../../semantic-diff/data/ICopyable';
-import PlanDataFactory from './PlanDataFactory';
+import OperatorFactory from './OperatorFactory';
 
-export class PlanData extends XmlData implements ICopyable<PlanData> {
+export class Operator extends XmlData implements ICopyable<Operator> {
   // dirty id hack, be careful about null IDs
   static increasingId = 0;
-  dummyId = String(PlanData.increasingId++);
+  dummyId = String(Operator.increasingId++);
 
   get operatorName(): string {
     return this.label;
@@ -56,12 +56,12 @@ export class PlanData extends XmlData implements ICopyable<PlanData> {
     return <Box>{this.label}</Box>;
   }
 
-  copy(): PlanData {
+  copy(): Operator {
     const xmlDataCopy = super.copy();
     // must remove operatorId, as it would no longer be unique
     xmlDataCopy.attributes.delete('operator_id');
-    return PlanDataFactory.create(xmlDataCopy.label, xmlDataCopy.text, xmlDataCopy.attributes);
+    return OperatorFactory.create(xmlDataCopy.label, xmlDataCopy.text, xmlDataCopy.attributes);
   }
 }
 
-export type PlanNode = TNode<PlanData>;
+export type PlanNode = TNode<Operator>;

@@ -1,4 +1,4 @@
-import { PlanData, PlanNode } from '../../../model/operator/PlanData';
+import { Operator, PlanNode } from '../../../model/operator/Operator';
 import INormalizeOptions from './INormalizeOptions';
 import { Edge, Node } from 'reactflow';
 
@@ -8,5 +8,5 @@ export default interface INormalizer {
     planIndex: number,
     dimensinos: Map<PlanNode, [number, number]>,
     options: INormalizeOptions
-  ): [Node<PlanData>[], Edge[]];
+  ): [Node<Operator>[], Edge[]];
 }

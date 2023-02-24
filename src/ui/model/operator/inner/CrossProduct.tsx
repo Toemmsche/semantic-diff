@@ -1,9 +1,9 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import React from 'react';
 import { Box, Stack } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
-export class CrossProduct extends PlanData {
+export class CrossProduct extends Operator {
   public static LABEL = 'CrossProduct';
 
   render(): any {

@@ -1,6 +1,6 @@
 import { Button, Chip, IconButton, Modal, Stack } from '@mui/material';
 import React, { useState } from 'react';
-import { PlanNode } from '../../../model/operator/PlanData';
+import { PlanNode } from '../../../model/operator/Operator';
 import Editor from '@monaco-editor/react';
 import { Subject } from '@mui/icons-material';
 import vkbeautify from 'vkbeautify';

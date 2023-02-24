@@ -1,4 +1,4 @@
-import { PlanNode } from '../../../model/operator/PlanData';
+import { PlanNode } from '../../../model/operator/Operator';
 
 export default interface INormalizeOptions {
   filter: (planNode: PlanNode) => boolean;

@@ -1,5 +1,5 @@
 import { TreeLayoutOptions } from './ITreeLayoutOptions';
-import { PlanData } from '../../../model/operator/PlanData';
+import { Operator } from '../../../model/operator/Operator';
 import { Edge, Node } from 'reactflow';
 import { default as ELK, ElkExtendedEdge, ElkNode } from 'elkjs';
 import IAsyncLayouter from './IAsyncLayouter';
@@ -7,7 +7,7 @@ import IAsyncLayouter from './IAsyncLayouter';
 export default class ElkJsLayouter implements IAsyncLayouter {
   constructor(private elkAlgorithm: string) {}
   async treeLayout(
-    nodes: Node<PlanData>[],
+    nodes: Node<Operator>[],
     edges: Edge[],
     options: TreeLayoutOptions
   ): Promise<Node[]> {

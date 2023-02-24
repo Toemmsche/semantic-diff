@@ -1,9 +1,9 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import React from 'react';
 import { Box, Stack } from '@mui/material';
 import { QuestionMark } from '@mui/icons-material';
 
-export class CustomLeaf extends PlanData {
+export class CustomLeaf extends Operator {
   public static LABEL = 'CustomLeaf';
 
   get name(): string {

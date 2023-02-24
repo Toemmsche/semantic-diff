@@ -1,4 +1,4 @@
-import { PlanData, PlanNode } from '../PlanData';
+import { Operator, PlanNode } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 import { GroupJoin } from './GroupJoin';
@@ -46,7 +46,7 @@ export function getJoinSymbolForType(type: JoinType) {
   return UTF8_JOIN_SYMBOLS.get(JoinType.INNER)! + '?';
 }
 
-export default class Join extends PlanData {
+export default class Join extends Operator {
   public static LABEL = 'Join';
 
   get joinType(): JoinType {
@@ -80,7 +80,7 @@ export default class Join extends PlanData {
     );
   }
 
-  static isJoin(data: PlanData): data is Join {
+  static isJoin(data: Operator): data is Join {
     return data.label === Join.LABEL;
   }
 

@@ -8,7 +8,7 @@ import {
   getSmoothStepPath,
   getStraightPath
 } from 'reactflow';
-import { PlanNode } from '../../../model/operator/PlanData';
+import { PlanNode } from '../../../model/operator/Operator';
 import { useParameterState } from '../../../state/ParameterStore';
 import { EarlyProbe } from '../../../model/operator/inner/EarlyProbe';
 import { getColorForIndex, getGradientForIndexGroup } from './color';

@@ -1,7 +1,7 @@
 import { Edge, Node } from 'reactflow';
-import { PlanData } from '../../../model/operator/PlanData';
+import { Operator } from '../../../model/operator/Operator';
 import { TreeLayoutOptions } from './ITreeLayoutOptions';
 
 export default interface IBlockingLayouter {
-  treeLayout(nodes: Node<PlanData>[], edges: Edge[], options: TreeLayoutOptions): Node[];
+  treeLayout(nodes: Node<Operator>[], edges: Edge[], options: TreeLayoutOptions): Node[];
 }

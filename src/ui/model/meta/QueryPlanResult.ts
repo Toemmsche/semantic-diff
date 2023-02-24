@@ -1,5 +1,5 @@
 import BenchmarkResult from './BenchmarkResult';
-import { PlanNode } from '../operator/PlanData';
+import { PlanNode } from '../operator/Operator';
 
 export type System = string;
 export type Query = string;

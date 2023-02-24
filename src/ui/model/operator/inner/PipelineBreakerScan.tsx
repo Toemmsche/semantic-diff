@@ -1,17 +1,17 @@
-import { PlanData, PlanNode } from '../PlanData';
+import { Operator, PlanNode } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import React from 'react';
 
 const UTF8_STACK = '☷';
 
-export class PipelineBreakerScan extends PlanData {
+export class PipelineBreakerScan extends Operator {
   public static LABEL = 'PipelineBreakerScan';
 
   get scannedId(): string {
     return this.attributes.get('scanned_id')!;
   }
 
-  static isPipelineBreakerScan(data: PlanData): data is PipelineBreakerScan {
+  static isPipelineBreakerScan(data: Operator): data is PipelineBreakerScan {
     return data.label === PipelineBreakerScan.LABEL;
   }
 

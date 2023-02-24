@@ -1,9 +1,9 @@
-import { PlanData, PlanNode } from '../PlanData';
+import { Operator, PlanNode } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import { Colorize } from '@mui/icons-material';
 import React from 'react';
 
-export class EarlyProbe extends PlanData {
+export class EarlyProbe extends Operator {
   public static LABEL = 'EarlyProbe';
 
   get source(): string {
@@ -19,7 +19,7 @@ export class EarlyProbe extends PlanData {
     );
   }
 
-  public static isEarlyProbe(data: PlanData): data is EarlyProbe {
+  public static isEarlyProbe(data: Operator): data is EarlyProbe {
     return data.label === EarlyProbe.LABEL;
   }
 

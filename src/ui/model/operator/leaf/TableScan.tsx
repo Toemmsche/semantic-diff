@@ -1,11 +1,11 @@
-import { PlanData } from '../PlanData';
+import { Operator } from '../Operator';
 import { Box, Stack } from '@mui/material';
 import { ManageSearch } from '@mui/icons-material';
 import React from 'react';
 
 const tableSizeMap = new Map<string, number>();
 
-export class TableScan extends PlanData {
+export class TableScan extends Operator {
   public static LABEL = 'TableScan';
 
   get tableName(): string {
@@ -27,7 +27,7 @@ export class TableScan extends PlanData {
     }
   }
 
-  static isTableScan(data: PlanData): data is TableScan {
+  static isTableScan(data: Operator): data is TableScan {
     return data.label === TableScan.LABEL;
   }
 
