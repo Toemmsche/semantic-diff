@@ -26,7 +26,7 @@ export default class ElkJsLayouter implements IAsyncLayouter {
       id: 'root',
       layoutOptions: {
         'elk.algorithm': this.elkAlgorithm,
-        'elk.spacing.nodeNode': options.rankSep.toString(),
+        'elk.spacing.nodeNode': options.nodeSep.toString(),
         'spacing.nodeNodeBetweenLayers': options.rankSep.toString(),
         'elk.direction': 'DOWN'
       },
