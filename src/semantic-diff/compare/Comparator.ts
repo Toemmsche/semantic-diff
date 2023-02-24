@@ -36,7 +36,7 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
       }
     }
 
-    const commonalityCv = 1 - common / Math.max(setA.size, setB.size);
+    const commonalityCv = 1 - (2 * common) / (setA.size + setB.size);
 
     return this.weightedAverage(
       [this.compareContent(nodeA, nodeB), this.comparePosition(nodeA, nodeB), commonalityCv],
@@ -82,7 +82,7 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
       let cv: Nullable<number> = 1;
       if (!((valueA == null && valueB) || (valueA && valueB == null))) {
         switch (wcv.comparisonType) {
-          case ComparisonType.ALL_OR_NOTHING:
+          case ComparisonType.EQ:
             cv = valueA === valueB ? 0 : 1;
             break;
           case ComparisonType.LCS:
