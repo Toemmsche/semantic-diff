@@ -52,8 +52,7 @@ export default class TNode<T> {
   public constructor(
     public data: T, // state fully modifiable for now
     public readonly grammarNode: Nullable<GrammarNode>
-  ) {
-  }
+  ) {}
 
   /* TODO remove these */
 
@@ -113,9 +112,9 @@ export default class TNode<T> {
   xPath(): string {
     // discard root node
     return this.path()
-               .slice(1)
-               .map((node) => node._index)
-               .join('/');
+      .slice(1)
+      .map((node) => node._index)
+      .join('/');
   }
 
   path(limit?: number) {
@@ -135,7 +134,9 @@ export default class TNode<T> {
 
   toPreOrderUnique(nodeSet = new Set<TNode<T>>()): TNode<T>[] {
     // early return
-    if (nodeSet.has(this)) return Array.from(nodeSet);
+    if (nodeSet.has(this)) {
+      return Array.from(nodeSet);
+    }
 
     nodeSet.add(this);
 
@@ -203,6 +204,9 @@ export default class TNode<T> {
   }
 
   isLeaf(): boolean {
+    if (this.children.length > 0 && this.grammarNode == null) {
+      console.warn('broken_leaf', this.label);
+    }
     return this.grammarNode != null && this.grammarNode.type === NodeType.LEAF;
   }
 
@@ -258,8 +262,11 @@ export default class TNode<T> {
       return false;
     }
     // if the set contains two nodes from the same tree, do not match at all
-    if (other.sourceIndex >= 0 &&
-        (other.sourceIndex === this.sourceIndex || this.getGroupSourceIndices().includes(other.sourceIndex))) {
+    if (
+      other.sourceIndex >= 0 &&
+      (other.sourceIndex === this.sourceIndex ||
+        this.getGroupSourceIndices().includes(other.sourceIndex))
+    ) {
       console.warn('match_set_same_tree');
       return false;
     }
@@ -290,8 +297,8 @@ export default class TNode<T> {
   getSingleMatchingMap(): Map<TNode<T>, TNode<T>> {
     return new Map(
       this.toPreOrderUnique()
-          .filter((node) => node.isMatched())
-          .map((node) => [node, node.getSingleMatch()])
+        .filter((node) => node.isMatched())
+        .map((node) => [node, node.getSingleMatch()])
     );
   }
 
@@ -314,8 +321,8 @@ export default class TNode<T> {
 
   getGroupSourceIndices(): number[] {
     return this.getMatchGroup()
-               .map((n) => n.sourceIndex)
-               .sort();
+      .map((n) => n.sourceIndex)
+      .sort();
   }
 
   getMetaNode(): TNode<T> {

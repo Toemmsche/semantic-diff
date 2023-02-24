@@ -1,5 +1,5 @@
 enum ComparisonType {
-  ALL_OR_NOTHING,
+  EQ,
   LCS,
   GATE,
   NUMERIC

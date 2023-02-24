@@ -4,6 +4,6 @@ export default class WeightedCV {
   constructor(
     public path: string,
     public weight: number = 1,
-    public comparisonType: ComparisonType = ComparisonType.ALL_OR_NOTHING
+    public comparisonType: ComparisonType = ComparisonType.EQ
   ) {}
 }

@@ -70,6 +70,7 @@ export class EditScriptGenerator<T> {
 
   #alignChildren(oldParent: TNode<T>) {
     const nodes = oldParent.children;
+
     // To find the minimal number of moves, map each child to the index of
     // its matching partner and compute the longest increasing subsequence (LIS)
     // on the result. Every node that isn't part of the LIS must be moved.

@@ -45,9 +45,9 @@ export const QP_GRAMMAR: Grammar = new GrammarXmlSerDes(defaultDiffOptions).pars
         <GroupJoin ordered="true">
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
         </GroupJoin>
-        <MultiWayJoin ordered="true">
+        <MultiwayJoin ordered="true">
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>
-        </MultiWayJoin>
+        </MultiwayJoin>
         <SetOperation ordered="true">
             <comparisonValue comparisonType="GATE">@_type</comparisonValue>
             <comparisonValue weight="30" comparisonType="NUMERIC">@_exact_cardinality</comparisonValue>

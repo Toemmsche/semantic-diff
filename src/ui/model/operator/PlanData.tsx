@@ -44,6 +44,10 @@ export class PlanData extends XmlData implements ICopyable<PlanData> {
     return parseInt(this.attributes.get('exact_cardinality')!);
   }
 
+  get estimatedCardinality(): number {
+    return parseInt(this.attributes.get('estimated_cardinality')!);
+  }
+
   get systemRepresentation(): string {
     return this.attributes.get('system_representation')!;
   }

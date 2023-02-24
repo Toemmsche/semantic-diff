@@ -18,7 +18,6 @@ import {
 } from '../../state/QueryPlanResultStore';
 import { Nullable } from '../../../semantic-diff/Types';
 import QueryPlanResult, { Query, System } from '../../model/meta/QueryPlanResult';
-import { scaleLinear as d3ScaleLinear } from 'd3';
 import { Subject } from '@mui/icons-material';
 import Editor from '@monaco-editor/react';
 import {
@@ -92,8 +91,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
               } else {
                 metricDiff = compareAgainstBaseline(
                   qpr.benchmarkResult[selectedMetric]!,
-                  baselineResult.benchmarkResult[selectedMetric]!,
-                  // just default to lower is better for now
+                  baselineResult.benchmarkResult[selectedMetric]!, // just default to lower is better for now
                   ComparisonSemantic.LOWER_IS_BETTER
                 );
               }
@@ -157,7 +155,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
       if (maybeWorstResult) {
         const [worstQpr, worstDiff, similarity] = maybeWorstResult;
 
-        const metricDiffSuffix = ' (' + (worstDiff * 100).toFixed(0) + '%)';
+        const metricDiffSuffix =
+          ' (' + (worstDiff > 0 ? '+' : '') + (worstDiff * 100).toFixed(0) + '%)';
         const metricColor = diffColorScale(worstDiff);
         additionalContent.push(
           <Box key="metricDiff" color={metricColor}>

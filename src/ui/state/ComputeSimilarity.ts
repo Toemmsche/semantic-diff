@@ -4,27 +4,40 @@ import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff/i
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
 import { DagEdgeTreatment } from './Parameters';
-import { PlanNode } from '../model/operator/PlanData';
+import { PlanData, PlanNode } from '../model/operator/PlanData';
 import { PipelineBreakerScan } from '../model/operator/inner/PipelineBreakerScan';
-import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
 import { sum } from 'd3';
 import Join, { JoinMethod } from '../model/operator/inner/Join';
 import { Select } from '../model/operator/inner/Select';
+import LcsLib from '../../semantic-diff/lib/LcsLib';
+import { EditScriptGenerator } from '../../semantic-diff/delta/EditScriptGenerator';
+import { EarlyProbe } from '../model/operator/inner/EarlyProbe';
+import { TableScan } from '../model/operator/leaf/TableScan';
 
 // dunno where to place this
 export function treatDagEdges(plan: PlanNode, dagEdgeTreatment: DagEdgeTreatment) {
-  if (dagEdgeTreatment > DagEdgeTreatment.IGNORE) {
+  if (dagEdgeTreatment >= DagEdgeTreatment.COPY_SUBTREE) {
     PipelineBreakerScan.handlePipelineBreakerScans(
       plan,
       dagEdgeTreatment === DagEdgeTreatment.COPY_SUBTREE
     );
+  }
+  if (dagEdgeTreatment >= DagEdgeTreatment.FULL_DAG) {
     EarlyProbe.handleEarlyProbes(plan);
   }
 }
 
+export enum SimilarityMetric {
+  MATCH_ONLY,
+  CHILDREN_MATCH,
+  WEIGHTED_CMM,
+  EDIT_SCRIPT_COST
+}
+
 export default function computeSimilarity(
   queryPlanResults: QueryPlanResult[],
-  dagEdgeTreatment: DagEdgeTreatment
+  dagEdgeTreatment: DagEdgeTreatment,
+  similarityMetric: SimilarityMetric = SimilarityMetric.EDIT_SCRIPT_COST
 ): void {
   console.time('compute_sim');
 
@@ -51,48 +64,96 @@ export default function computeSimilarity(
           new Comparator(defaultDiffOptions)
         );
 
-        // value + weight
-        const similarityMap = new Map<PlanNode, number>();
-        const weightMap = new Map<PlanNode, number>();
-        plans.forEach((plan) => {
-          plan.toPostOrderUnique().forEach((n) => {
-            let avgCmm;
+        let similarity;
+        if (similarityMetric === SimilarityMetric.WEIGHTED_CMM) {
+          // value + weight
+          const similarityMap = new Map<PlanNode, number>();
+          const weightMap = new Map<PlanNode, number>();
+          plans.forEach((plan) => {
+            plan.toPostOrderUnique().forEach((n) => {
+              let avgCmm;
 
-            // Compute similarity of matching
-            let matchSimValue = 0;
-            if (n.isMatched()) {
-              const cmmA = cmm(n);
-              const cmmB = cmm(n.getSingleMatch());
-              avgCmm = (cmmA + cmmB) / 2;
-              // should give one if they are equal
-              matchSimValue = (Math.min(cmmA, cmmB) + 1) / (Math.max(cmmA, cmmB) + 1);
-            } else {
-              avgCmm = cmm(n);
-            }
-            weightMap.set(n, Math.log2(avgCmm + 2));
-
-            if (n.isLeaf()) {
+              // Compute similarity of matching
+              let matchSimValue = 0;
+              if (n.isMatched()) {
+                const cmmA = cmm(n);
+                const cmmB = cmm(n.getSingleMatch());
+                avgCmm = (cmmA + cmmB) / 2;
+                // should give one if they are equal
+                matchSimValue = (Math.min(cmmA, cmmB) + 1) / (Math.max(cmmA, cmmB) + 1);
+              } else {
+                avgCmm = cmm(n);
+              }
+              weightMap.set(n, avgCmm);
               similarityMap.set(n, matchSimValue);
-              return;
-            }
-
-            // Compute similarity of children
-            const innerChildrenSims = n.children.map((c) => similarityMap.get(c)!);
-
-            const childSims = sum(innerChildrenSims) / n.children.length;
-            similarityMap.set(n, (childSims + matchSimValue) / 2);
+            });
           });
-        });
 
-        const values: number[] = [];
-        const weights: number[] = [];
+          const values: number[] = [];
+          const weights: number[] = [];
 
-        similarityMap.forEach((v, n) => {
-          values.push(v);
-          weights.push(weightMap.get(n)!);
-        });
+          similarityMap.forEach((v, n) => {
+            values.push(v);
+            weights.push(weightMap.get(n)!);
+          });
 
-        let similarity = new Comparator(defaultDiffOptions).weightedAverage(values, weights, 1);
+          similarity = new Comparator(defaultDiffOptions).weightedAverage(values, weights, 1);
+        } else if (similarityMetric === SimilarityMetric.MATCH_ONLY) {
+          const matchedCount = plans[0]
+            .toPreOrderUnique()
+            .filter((n) => !n.isLeaf())
+            .filter((n) => n.isMatched()).length;
+          const firstCount = plans[0].toPreOrderUnique().filter((n) => !n.isLeaf()).length;
+          const secondCount = plans[1].toPreOrderUnique().filter((n) => !n.isLeaf()).length;
+          similarity = (2 * matchedCount) / (firstCount + secondCount);
+        } else if (similarityMetric === SimilarityMetric.CHILDREN_MATCH) {
+          // value + weight
+          const similarityMap = new Map<PlanNode, number>();
+          plans.forEach((plan) => {
+            plan
+              .toPostOrderUnique()
+              .filter((n) => !n.isLeaf())
+              .forEach((n) => {
+                let avgCmm;
+
+                // Compute similarity of matching
+                let matchSimValue = 0;
+                let childSim;
+                if (n.isMatched()) {
+                  matchSimValue = 1;
+                  const lcsLen = new LcsLib(defaultDiffOptions).getLcsLength(
+                    n.children,
+                    n.getSingleMatch().children,
+                    (a, b) => a.isMatchedTo(b)
+                  );
+                  childSim =
+                    (2 * lcsLen) / (n.children.length + n.getSingleMatch().children.length);
+                } else {
+                  childSim = sum(n.children.map((c) => similarityMap.get(c))) / n.children.length;
+                }
+                similarityMap.set(n, (matchSimValue + childSim) / 2);
+              });
+          });
+          let similaritySum = 0;
+          for (const value of similarityMap.values()) {
+            similaritySum += value;
+          }
+          similarity = similaritySum / similarityMap.size;
+        } else {
+          // drop the leaf level of nodes
+          [plans[0], plans[0]].forEach((plan) =>
+            plan
+              .toPostOrderUnique()
+              .filter((n) => n.isLeaf() && n.isMatched())
+              .forEach((n) => n.removeFromParent())
+          );
+          const editScript = new EditScriptGenerator(defaultDiffOptions).generateEditScript(
+            plans[0],
+            plans[1]
+          );
+          const cost = editScript.getCost() - editScript.updates(); // no updates
+          similarity = Math.min(1, Math.max(0, 1 - cost / (plans[0].size() + plans[1].size())));
+        }
         first.similarity.set(second, similarity);
         second.similarity.set(first, similarity);
       });
@@ -102,36 +163,70 @@ export default function computeSimilarity(
   console.timeEnd('compute_sim');
 }
 
-export function cmm(planNode: PlanNode): number {
+export function cmm(
+  planNode: PlanNode,
+  omitChildCosts: boolean = false,
+  useEstimates = false
+): number {
   const data = planNode.data;
   const scanDiscountFactor = 0.2;
   const indexLookupFactor = 2;
 
+  function getCardinality(planData: PlanData): number {
+    if (useEstimates) {
+      return planData.estimatedCardinality;
+    } else {
+      return planData.exactCardinality;
+    }
+  }
+
   // Real two-way join
+  let cost;
   if (Join.isJoin(data) && planNode.children.length === 2) {
     const leftInput = planNode.childAt(0).data;
     const rightInput = planNode.childAt(0).data;
 
     if (data.method === JoinMethod.HASH_JOIN) {
-      return leftInput.exactCardinality + rightInput.exactCardinality;
+      cost = getCardinality(leftInput) + getCardinality(data);
     } else if (data.method === JoinMethod.INDEX_NESTED_LOOP_JOIN) {
-      if (planNode.childAt(0).data instanceof Select) {
-        console.warn('select right of index nl');
+      if (Select.isSelect(rightInput)) {
+        console.warn('cmm_indexnl_right_select');
       }
+
       // multiplier should always be one?
       const multiplier =
         leftInput.exactCardinality > 0
-          ? Math.max(data.exactCardinality / leftInput.exactCardinality, 1)
+          ? Math.max(getCardinality(data) / getCardinality(leftInput), 1)
           : 1;
-      return leftInput.exactCardinality * multiplier * indexLookupFactor;
+      cost = getCardinality(leftInput) * multiplier * indexLookupFactor;
+
+      // early return
+      if (omitChildCosts) {
+        return cost;
+      } else {
+        // only use cost of first input
+        return cost + cmm(planNode.childAt(0), omitChildCosts, useEstimates);
+      }
     } else if (
       data.method === JoinMethod.BLOCKWISE_NESTED_LOOP_JOIN ||
       data.method === JoinMethod.NESTED_LOOP_JOIN
     ) {
-      return leftInput.exactCardinality * rightInput.exactCardinality;
+      cost = getCardinality(leftInput) * getCardinality(rightInput);
+    } else {
+      // assume linear time -> sum up input cardinalities
+      cost = sum(planNode.children.map((c) => getCardinality(c.data)));
     }
+  } else if (TableScan.isTableScan(data)) {
+    cost = scanDiscountFactor * data.tableSize;
+  } else {
+    // assume linear time -> sum up input cardinalities
+    cost = sum(planNode.children.map((c) => getCardinality(c.data)));
   }
 
-  // assume linear time -> sum up input cardinalities
-  return sum(planNode.children.map((c) => c.data.exactCardinality));
+  if (omitChildCosts) {
+    return cost;
+  }
+
+  cost += sum(planNode.children.map((c) => cmm(c, omitChildCosts, useEstimates)));
+  return cost;
 }

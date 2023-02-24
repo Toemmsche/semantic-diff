@@ -71,7 +71,7 @@ export default class GrammarXmlSerDes extends SerDes<Grammar> {
           ComparisonType[
             (hasComparisonType
               ? weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_COMPARISON_TYPE_KEY)
-              : 'ALL_OR_NOTHING') as keyof typeof ComparisonType
+              : 'EQ') as keyof typeof ComparisonType
           ];
         const path = getTextContentWithoutChildren(weightedCvElement) ?? '';
         weightedCvs.push(new WeightedCV(path, weight, comparisonType));
