@@ -140,18 +140,16 @@ export default function computeSimilarity(
           }
           similarity = similaritySum / similarityMap.size;
         } else {
-          // drop the leaf level of nodes
-          [plans[0], plans[0]].forEach((plan) =>
-            plan
-              .toPostOrderUnique()
-              .filter((n) => n.isLeaf() && n.isMatched())
-              .forEach((n) => n.removeFromParent())
-          );
-          const editScript = new EditScriptGenerator(defaultDiffOptions).generateEditScript(
-            plans[0],
-            plans[1]
-          );
-          const cost = editScript.getCost() - editScript.updates(); // no updates
+          const excessUpdates = plans[0].toPreOrderUnique().filter(
+            (n) =>
+              n.isMatched() && // filter update ops without cardinality change
+              !n.contentEquals(n.getSingleMatch()) &&
+              n.data.exactCardinality == n.getSingleMatch().data.exactCardinality
+          ).length;
+          const editScript = new EditScriptGenerator<Operator>(
+            defaultDiffOptions
+          ).generateEditScript(plans[0], plans[1]);
+          const cost = editScript.getCost() - excessUpdates;
           similarity = Math.min(1, Math.max(0, 1 - cost / (plans[0].size() + plans[1].size())));
         }
         first.similarity.set(second, similarity);

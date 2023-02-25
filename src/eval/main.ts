@@ -13,40 +13,21 @@ const definitions = [
     'test/qpr/batch_plans_tpchSf10.json',
     'umbra [2023-01-13]',
     'hyper',
+    'tpchSf10 - 6.sql',
     SimilarityMetric.EDIT_SCRIPT_COST,
     'umbra_tpch_hyper_esc.csv'
   ],
   [
     'test/qpr/batch_plans_tpchSf10.json',
     'umbra [2023-01-13]',
-    'hyper',
-    SimilarityMetric.MATCH_ONLY,
-    'umbra_tpch_hyper_mo.csv'
-  ],
-  [
-    'test/qpr/batch_plans_tpchSf10.json',
-    'umbra [2023-01-13]',
     'umbra [2022-11-03]',
+    'tpchSf10 - 17.sql',
     SimilarityMetric.EDIT_SCRIPT_COST,
     'umbra_tpch_umbra_esc.csv'
-  ],
-  [
-    'test/qpr/batch_plans_tpcdsSf10.json',
-    'umbra [2023-01-13]',
-    'umbra [2022-11-03]',
-    SimilarityMetric.EDIT_SCRIPT_COST,
-    'umbra_tpcds_umbra_esc.csv'
-  ],
-  [
-    'test/qpr/batch_plans_tpcdsSf10.json',
-    'umbra [2023-01-13]',
-    'duck',
-    SimilarityMetric.EDIT_SCRIPT_COST,
-    'umbra_tpcds_duck_esc.csv'
   ]
-] as [string, string, string, SimilarityMetric, string][];
+] as [string, string, string, string, SimilarityMetric, string][];
 
-for (const [file, baseline, comp, similarityMetric, resultFile] of definitions) {
+for (const [file, baseline, comp, specialQuery, similarityMetric, resultFile] of definitions) {
   const qprRaw = readFileSync(file).toString();
   const qprs = serdes.queryPlanResultCollectionFromJson(qprRaw);
   const allQueries = [...new Set(qprs.map((qpr) => qpr.query))];
@@ -85,7 +66,7 @@ for (const [file, baseline, comp, similarityMetric, resultFile] of definitions) 
 
     lines.push(
       [
-        totalDiff > 0 ? 'speedup' : 'slowdown',
+        query === specialQuery ? 'special' : totalDiff > 0 ? 'speedup' : 'slowdown',
         totalDiff,
         planSim,
         costSimAct,

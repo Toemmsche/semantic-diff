@@ -45,15 +45,15 @@ export class EditScript<T> {
   }
 
   deletions() {
-    return this.editOperations.filter((editOp) => editOp.isDeletion()).length;
+    return this.editOperations.filter((editOp) => editOp.isDeletion());
   }
 
   insertions() {
-    return this.editOperations.filter((editOp) => editOp.isInsertion()).length;
+    return this.editOperations.filter((editOp) => editOp.isInsertion());
   }
 
   moves() {
-    return this.editOperations.filter((editOp) => editOp.isMove()).length;
+    return this.editOperations.filter((editOp) => editOp.isMove());
   }
 
   size() {
@@ -61,6 +61,6 @@ export class EditScript<T> {
   }
 
   updates() {
-    return this.editOperations.filter((editOp) => editOp.isUpdate()).length;
+    return this.editOperations.filter((editOp) => editOp.isUpdate());
   }
 }
