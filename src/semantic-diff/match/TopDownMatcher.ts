@@ -28,6 +28,9 @@ export default class TopDownMatcher<T> implements IMatcher<T> {
       }
     };
 
-    matchRecursive(oldTree, newTree);
+    oldTree
+      .toPreOrderUnique()
+      .filter((n) => n.isMatched())
+      .forEach((n) => matchRecursive(n, n.getSingleMatch()));
   }
 }
