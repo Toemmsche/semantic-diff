@@ -16,7 +16,7 @@ export function powerSet<T>(arr: T[]): T[][] {
 export default function Legend(props: {}) {
   const [qprState] = useQueryPlanState();
 
-  // No legend necessary if no tree or no elements view
+  // No legend necessary if no tree or no elements graph
   if (!qprState.resultSelection) {
     return <></>;
   }

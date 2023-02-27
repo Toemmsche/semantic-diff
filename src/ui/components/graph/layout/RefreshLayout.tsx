@@ -15,7 +15,7 @@ export interface INodeLayouterProps {
 
 export function fitLater(reactFlowInstance: ReactFlowInstance) {
   setTimeout(() => {
-    console.log('fitting to view ... ');
+    console.log('fitting to graph ... ');
     reactFlowInstance.fitView({
       ...animationOptions,
       padding: 0.15

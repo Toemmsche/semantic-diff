@@ -8,7 +8,7 @@ import {
   useUniqueSystems
 } from '../../state/QueryPlanResultStore';
 import { QueryStats } from '@mui/icons-material';
-import { getColorForIndex } from '../view/elements/color';
+import { getColorForIndex } from '../graph/elements/color';
 import { Nullable } from '../../../semantic-diff/Types';
 
 export default function QueryPlanDiffChart(props: {}) {

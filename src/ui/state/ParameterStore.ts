@@ -1,12 +1,12 @@
 import { Action, createHook, createStore } from 'react-sweet-state';
-import DagreLayouter from '../components/view/layout/DagreLayouter';
-import D3HierarchyLayouter from '../components/view/layout/D3HierarchyLayouter';
-import ElkJsLayouter from '../components/view/layout/ElkJsLayouter';
+import DagreLayouter from '../components/graph/layout/DagreLayouter';
+import D3HierarchyLayouter from '../components/graph/layout/D3HierarchyLayouter';
+import ElkJsLayouter from '../components/graph/layout/ElkJsLayouter';
 import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
 import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
 import { defaultDiffOptions } from '../../semantic-diff/index';
-import IAsyncLayouter from '../components/view/layout/IAsyncLayouter';
-import IBlockingLayouter from '../components/view/layout/IBlockingLayouter';
+import IAsyncLayouter from '../components/graph/layout/IAsyncLayouter';
+import IBlockingLayouter from '../components/graph/layout/IBlockingLayouter';
 import { DagEdgeTreatment, EdgeType, LayoutAlgorithm, MatchAlgorithm } from './Parameters';
 
 export interface IParameterState {

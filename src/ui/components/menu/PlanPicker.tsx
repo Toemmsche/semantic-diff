@@ -25,7 +25,7 @@ import {
   ComparisonMetric,
   ComparisonSemantic
 } from '../../model/meta/BenchmarkResult';
-import { diffColorScale, similarityColorScale } from '../view/elements/color';
+import { diffColorScale, similarityColorScale } from '../graph/elements/color';
 
 export interface IQueryPlanResultDiffProps {}
 
