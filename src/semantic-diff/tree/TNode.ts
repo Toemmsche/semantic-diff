@@ -19,7 +19,7 @@ export default class TNode<T> {
     public readonly grammarNode: Nullable<GrammarNode>
   ) {}
 
-  /* TODO remove these */
+  /* TODO all of these should be moved to "extends" restrictions in the type parameter */
 
   get label(): string {
     return (this.data as IData & ICopyable<T>).label;

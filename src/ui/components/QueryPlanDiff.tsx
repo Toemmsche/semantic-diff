@@ -1,5 +1,5 @@
 import React from 'react';
-import { UnifiedTreeView } from './graph/UnifiedTreeView';
+import { DeltaGraphView } from './graph/DeltaGraphView';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import { Operator, PlanNode } from '../model/operator/Operator';
@@ -10,7 +10,7 @@ import {
   useMatchAlgorithm
 } from '../state/ParameterStore';
 import { Comparator } from '../../semantic-diff/compare/Comparator';
-import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator';
+import DeltaGraphGenerator from '../../semantic-diff/delta/DeltaGraphGenerator';
 import Origin from '../../semantic-diff/tree/Origin';
 import UnionFind from '../../semantic-diff/lib/UnionFind';
 import { ReactFlowProvider } from 'reactflow';
@@ -91,9 +91,9 @@ export default function QueryPlanDiff() {
       });
     });
 
-    unifiedTree = new NwayUnifiedGenerator<Operator>(defaultDiffOptions).generate(plans);
+    unifiedTree = new DeltaGraphGenerator<Operator>().generate(plans);
 
-    GraphView = <UnifiedTreeView unifiedTree={unifiedTree} />;
+    GraphView = <DeltaGraphView unifiedTree={unifiedTree} />;
   } else {
     GraphView = <></>;
   }

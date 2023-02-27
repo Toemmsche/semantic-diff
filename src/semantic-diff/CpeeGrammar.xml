@@ -1,9 +1,7 @@
 <grammar>
     <leaves>
         <call ordered="false">
-            <comparisonValue weight="3">
-                @_endpoint
-            </comparisonValue>
+            <comparisonValue weight="3">@endpoint</comparisonValue>
             <comparisonValue weight="2">parameters/method</comparisonValue>
             <comparisonValue weight="3">code/finalize</comparisonValue>
         </call>
@@ -17,18 +15,18 @@
     <inners>
         <description/>
         <parallel ordered="false">
-            <comparisonValue weight="1">@_mode</comparisonValue>
-            <comparisonValue weight="2">@_condition</comparisonValue>
+            <comparisonValue weight="1">@mode</comparisonValue>
+            <comparisonValue weight="2">@condition</comparisonValue>
         </parallel>
         <loop>
-            <comparisonValue weight="1">@_mode</comparisonValue>
-            <comparisonValue weight="2">@_condition</comparisonValue>
+            <comparisonValue weight="1">@mode</comparisonValue>
+            <comparisonValue weight="2">@condition</comparisonValue>
         </loop>
         <choose ordered="false">
-            <comparisonValue weight="1">@_mode</comparisonValue>
+            <comparisonValue weight="1">@mode</comparisonValue>
         </choose>
         <alternative>
-            <comparisonValue weight="1">@_condition</comparisonValue>
+            <comparisonValue weight="1">@condition</comparisonValue>
         </alternative>
         <otherwise/>
         <parallel_branch/>

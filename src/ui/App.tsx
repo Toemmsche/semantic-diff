@@ -29,11 +29,11 @@ function App() {
   useEffect(() => {
     Promise.all([
       fetch('/semantic-diff/qpr/tpchSf10.json').then((res) => res.json()),
-      fetch('/semantic-diff/qpr/tpcdsSf10.json').then((res) => res.json()),
-      fetch('/semantic-diff/qpr/job.json').then((res) => res.json())
-    ]).then(([tpchQprs, tpcdsQprs, jobQprs]) => {
+      fetch('/semantic-diff/qpr/tpcdsSf10.json').then((res) => res.json())
+      // TODO include JOB as soon as HyPer table names are resolved
+    ]).then(([tpchQprs, tpcdsQprs]) => {
       // combine and stringify
-      const bundledText = JSON.stringify([...tpchQprs, ...tpcdsQprs, ...jobQprs]);
+      const bundledText = JSON.stringify([...tpchQprs, ...tpcdsQprs]);
       qprActions.setQueryPlanResults(bundledText);
     });
   }, []);

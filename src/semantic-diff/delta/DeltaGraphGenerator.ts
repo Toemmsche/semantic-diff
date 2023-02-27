@@ -1,19 +1,11 @@
 import TNode from '../tree/TNode';
 import ISemanticDiffOptions from '../diff/ISemanticDiffOptions';
-import GroupBy from '../../ui/model/operator/inner/GroupBy';
 
-export const enum Origin {
-  OLD = 'old',
-  NEW = 'new',
-  SHARED = 'shared'
-}
-
-export default class NwayUnifiedGenerator<T> {
-  constructor(private options: ISemanticDiffOptions) {}
+export default class DeltaGraphGenerator<T> {
+  constructor() {}
 
   converge(tree: TNode<T>) {
-    tree.toPreOrderUnique()
-        .forEach((node) => {
+    tree.toPreOrderUnique().forEach((node) => {
       for (let i = 0; i < node.children.length; i++) {
         if (node.childAt(i).getAdjacentLowerMatch() != null) {
           // do not clear parent

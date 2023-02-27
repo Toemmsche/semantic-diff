@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import QueryPlanDiffChart from './QueryPlanDiffChart';
 import { Box, Collapse, Fab, Stack } from '@mui/material';
 import ParamConfig from './ParamConfig';
-import UploadCollection from './UploadCollection';
+import QprUpload from './QprUpload';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 export default function FloatingMenu(props: {}) {
@@ -40,7 +40,7 @@ export default function FloatingMenu(props: {}) {
               alignItems="center"
               width="100%"
               height="100%">
-              <UploadCollection></UploadCollection>
+              <QprUpload></QprUpload>
               <PlanPicker></PlanPicker>
               <QueryPlanDiffChart></QueryPlanDiffChart>
               <ParamConfig></ParamConfig>

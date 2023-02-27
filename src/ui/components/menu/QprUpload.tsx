@@ -3,7 +3,7 @@ import { IconButton } from '@mui/material';
 import { UploadFile } from '@mui/icons-material';
 import { useQueryPlanState } from '../../state/QueryPlanResultStore';
 
-export default function UploadCollection(props: {}) {
+export default function QprUpload(props: {}) {
   const [qpr, qprActions] = useQueryPlanState();
 
   async function loadCollection(event: any) {

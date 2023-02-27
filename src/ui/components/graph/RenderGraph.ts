@@ -1,12 +1,12 @@
-import { PlanNode } from '../../../model/operator/Operator';
-import IBlockingLayouter from '../layout/IBlockingLayouter';
-import IAsyncLayouter from '../layout/IAsyncLayouter';
+import { PlanNode } from '../../model/operator/Operator';
+import IBlockingLayouter from './layout/IBlockingLayouter';
+import IAsyncLayouter from './layout/IAsyncLayouter';
 import { Edge, Node, ReactFlowInstance } from 'reactflow';
-import DefaultNormalizer from '../normalize/DefaultNormalizer';
-import { ICustomUnifiedEdgeData } from '../elements/DeltaEdge';
-import { defaultTreeLayoutOptions } from '../layout/ITreeLayoutOptions';
-import { fitLater } from '../layout/RefreshLayout';
-import { Dimensions } from './PreRenderDimensions';
+import DefaultNormalizer from './normalize/DefaultNormalizer';
+import { ICustomUnifiedEdgeData } from './elements/DeltaEdge';
+import { defaultTreeLayoutOptions } from './layout/ITreeLayoutOptions';
+import { fitLater } from './layout/RefreshLayout';
+import { Dimensions } from './dimensions/PreRenderDimensions';
 
 export default function renderGraph(
   unifiedTree: PlanNode,

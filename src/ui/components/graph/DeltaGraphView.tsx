@@ -12,7 +12,7 @@ export interface IUnifiedTreeViewProps {
   unifiedTree: PlanNode;
 }
 
-export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
+export function DeltaGraphView(props: IUnifiedTreeViewProps) {
   const { unifiedTree } = props;
 
   const nodeTypes = useMemo(

@@ -5,7 +5,7 @@ import { Edge, Node, ReactFlowInstance } from 'reactflow';
 import DeltaNode from '../elements/DeltaNode';
 import { useCollapsible, useLayouter } from '../../../state/ParameterStore';
 import DocumentingRenderer from './DocumentingRenderer';
-import renderGraph from './RenderGraph';
+import renderGraph from '../RenderGraph';
 
 export type Dimensions = [number, number];
 
