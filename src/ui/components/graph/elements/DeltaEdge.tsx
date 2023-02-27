@@ -164,13 +164,13 @@ export default function DeltaEdge(props: EdgeProps) {
     const color = getColorForIndex(sourceIndex);
 
     const myAnim = keyframes`
-      0% {
-        stroke-dashoffset: ${blockSize * j + totalBlock + gap};
-      }
-      100% {
-        stroke-dashoffset: ${blockSize * j};
-      }
-    `;
+          0% {
+            stroke-dashoffset: ${blockSize * j + totalBlock + gap};
+          }
+          100% {
+            stroke-dashoffset: ${blockSize * j};
+          }
+        `;
 
     return (
       <path
@@ -246,11 +246,11 @@ export default function DeltaEdge(props: EdgeProps) {
               padding: 4
             }}>
             <Stack direction="row">{EdgeLabels}</Stack>
-            <Box>
-              {avgCardinality != null
-                ? (allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)
-                : '???'}
-            </Box>
+            {avgCardinality != null ? (
+              <Box>{(allCardinalitiesEqual ? '' : '~') + shortCardinality(avgCardinality)}</Box>
+            ) : (
+              <Box color="darkred">???</Box>
+            )}
           </Stack>
         </EdgeLabelRenderer>
       )}
