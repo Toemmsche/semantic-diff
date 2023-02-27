@@ -62,7 +62,7 @@ export default function computeSimilarity(
             (n) =>
               n.isMatched() && // filter update ops without cardinality change
               !n.contentEquals(n.getSingleMatch()) &&
-              n.data.exactCardinality == n.getSingleMatch().data.exactCardinality
+              roughlyEqual(n.data.exactCardinality, n.getSingleMatch().data.exactCardinality)
           ).length;
           const editScript = new EditScriptGenerator<Operator>(
             defaultDiffOptions
@@ -153,4 +153,13 @@ export function cmm(
 // small helper to eliminate duplicates from an array in an FP fashion
 export function unique<T>(value: T, index: number, array: T[]) {
   return array.indexOf(value) === index;
+}
+
+export function roughlyEqual(first: number, second: number) {
+  if (first < second) {
+    [first, second] = [second, first];
+  }
+
+  // tolerate a 20% error in cardinality
+  return first === 0 ? true : 1 - second / first <= 0.2;
 }

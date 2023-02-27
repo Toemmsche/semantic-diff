@@ -18,20 +18,12 @@ import { Nullable } from '../../../../semantic-diff/Types';
 import Join from '../../../model/operator/inner/Join';
 import { Box, Stack } from '@mui/material';
 import { EdgeType } from '../../../state/Parameters';
+import { roughlyEqual } from '../../../util';
 
 export interface ICustomUnifiedEdgeData {
   parentPlanNode: PlanNode;
 
   childPlanNode: PlanNode;
-}
-
-function roughlyEqual(first: number, second: number) {
-  if (first < second) {
-    [first, second] = [second, first];
-  }
-
-  // tolerate a 20% error in cardinality
-  return first === 0 ? true : 1 - second / first <= 0.2;
 }
 
 function shortCardinality(cardinality: number): string {

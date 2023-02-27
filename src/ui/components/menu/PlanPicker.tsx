@@ -37,12 +37,12 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   const [compSystem, setCompSystem] = useState([] as System[]);
   const [state, actions] = useQueryPlanState();
   const [allLabels] = useAllLabels();
-  const [availableSystems] = useUniqueSystems();
+  const [allSystems] = useUniqueSystems();
 
   useEffect(() => {
     if (baselineSystem && selectedQuery) {
       actions.setResultSelection(
-        availableSystems.map((system) =>
+        allSystems.map((system) =>
           [baselineSystem, ...compSystem].includes(system)
             ? state.queryPlanResults.find(
                 (qpr) => qpr.system === system && qpr.query === selectedQuery
@@ -55,8 +55,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     }
   }, [baselineSystem, selectedQuery, compSystem]);
 
-  const baseLineQprForSelectedQuery = state.queryPlanResults.find(
-    (qpr) => qpr.query === selectedQuery && qpr.system === baselineSystem
+  const qprsForSelectedQuery = state.queryPlanResults.filter((qpr) => qpr.query === selectedQuery);
+  const baseLineQprForSelectedQuery = qprsForSelectedQuery.find(
+    (qpr) => qpr.system === baselineSystem
   );
 
   let worstOverallMetricDiff: Nullable<number> = null;
@@ -248,7 +249,7 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   }
 
   function BaselineComponent(props: {}) {
-    const BaselineItems = availableSystems.map((system) => {
+    const BaselineItems = allSystems.map((system) => {
       return (
         <MenuItem key={system} value={system}>
           {system}
@@ -276,8 +277,9 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   }
 
   function CompComponent(props: {}) {
-    const CompCandidateItems = availableSystems
+    const CompCandidateItems = allSystems
       .filter((s) => s !== baselineSystem)
+      .filter((s) => !selectedQuery || qprsForSelectedQuery.map((qpr) => qpr.system).includes(s))
       .map((system) => {
         function addOrRemoveComp(system: System) {
           if (compSystem.includes(system)) {
