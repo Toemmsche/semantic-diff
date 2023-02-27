@@ -1,11 +1,12 @@
 import SerDes from './SerDes';
-import TNode, { TNodeBuilder } from '../tree/TNode';
 import xmldom from '@xmldom/xmldom';
 import vkbeautify from 'vkbeautify';
 import { getElementChildren, getTextContentWithoutChildren, RUNNING_IN_BROWSER } from '../Util';
 import ISerDesOptions from './options/ISerDesOptions';
 import Grammar from '../grammar/Grammar';
 import { Nullable } from '../Types';
+import TNode from '../tree/TNode';
+import TNodeBuilder from '../tree/TNodeBuilder';
 
 export default abstract class TNodeXMLSerDes<T> extends SerDes<TNode<T>> {
   public constructor(private grammar: Grammar, private options: ISerDesOptions) {

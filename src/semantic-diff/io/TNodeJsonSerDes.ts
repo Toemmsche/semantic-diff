@@ -1,9 +1,10 @@
-import TNode, { TNodeBuilder } from '../tree/TNode';
 import vkbeautify from 'vkbeautify';
 import ISerDesOptions from './options/ISerDesOptions';
 import Grammar from '../grammar/Grammar';
 import SerDes from './SerDes';
 import { Nullable } from '../Types';
+import TNodeBuilder from '../tree/TNodeBuilder';
+import TNode from '../tree/TNode';
 
 export default abstract class TNodeJsonSerDes<T> extends SerDes<TNode<T>> {
   public constructor(private grammar: Grammar, private options: ISerDesOptions) {
