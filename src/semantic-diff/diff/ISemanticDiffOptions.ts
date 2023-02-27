@@ -12,6 +12,7 @@ export default interface ISemanticDiffOptions
 // TODO move default diff options into interface diff classes
 export const defaultDiffOptions: ISemanticDiffOptions = {
   COMPARISON_THRESHOLD: 0.4,
+  BASE_WEIGHT: 100,
   CONTENT_WEIGHT: 5,
   POSITION_WEIGHT: 1,
   COMMONALITY_WEIGHT: 4,

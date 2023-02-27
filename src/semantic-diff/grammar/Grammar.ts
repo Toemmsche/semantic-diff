@@ -6,11 +6,7 @@ export default class Grammar {
   // Property nodes are inferred implicitly (everything that is NOT an inner
   // and NOT a leaf node)
 
-  constructor(
-    public readonly inners: GrammarNode[],
-    public readonly leaves: GrammarNode[],
-    public readonly baseWeight: number = 0
-  ) {
+  constructor(public readonly inners: GrammarNode[], public readonly leaves: GrammarNode[]) {
     for (const grammarNode of inners.concat(leaves)) {
       this.labelMap.set(grammarNode.label, grammarNode);
     }

@@ -33,8 +33,7 @@ export const cpeeGrammar = new Grammar(
     new GrammarNode(NodeType.LEAF, 'stop', []),
     new GrammarNode(NodeType.LEAF, 'terminate', []),
     new GrammarNode(NodeType.LEAF, 'escape', [])
-  ],
-  0
+  ]
 );
 
 export const ChangeModel = {

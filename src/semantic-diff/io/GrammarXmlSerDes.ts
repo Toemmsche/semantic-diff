@@ -37,8 +37,7 @@ export default class GrammarXmlSerDes extends SerDes<Grammar> {
           throw new MalformedGrammarError();
       }
     }
-    const maybeBaseWeight = root.getAttribute('baseWeight');
-    return new Grammar(inners, leaves, maybeBaseWeight ? parseInt(maybeBaseWeight) : 0);
+    return new Grammar(inners, leaves);
   }
 
   private parseGrammarNodes(xmlDom: Element, nodeType: NodeType): GrammarNode[] {

@@ -66,9 +66,9 @@ export class Comparator<T> extends Cache<T> implements IComparator<T> {
 
     const grammarNode: GrammarNode = nodeA.grammarNode;
 
-    // just by label equality, we get a good base value
+    // set a custom base value
     const items: Nullable<number>[] = [0];
-    const weights = [100];
+    const weights = [this.options.BASE_WEIGHT];
     const propertiesA = this.getProperties(nodeA);
     const propertiesB = this.getProperties(nodeB);
     for (const wcv of grammarNode.weightedCVs) {
