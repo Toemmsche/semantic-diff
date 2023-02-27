@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Node, useReactFlow } from 'reactflow';
+import { useEffect, useState } from 'react';
 import { timer } from 'd3-timer';
 
 export const animationOptions = { duration: 300 };
@@ -24,7 +24,6 @@ export default function useAnimatedNodes(
 
     const t = timer((elapsed) => {
       const s = elapsed / options.duration;
-
       const currNodes = transitions.map(({ node, from, to }) => {
         return {
           ...node,

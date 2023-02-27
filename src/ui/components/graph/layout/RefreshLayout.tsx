@@ -6,8 +6,8 @@ import React from 'react';
 import { Fab } from '@mui/material';
 import { Autorenew } from '@mui/icons-material';
 import { defaultTreeLayoutOptions } from './ITreeLayoutOptions';
-import { animationOptions } from '../../useAnimatedNodes';
 import { useLayouter } from '../../../state/ParameterStore';
+import { animationOptions } from '../AnimatedNodes';
 
 export interface INodeLayouterProps {
   nodeSetter: (nodes: Node[]) => void;

@@ -14,7 +14,7 @@ import NwayUnifiedGenerator from '../../semantic-diff/delta/NwayUnifiedGenerator
 import Origin from '../../semantic-diff/tree/Origin';
 import UnionFind from '../../semantic-diff/lib/UnionFind';
 import { ReactFlowProvider } from 'reactflow';
-import { treatDagEdges } from '../state/ComputeSimilarity';
+import { treatDagEdges } from '../util';
 
 export default function QueryPlanDiff() {
   const [state] = useQueryPlanState();

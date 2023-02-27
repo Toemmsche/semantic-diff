@@ -6,7 +6,7 @@ import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';
 import { Nullable } from '../../semantic-diff/Types';
 import { ComparisonMetric } from '../model/meta/BenchmarkResult';
 import { System } from '../model/meta/QueryPlanResult';
-import computeSimilarity from './ComputeSimilarity';
+import computeSimilarity from '../util';
 import { DagEdgeTreatment } from './Parameters';
 
 export interface IQueryPlanResultsState {
