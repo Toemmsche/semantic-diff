@@ -125,14 +125,14 @@ export default function DeltaEdge(props: EdgeProps) {
     if (edgeExists) {
       edgeGroupSourceIndices.push(participant.sourceIndex);
       cardinalities.push(participant.data.exactCardinality);
-      if (parameters.labelBuildAndProbe) {
-        if (Join.isBuildEdge(parentPlanNode, participant)) {
-          indexedLabels.push([participant.sourceIndex, 'BUILD']);
-        } else if (Join.isProbeEdge(parentPlanNode, participant)) {
-          indexedLabels.push([participant.sourceIndex, 'PROBE']);
-        } else if (Join.isIndexLookupEdge(parentPlanNode, participant)) {
-          indexedLabels.push([participant.sourceIndex, 'INDEX']);
-        }
+
+      // compute additional labels for special operators
+      if (Join.isBuildEdge(parentPlanNode, participant)) {
+        indexedLabels.push([participant.sourceIndex, 'BUILD']);
+      } else if (Join.isProbeEdge(parentPlanNode, participant)) {
+        indexedLabels.push([participant.sourceIndex, 'PROBE']);
+      } else if (Join.isIndexLookupEdge(parentPlanNode, participant)) {
+        indexedLabels.push([participant.sourceIndex, 'INDEX']);
       }
     }
   }

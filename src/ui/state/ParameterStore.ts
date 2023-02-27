@@ -15,7 +15,6 @@ export interface IParameterState {
   matchAlgorithm: MatchAlgorithm;
   layoutAlgorithm: LayoutAlgorithm;
   edgeType: EdgeType;
-  labelBuildAndProbe: boolean;
 }
 
 export const helpers = {
@@ -47,9 +46,6 @@ export const helpers = {
         state.matchAlgorithm < MatchAlgorithm.BOTTOM_UP
       );
     }
-    return true;
-  },
-  isNwayDiffPossible(state: IParameterState, nwayDiff: boolean) {
     return true;
   }
 };
@@ -98,13 +94,6 @@ const actions = {
       setState({
         edgeType
       });
-    },
-  setLabelBuildAndProbe:
-    (labelBuildAndProbe: boolean): Action<IParameterState> =>
-    ({ setState, getState }) => {
-      setState({
-        labelBuildAndProbe: labelBuildAndProbe
-      });
     }
 };
 const ParameterStore = createStore<IParameterState, typeof actions>({
@@ -113,8 +102,7 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
     dagEdgeTreatment: DagEdgeTreatment.IGNORE,
     matchAlgorithm: MatchAlgorithm.NONE,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
-    edgeType: EdgeType.BEZIER,
-    labelBuildAndProbe: true
+    edgeType: EdgeType.BEZIER
   },
   actions
 });
