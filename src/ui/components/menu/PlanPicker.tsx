@@ -26,6 +26,7 @@ import {
   ComparisonSemantic
 } from '../../model/meta/BenchmarkResult';
 import { diffColorScale, similarityColorScale } from '../graph/elements/color';
+import { unique } from '../../util';
 
 export interface IQueryPlanResultDiffProps {}
 
@@ -58,9 +59,6 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     (qpr) => qpr.query === selectedQuery && qpr.system === baselineSystem
   );
 
-  const QueriesSet = new Set(state.queryPlanResults.map((qpr) => qpr.query));
-  const uniqueQueries = Array.from(QueriesSet.entries()).map((val) => val[1]);
-
   let worstOverallMetricDiff: Nullable<number> = null;
   let bestOverallMetricDiff: Nullable<number> = null;
   let otherResultsPerQuery: Map<
@@ -70,11 +68,19 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   let worstResultsPerQuery: Map<Query, Nullable<[QueryPlanResult, number, number]>> = new Map();
 
   if (baselineSystem != null) {
+    const baselineQueries = state.queryPlanResults
+      .filter((qpr) => qpr.system === baselineSystem)
+      .map((qpr) => qpr.query)
+      .filter(unique);
+
     otherResultsPerQuery = new Map(
-      uniqueQueries.map((query) => {
+      baselineQueries.map((query) => {
         const baselineResult = state.queryPlanResults.find((qpr) => {
           return qpr.system === baselineSystem && qpr.query === query;
         })!;
+
+        if (!baselineResult) {
+        }
 
         const otherDiffAndSimilarity = new Map<QueryPlanResult, [Nullable<number>, number]>(
           state.queryPlanResults
@@ -242,8 +248,6 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
   }
 
   function BaselineComponent(props: {}) {
-    const [anchorEl, setAnchorEl] = useState(null as Nullable<HTMLElement>);
-
     const BaselineItems = availableSystems.map((system) => {
       return (
         <MenuItem key={system} value={system}>
@@ -253,8 +257,8 @@ export default function PlanPicker(props: IQueryPlanResultDiffProps) {
     });
 
     function resetBaseline(newBaseline: System) {
-      // keep query selected
       setCompSystem([]);
+      setSelectedQuery(null);
       setBaselineSystem(newBaseline);
     }
 

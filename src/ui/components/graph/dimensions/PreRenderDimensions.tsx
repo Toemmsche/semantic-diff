@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { PlanNode } from '../../../model/operator/Operator';
 import { Edge, Node, ReactFlowInstance } from 'reactflow';
-import UnifiedDiffPlanNode from '../elements/UnifiedDiffPlanNode';
+import DeltaNode from '../elements/DeltaNode';
 import { useCollapsible, useLayouter } from '../../../state/ParameterStore';
 import DocumentingRenderer from './DocumentingRenderer';
 import renderGraph from './RenderGraph';
@@ -11,13 +11,13 @@ export type Dimensions = [number, number];
 
 function renderDummyPlanNode(planNode: PlanNode) {
   return (
-    <UnifiedDiffPlanNode
+    <DeltaNode
       data={{
         // dummy input for collapse / expand
         expandedNodes: [planNode],
         setExpandedNodes: (nodes) => {},
         planNode: planNode
-      }}></UnifiedDiffPlanNode>
+      }}></DeltaNode>
   );
 }
 

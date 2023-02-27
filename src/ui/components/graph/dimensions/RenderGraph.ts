@@ -3,7 +3,7 @@ import IBlockingLayouter from '../layout/IBlockingLayouter';
 import IAsyncLayouter from '../layout/IAsyncLayouter';
 import { Edge, Node, ReactFlowInstance } from 'reactflow';
 import DefaultNormalizer from '../normalize/DefaultNormalizer';
-import { ICustomUnifiedEdgeData } from '../elements/CustomUnifiedEdge';
+import { ICustomUnifiedEdgeData } from '../elements/DeltaEdge';
 import { defaultTreeLayoutOptions } from '../layout/ITreeLayoutOptions';
 import { fitLater } from '../layout/RefreshLayout';
 import { Dimensions } from './PreRenderDimensions';

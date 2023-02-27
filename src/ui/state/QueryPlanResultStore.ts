@@ -36,7 +36,6 @@ const actions = {
   setResultSelection:
     (selection: Nullable<QueryPlanResult>[]): Action<IQueryPlanResultsState> =>
     ({ setState, getState }) => {
-      console.log(selection);
       setState({
         resultSelection: selection
       });

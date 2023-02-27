@@ -10,7 +10,7 @@ const serdes = new PlanNodeSerDes(QP_GRAMMAR, defaultDiffOptions);
 
 const definitions = [
   [
-    'test/qpr/batch_plans_tpchSf10.json',
+    'public/qpr/tpchSf10.json',
     'umbra [2023-01-13]',
     'hyper',
     'execution',
@@ -18,7 +18,7 @@ const definitions = [
     'umbra_tpch_hyper_esc.csv'
   ],
   [
-    'test/qpr/batch_plans_tpchSf10.json',
+    'public/qpr/tpchSf10.json',
     'umbra [2023-01-13]',
     'umbra [2022-11-03]',
     'execution',
@@ -35,7 +35,7 @@ for (const [file, baseline, comp, metric, specialQuery, resultFile] of definitio
   computeSimilarity(qprs, DagEdgeTreatment.COPY_SUBTREE);
 
   const lines = [];
-  lines.push('label,totalDiff,planSim,costSimAct,mul,costSimEst');
+  lines.push('label,metricDiff,planSim,costSim,mul');
   for (const query of allQueries) {
     const compQpr = qprs.find((qpr) => qpr.query === query && qpr.system === comp);
     const baselineQpr = qprs.find((qpr) => qpr.query === query && qpr.system === baseline);
@@ -51,27 +51,22 @@ for (const [file, baseline, comp, metric, specialQuery, resultFile] of definitio
     const baseCostAct = cmm(basePlan, false);
     const compCostAct = cmm(compPlan, false);
 
-    const baseCostEst = cmm(basePlan, false, true);
-    const compCostEst = cmm(compPlan, false, true);
-
-    const totalDiff = compareAgainstBaseline(
+    const metricDiff = compareAgainstBaseline(
       compQpr.benchmarkResult[metric] as number,
       baselineQpr.benchmarkResult[metric] as number
     );
     const costSimAct =
       (Math.min(baseCostAct, compCostAct) + 1) / (Math.max(baseCostAct, compCostAct) + 1);
-    const costSimEst =
-      (Math.min(baseCostEst, compCostEst) + 1) / (Math.max(baseCostEst, compCostEst) + 1);
+
     const planSim = compQpr.similarity.get(baselineQpr);
 
     lines.push(
       [
-        query === specialQuery ? 'special' : totalDiff > 0 ? 'speedup' : 'slowdown',
-        totalDiff,
+        query === specialQuery ? 'special' : metricDiff > 0 ? 'speedup' : 'slowdown',
+        metricDiff,
         planSim,
         costSimAct,
-        planSim! * costSimAct,
-        costSimEst
+        planSim! * costSimAct
       ].join(',')
     );
   }

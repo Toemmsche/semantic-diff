@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import QueryPlanDiff from './components/QueryPlanDiff';
-import { Stack } from '@mui/material';
+import { CircularProgress, Stack } from '@mui/material';
 import {
   BarElement,
   CategoryScale,
@@ -16,7 +16,6 @@ import {
 } from 'chart.js';
 import FloatingMenu from './components/menu/FloatingMenu';
 import { useQueryPlanState } from './state/QueryPlanResultStore';
-import { batchPlans } from './state/defaultPlans';
 
 // @ts-ignore
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors);
@@ -24,11 +23,33 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 function App() {
   const [qprState, qprActions] = useQueryPlanState();
 
-  // simulate upload once
+  const isLoading = qprState.queryPlanResults.length === 0;
+
+  // fetch inital QPRs from backend
   useEffect(() => {
-    qprActions.setQueryPlanResults(batchPlans);
+    Promise.all([
+      fetch('/semantic-diff/qpr/tpchSf10.json').then((res) => res.json()),
+      fetch('/semantic-diff/qpr/tpcdsSf10.json').then((res) => res.json()),
+      fetch('/semantic-diff/qpr/job.json').then((res) => res.json())
+    ]).then(([tpchQprs, tpcdsQprs, jobQprs]) => {
+      // combine and stringify
+      const bundledText = JSON.stringify([...tpchQprs, ...tpcdsQprs, ...jobQprs]);
+      qprActions.setQueryPlanResults(bundledText);
+    });
   }, []);
 
+  if (isLoading) {
+    return (
+      <Stack
+        direction="column"
+        height="100vh"
+        width="100vw"
+        justifyContent="center"
+        alignItems="center">
+        <CircularProgress size={200} />
+      </Stack>
+    );
+  }
   return (
     <Stack direction="column" height="100vh" width="100vw">
       <FloatingMenu></FloatingMenu>

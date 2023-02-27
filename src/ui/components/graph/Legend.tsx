@@ -3,15 +3,8 @@ import React from 'react';
 import { useQueryPlanState } from '../../state/QueryPlanResultStore';
 import { Operator } from '../../model/operator/Operator';
 import { TNode } from '../../../semantic-diff/index';
-import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
+import DeltaNode from './elements/DeltaNode';
 import Origin from '../../../semantic-diff/tree/Origin';
-
-export function powerSet<T>(arr: T[]): T[][] {
-  return arr.reduce(
-    (subsets: T[][], value) => subsets.concat(subsets.map((set: T[]) => [value, ...set])),
-    [[]]
-  );
-}
 
 export default function Legend(props: {}) {
   const [qprState] = useQueryPlanState();
@@ -33,7 +26,7 @@ export default function Legend(props: {}) {
       planNode.origin = new Origin(index, index, system);
       return (
         <Box key={system} width="max-content">
-          <UnifiedDiffPlanNode
+          <DeltaNode
             data={{
               planNode,
               expandedNodes: [planNode],

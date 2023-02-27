@@ -2,9 +2,9 @@ import React, { useMemo } from 'react';
 import ReactFlow, { MiniMap, useEdgesState, useReactFlow } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { PlanNode } from '../../model/operator/Operator';
-import UnifiedDiffPlanNode from './elements/UnifiedDiffPlanNode';
+import DeltaNode from './elements/DeltaNode';
 import Legend from './Legend';
-import CustomUnifiedEdge from './elements/CustomUnifiedEdge';
+import DeltaEdge from './elements/DeltaEdge';
 import PreRenderDimensions from './dimensions/PreRenderDimensions';
 import useAnimatedNodes from './AnimatedNodes';
 
@@ -17,14 +17,14 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
 
   const nodeTypes = useMemo(
     () => ({
-      customNode: UnifiedDiffPlanNode
+      customNode: DeltaNode
     }),
     []
   );
 
   const edgeTypes = useMemo(
     () => ({
-      customEdge: CustomUnifiedEdge
+      customEdge: DeltaEdge
     }),
     []
   );
@@ -48,7 +48,6 @@ export function UnifiedTreeView(props: IUnifiedTreeViewProps) {
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
-        // @ts-ignore
         edgeTypes={edgeTypes}>
         <MiniMap zoomable pannable nodeColor="darkgrey"></MiniMap>
       </ReactFlow>

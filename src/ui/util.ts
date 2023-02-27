@@ -33,46 +33,51 @@ export default function computeSimilarity(
   console.time('compute_sim');
 
   // compute similarities
-  [...new Set(queryPlanResults.map((qpr) => qpr.query))].forEach((query) => {
-    const qprs = queryPlanResults.filter((qpr) => qpr.query === query);
+  queryPlanResults
+    .map((qpr) => qpr.query)
+    .filter(unique)
+    .forEach((query) => {
+      const qprs = queryPlanResults.filter((qpr) => qpr.query === query);
 
-    qprs.forEach((qpr) => (qpr.similarity = new Map()));
+      qprs.forEach((qpr) => (qpr.similarity = new Map()));
 
-    // compute similarity
-    qprs.forEach((first, i) => {
-      qprs.slice(i + 1).forEach((second) => {
-        const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
-        const plans = [first, second].map((qpr) => {
-          const plan = planSerdes.transformParsedJsonObj(qpr.queryPlan);
-          treatDagEdges(plan, dagEdgeTreatment);
-          return plan;
+      // compute similarity
+      qprs.forEach((first, i) => {
+        qprs.slice(i + 1).forEach((second) => {
+          const planSerdes = new PlanNodeBrowserSerDes(QP_GRAMMAR, defaultDiffOptions);
+          const plans = [first, second].map((qpr) => {
+            const plan = planSerdes.transformParsedJsonObj(qpr.queryPlan);
+            treatDagEdges(plan, dagEdgeTreatment);
+            return plan;
+          });
+
+          // use semantic diff
+          MatchPipeline.fromMode(defaultDiffOptions).execute(
+            plans[0],
+            plans[1],
+            new Comparator(defaultDiffOptions)
+          );
+
+          const excessUpdates = plans[0].toPreOrderUnique().filter(
+            (n) =>
+              n.isMatched() && // filter update ops without cardinality change
+              !n.contentEquals(n.getSingleMatch()) &&
+              n.data.exactCardinality == n.getSingleMatch().data.exactCardinality
+          ).length;
+          const editScript = new EditScriptGenerator<Operator>(
+            defaultDiffOptions
+          ).generateEditScript(plans[0], plans[1]);
+          const cost = editScript.getCost() - excessUpdates;
+          const similarity = Math.min(
+            1,
+            Math.max(0, 1 - cost / (plans[0].size() + plans[1].size()))
+          );
+
+          first.similarity.set(second, similarity);
+          second.similarity.set(first, similarity);
         });
-
-        // use semantic diff
-        MatchPipeline.fromMode(defaultDiffOptions).execute(
-          plans[0],
-          plans[1],
-          new Comparator(defaultDiffOptions)
-        );
-
-        const excessUpdates = plans[0].toPreOrderUnique().filter(
-          (n) =>
-            n.isMatched() && // filter update ops without cardinality change
-            !n.contentEquals(n.getSingleMatch()) &&
-            n.data.exactCardinality == n.getSingleMatch().data.exactCardinality
-        ).length;
-        const editScript = new EditScriptGenerator<Operator>(defaultDiffOptions).generateEditScript(
-          plans[0],
-          plans[1]
-        );
-        const cost = editScript.getCost() - excessUpdates;
-        const similarity = Math.min(1, Math.max(0, 1 - cost / (plans[0].size() + plans[1].size())));
-
-        first.similarity.set(second, similarity);
-        second.similarity.set(first, similarity);
       });
     });
-  });
 
   console.timeEnd('compute_sim');
 }
@@ -143,4 +148,9 @@ export function cmm(
 
   cost += sum(planNode.children.map((c) => cmm(c, omitChildCosts, useEstimates)));
   return cost;
+}
+
+// small helper to eliminate duplicates from an array in an FP fashion
+export function unique<T>(value: T, index: number, array: T[]) {
+  return array.indexOf(value) === index;
 }
