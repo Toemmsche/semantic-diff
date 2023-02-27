@@ -1,5 +1,4 @@
 import GrammarNode from './GrammarNode';
-import XmlSerializable from '../io/SerDes';
 
 export default class Grammar {
   private labelMap: Map<String, GrammarNode> = new Map();
@@ -7,7 +6,11 @@ export default class Grammar {
   // Property nodes are inferred implicitly (everything that is NOT an inner
   // and NOT a leaf node)
 
-  constructor(public inners: GrammarNode[], public leaves: GrammarNode[]) {
+  constructor(
+    public readonly inners: GrammarNode[],
+    public readonly leaves: GrammarNode[],
+    public readonly baseWeight: number = 0
+  ) {
     for (const grammarNode of inners.concat(leaves)) {
       this.labelMap.set(grammarNode.label, grammarNode);
     }

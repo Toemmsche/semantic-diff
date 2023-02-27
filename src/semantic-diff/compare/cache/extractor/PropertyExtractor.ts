@@ -23,11 +23,11 @@ export default class PropertyExtractor<T> extends CachingExtractor<
     let curr: Nullable<TNode<T>> = node;
     for (const pathNode of pathNodes) {
       // Termination conditions
-      if (pathNode === '#text' || pathNode === '') {
+      if (pathNode === 'text()' || pathNode === '') {
         return curr.text;
       }
-      if (pathNode.startsWith('@_')) {
-        const attributeName = pathNode.replace('@_', '');
+      if (pathNode.startsWith('@')) {
+        const attributeName = pathNode.replace('@', '');
         return curr.attributes.get(attributeName);
       }
       curr = curr.children.find((child) => child.label === pathNode);

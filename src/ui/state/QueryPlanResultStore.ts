@@ -1,5 +1,4 @@
 import { Action, createHook, createStore } from 'react-sweet-state';
-import { batchPlans } from './defaultPlans';
 import { QP_GRAMMAR } from '../model/meta/QpGrammar';
 import QueryPlanResult, { QueryPlanResultCollection } from '../model/meta/QueryPlanResult';
 import { defaultDiffOptions, PlanNodeBrowserSerDes } from '../../semantic-diff';

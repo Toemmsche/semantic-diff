@@ -10,7 +10,7 @@ export default interface ISemanticDiffOptions
     IMatchOptions {}
 
 // TODO move default diff options into interface diff classes
-export const defaultDiffOptions = {
+export const defaultDiffOptions: ISemanticDiffOptions = {
   COMPARISON_THRESHOLD: 0.4,
   CONTENT_WEIGHT: 5,
   POSITION_WEIGHT: 1,
@@ -20,19 +20,11 @@ export const defaultDiffOptions = {
   WEIGHT_BOOST_MULTIPLIER: 1,
   USE_CONTENT_HASH_FOR_PATH_COMPARISON: true,
   EXACT_EDIT_SCRIPT: true,
-  ATTRIBUTE_GROUP_NAME: '@_',
-  TEXT_NODE_NAME: '#text',
+  ATTRIBUTE_GROUP_NAME: '@',
+  TEXT_NODE_NAME: 'text()',
   ATTRIBUTE_NAME_PREFIX: '',
   DELTA_TAG: 'delta',
   PRETTY_XML: true,
-
-  GRAMMAR_INNERS_TAG: 'inners',
-  GRAMMAR_LEAVES_TAG: 'leaves',
-  GRAMMAR_NODE_WEIGHT_KEY: 'weight',
-  GRAMMAR_NODE_WEIGHTED_CV_TAG: 'comparisonValue',
-  GRAMMAR_NODE_COMPARISON_TYPE_KEY: 'comparisonType',
-  GRAMMAR_ROOT_TAG: 'grammar',
-  GRAMMAR_NODE_ORDERED_KEY: 'ordered',
 
   JX_ATTRS_KEY: '_attrs',
   JX_CHILDREN_KEY: '_children',

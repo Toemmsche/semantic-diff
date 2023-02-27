@@ -27,17 +27,18 @@ export default class GrammarXmlSerDes extends SerDes<Grammar> {
     let leaves: GrammarNode[] = [];
     for (const element of getElementChildren(root)) {
       switch (element.localName) {
-        case this.options.GRAMMAR_INNERS_TAG:
+        case 'inners':
           inners = this.parseGrammarNodes(element, NodeType.INNER);
           break;
-        case this.options.GRAMMAR_LEAVES_TAG:
+        case 'leaves':
           leaves = this.parseGrammarNodes(element, NodeType.LEAF);
           break;
         default:
           throw new MalformedGrammarError();
       }
     }
-    return new Grammar(inners, leaves);
+    const maybeBaseWeight = root.getAttribute('baseWeight');
+    return new Grammar(inners, leaves, maybeBaseWeight ? parseInt(maybeBaseWeight) : 0);
   }
 
   private parseGrammarNodes(xmlDom: Element, nodeType: NodeType): GrammarNode[] {
@@ -46,31 +47,24 @@ export default class GrammarXmlSerDes extends SerDes<Grammar> {
     for (const grammarNodeElement of getElementChildren(xmlDom)) {
       const weightedCvs = [];
 
-      const ordered = grammarNodeElement.hasAttribute(this.options.GRAMMAR_NODE_ORDERED_KEY)
-        ? grammarNodeElement.getAttribute(this.options.GRAMMAR_NODE_ORDERED_KEY) == 'true'
+      const ordered = grammarNodeElement.hasAttribute('ordered')
+        ? grammarNodeElement.getAttribute('ordered') == 'true'
         : undefined;
 
       for (const weightedCvElement of getElementChildren(grammarNodeElement)) {
         // TODO make default weight explicit
 
         let weight;
-        if (
-          weightedCvElement.hasAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY) &&
-          weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY) != null
-        ) {
-          let parsed = parseFloat(
-            weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_WEIGHT_KEY)!!
-          );
+        if (weightedCvElement.getAttribute('weight') != null) {
+          let parsed = parseFloat(weightedCvElement.getAttribute('weight')!);
           weight = isNaN(parsed) ? undefined : parsed;
         }
 
-        const hasComparisonType = weightedCvElement.hasAttribute(
-          this.options.GRAMMAR_NODE_COMPARISON_TYPE_KEY
-        );
+        const hasComparisonType = weightedCvElement.hasAttribute('comparisonType');
         const comparisonType =
           ComparisonType[
             (hasComparisonType
-              ? weightedCvElement.getAttribute(this.options.GRAMMAR_NODE_COMPARISON_TYPE_KEY)
+              ? weightedCvElement.getAttribute('comparisonType')
               : 'EQ') as keyof typeof ComparisonType
           ];
         const path = getTextContentWithoutChildren(weightedCvElement) ?? '';
