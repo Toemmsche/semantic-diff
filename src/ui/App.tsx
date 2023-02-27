@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 // @ts-ignore
 import logo from './logo.svg';
 import './App.css';
-import QueryPlanDiff from './ui/components/QueryPlanDiff';
+import QueryPlanDiff from './components/QueryPlanDiff';
 import { Stack } from '@mui/material';
 import {
   BarElement,
@@ -14,9 +14,9 @@ import {
   Title,
   Tooltip
 } from 'chart.js';
-import FloatingMenu from './ui/components/menu/FloatingMenu';
-import { useQueryPlanState } from './ui/state/QueryPlanResultStore';
-import { batchPlans } from './ui/state/defaultPlans';
+import FloatingMenu from './components/menu/FloatingMenu';
+import { useQueryPlanState } from './state/QueryPlanResultStore';
+import { batchPlans } from './state/defaultPlans';
 
 // @ts-ignore
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Colors);

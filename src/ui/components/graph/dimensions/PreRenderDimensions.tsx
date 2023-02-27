@@ -9,7 +9,7 @@ import renderGraph from './RenderGraph';
 
 export type Dimensions = [number, number];
 
-function renderPlanNode(planNode: PlanNode) {
+function renderDummyPlanNode(planNode: PlanNode) {
   return (
     <UnifiedDiffPlanNode
       data={{
@@ -63,8 +63,6 @@ export default function PreRenderDimensions(props: IPreRenderDimensionsProps) {
     [dimensions, dimensionsComplete]
   );
 
-  console.log('rerender get dim');
-
   useEffect(() => {
     console.log('resetting dimensions due to new tree...', expandedNodes);
     setDimensions(new Map());
@@ -76,7 +74,7 @@ export default function PreRenderDimensions(props: IPreRenderDimensionsProps) {
       item={item}
       dimensions={dimensions}
       callback={tellDimensions}
-      renderFunc={renderPlanNode}
+      renderFunc={renderDummyPlanNode}
     />
   ));
 
