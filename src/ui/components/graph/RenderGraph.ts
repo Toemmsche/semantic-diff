@@ -19,8 +19,6 @@ export default function renderGraph(
   setEdges: (edges: Edge[]) => any,
   reactFlowInstance: ReactFlowInstance
 ) {
-  console.log('Rendering unified tree with dimensions', unifiedTree, dimensions);
-
   const [normalizedNodes, normalizedEdges] = new DefaultNormalizer().normalize(
     unifiedTree,
     0,

@@ -15,7 +15,6 @@ export interface INodeLayouterProps {
 
 export function fitLater(reactFlowInstance: ReactFlowInstance) {
   setTimeout(() => {
-    console.log('fitting to graph ... ');
     reactFlowInstance.fitView({
       ...animationOptions,
       padding: 0.15
@@ -32,13 +31,10 @@ export default function RefreshLayout(props: INodeLayouterProps) {
   const nodeHasDimension = (node: Node) => node.width != null && node.height != null;
 
   function changeLayout() {
-    console.log('changing layout...');
-
     const internalNodes = new Array(...internalNodeState.entries()).map((entry) => {
       const [id, node] = entry;
       return node;
     });
-    console.log('ACTUAL NODE DIMS', internalNodes);
     if (internalNodes.length > 0 && internalNodes.every(nodeHasDimension)) {
       const layoutNodes = layouter.treeLayout(internalNodes, edges, defaultTreeLayoutOptions);
       if (layoutNodes instanceof Promise) {
