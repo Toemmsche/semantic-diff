@@ -36,8 +36,6 @@ export default class DocumentingRenderer<T> extends React.Component<
   }
 
   componentDidUpdate() {
-    //console.log('render dimentor');
-    // @ts-ignore
     this.props.callback(
       this.props.item,
       this.childRef.current!.clientWidth,

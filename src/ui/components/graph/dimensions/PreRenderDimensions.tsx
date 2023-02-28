@@ -64,7 +64,6 @@ export default function PreRenderDimensions(props: IPreRenderDimensionsProps) {
   );
 
   useEffect(() => {
-    console.log('resetting dimensions due to new tree...', expandedNodes);
     setDimensions(new Map());
   }, [unifiedTree, expandedNodes, collapsible, layouter]);
 
