@@ -1,5 +1,4 @@
 import TNode from '../tree/TNode';
-import ISemanticDiffOptions from '../diff/ISemanticDiffOptions';
 
 export default class DeltaGraphGenerator<T> {
   constructor() {}
@@ -26,8 +25,7 @@ export default class DeltaGraphGenerator<T> {
           const filteredMatchChildren = nextHigherMatch.children.filter((child) => {
             return (
               // have to add any unmatched children
-              !child.getAdjacentLowerMatch() ||
-              // or those that were moved between this and the next higher tree
+              !child.getAdjacentLowerMatch() || // or those that were moved between this and the next higher tree
               child.getAdjacentLowerMatch()!.getParent() != node
             );
           });
@@ -59,27 +57,20 @@ export default class DeltaGraphGenerator<T> {
       return trees[0];
     }
 
-    // Turn tree into DAG by reusing nodes
-    this.converge(trees[trees.length - 1]);
+    // apply n - 1 converge() and unify()
+    for (let i = trees.length - 2; i >= 0; i--) {
+      const prev = trees[i + 1];
+      const curr = trees[i];
 
-    // do NOT use reverse since it modifies the array in-place
-    trees
-      .slice(1)
-      .reverse()
-      .slice(1)
-      .forEach((tree) => {
-        this.unify(tree);
+      this.converge(prev);
+      this.unify(curr);
 
-        // lower act index
-        tree.toPreOrderUnique().forEach((n) => {
-          // align working indices
-          n.workingIndex = tree.workingIndex;
-        });
-
-        this.converge(tree);
+      // lower act index
+      curr.toPreOrderUnique().forEach((n) => {
+        // align working indices
+        n.workingIndex = curr.workingIndex;
       });
-
-    this.unify(trees[0]);
+    }
 
     return trees[0];
   }
