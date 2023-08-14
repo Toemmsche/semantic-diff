@@ -6,7 +6,7 @@ import DefaultNormalizer from './normalize/DefaultNormalizer';
 import { ICustomUnifiedEdgeData } from './elements/DeltaEdge';
 import { defaultTreeLayoutOptions } from './layout/ITreeLayoutOptions';
 import { fitLater } from './layout/RefreshLayout';
-import { Dimensions } from './dimensions/PreRenderDimensions';
+import { Dimensions } from './dimensions/RenderDimensions';
 
 export default function renderGraph(
   unifiedTree: PlanNode,

@@ -1,13 +1,20 @@
-import { Action, createHook, createStore } from 'react-sweet-state';
+import {Action, createHook, createStore} from 'react-sweet-state';
 import DagreLayouter from '../components/graph/layout/DagreLayouter';
 import D3HierarchyLayouter from '../components/graph/layout/D3HierarchyLayouter';
 import ElkJsLayouter from '../components/graph/layout/ElkJsLayouter';
-import { MatchPipeline } from '../../semantic-diff/match/MatchPipeline';
-import { FixedMatcher } from '../../semantic-diff/match/FixedMatcher';
-import { defaultDiffOptions } from '../../semantic-diff/index';
+import {MatchPipeline} from '../../semantic-diff/match/MatchPipeline';
+import {FixedMatcher} from '../../semantic-diff/match/FixedMatcher';
+import {defaultDiffOptions} from '../../semantic-diff/index';
 import IAsyncLayouter from '../components/graph/layout/IAsyncLayouter';
 import IBlockingLayouter from '../components/graph/layout/IBlockingLayouter';
-import { DagEdgeTreatment, EdgeType, LayoutAlgorithm, MatchAlgorithm } from './Parameters';
+import {
+  DagEdgeTreatment,
+  EdgeType,
+  LayoutAlgorithm,
+  MatchAlgorithm,
+  NodeDimensions,
+  NodeDimensionsType
+} from './Parameters';
 
 export interface IParameterState {
   collapsible: boolean;
@@ -15,6 +22,7 @@ export interface IParameterState {
   matchAlgorithm: MatchAlgorithm;
   layoutAlgorithm: LayoutAlgorithm;
   edgeType: EdgeType;
+  nodeDimensions: NodeDimensions
 }
 
 export const helpers = {
@@ -102,7 +110,11 @@ const ParameterStore = createStore<IParameterState, typeof actions>({
     dagEdgeTreatment: DagEdgeTreatment.IGNORE,
     matchAlgorithm: MatchAlgorithm.NONE,
     layoutAlgorithm: LayoutAlgorithm.DAGRE,
-    edgeType: EdgeType.BEZIER
+    edgeType: EdgeType.BEZIER,
+    nodeDimensions: {
+      kind: NodeDimensionsType.STATIC,
+      staticDimensions: [100, 40]
+    },
   },
   actions
 });
@@ -117,6 +129,10 @@ export const useMatchAlgorithm = createHook(ParameterStore, {
 });
 export const useDagEdgeTreatment = createHook(ParameterStore, {
   selector: (state: IParameterState) => state.dagEdgeTreatment
+});
+
+export const useNodeDimensions = createHook(ParameterStore, {
+  selector: (state: IParameterState) => state.nodeDimensions
 });
 
 export const useLayouter = createHook(ParameterStore, {

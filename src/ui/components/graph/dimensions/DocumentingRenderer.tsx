@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import { Dimensions } from './PreRenderDimensions';
+import { Dimensions } from './RenderDimensions';
 
 export interface IDocumentingRendererProps<T> {
   item: T;
   dimensions: Map<T, Dimensions>;
-  callback: (item: T, width: number, height: number) => void;
+  callback: (item: T, dim: Dimensions) => void;
   renderFunc: (item: T) => any;
 }
 
@@ -38,8 +38,7 @@ export default class DocumentingRenderer<T> extends React.Component<
   componentDidUpdate() {
     this.props.callback(
       this.props.item,
-      this.childRef.current!.clientWidth,
-      this.childRef.current!.clientHeight
+      [this.childRef.current!.clientWidth, this.childRef.current!.clientHeight],
     );
   }
 

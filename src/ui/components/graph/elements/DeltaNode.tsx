@@ -7,6 +7,7 @@ import { ExpandMore } from '@mui/icons-material';
 import { Nullable } from '../../../../semantic-diff/Types';
 import NodeDetails from './NodeDetails';
 import { getGradientForIndexGroup } from './color';
+import {NodeDimensionsType} from "../../../state/Parameters";
 
 export interface IUnifiedDiffProps {
   data: {
@@ -23,6 +24,7 @@ export default function DeltaNode(props: IUnifiedDiffProps) {
   const [hoverActive, setHoverActive] = useState(false);
   const [detailsAnchorEl, setDetailsAnchorEl] = useState(null as Nullable<HTMLElement>);
   const [parameters] = useParameterState();
+  const nodeDimensions = parameters.nodeDimensions;
   const nodeRef = useRef(null);
 
   const hasExpanded =
@@ -85,7 +87,10 @@ export default function DeltaNode(props: IUnifiedDiffProps) {
         onMouseLeave={() => setHoverActive(false)}>
         <Handle type="target" id="topHandle" position={Position.Top} style={{ opacity: 0 }} />
         <Box padding={1}>
-          <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
+          <Stack
+              width={nodeDimensions.kind == NodeDimensionsType.STATIC ? nodeDimensions.staticDimensions[0] : undefined}
+              height={nodeDimensions.kind == NodeDimensionsType.STATIC ? nodeDimensions.staticDimensions[1] : undefined}
+              direction="row" alignItems="center" justifyContent="space-evenly">
             {metaPlanData.render()}
             {CollapsibleToggles}
             <Popover

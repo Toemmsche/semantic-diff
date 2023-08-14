@@ -5,8 +5,9 @@ import { PlanNode } from '../../model/operator/Operator';
 import DeltaNode from './elements/DeltaNode';
 import Legend from './Legend';
 import DeltaEdge from './elements/DeltaEdge';
-import PreRenderDimensions from './dimensions/PreRenderDimensions';
+import RenderDimensions from './dimensions/RenderDimensions';
 import useAnimatedNodes from './AnimatedNodes';
+import {useParameterState} from "../../state/ParameterStore";
 
 export interface IUnifiedTreeViewProps {
   unifiedTree: PlanNode;
@@ -37,11 +38,11 @@ export function DeltaGraphView(props: IUnifiedTreeViewProps) {
 
   return (
     <>
-      <PreRenderDimensions
+      <RenderDimensions
         unifiedTree={unifiedTree}
         setNodes={setNodes}
         setEdges={setEdges}
-        reactFlowInstance={reactFlowInstance}></PreRenderDimensions>
+        reactFlowInstance={reactFlowInstance}></RenderDimensions>
       <ReactFlow
         nodesConnectable={false}
         zoomOnScroll

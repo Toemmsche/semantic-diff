@@ -1,3 +1,5 @@
+import {Dimensions} from "../components/graph/dimensions/RenderDimensions";
+
 export enum MatchAlgorithm {
   NONE,
   TOP_DOWN,
@@ -24,3 +26,16 @@ export enum DagEdgeTreatment {
   COPY_SUBTREE,
   FULL_DAG
 }
+
+export enum NodeDimensionsType {
+  DYNAMIC,
+  STATIC
+}
+type DYNAMIC = {
+  kind: NodeDimensionsType.DYNAMIC
+}
+type STATIC = {
+  kind: NodeDimensionsType.STATIC,
+  staticDimensions: Dimensions
+};
+export type NodeDimensions = DYNAMIC | STATIC;
