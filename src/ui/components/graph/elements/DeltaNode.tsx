@@ -10,6 +10,7 @@ import { getGradientForIndexGroup } from './color';
 
 export interface IUnifiedDiffProps {
   data: {
+    isPrerender: boolean,
     expandedNodes: PlanNode[];
     setExpandedNodes: (nodes: PlanNode[]) => any;
     planNode: PlanNode;
@@ -17,7 +18,7 @@ export interface IUnifiedDiffProps {
 }
 
 export default function DeltaNode(props: IUnifiedDiffProps) {
-  const { expandedNodes, planNode, setExpandedNodes } = props.data;
+  const { isPrerender, expandedNodes, planNode, setExpandedNodes } = props.data;
 
   // Internal state
   const [hoverActive, setHoverActive] = useState(false);
@@ -29,7 +30,7 @@ export default function DeltaNode(props: IUnifiedDiffProps) {
     planNode.isLeaf() || planNode.children.every((c) => expandedNodes.includes(c));
 
   let CollapsibleToggles = <></>;
-  if (parameters.collapsible && !planNode.isLeaf()) {
+  if (!isPrerender && parameters.collapsible && !planNode.isLeaf()) {
     const hide = () => {
       // all descendants
       const descendants = new Set(planNode.toPreOrderUnique());
@@ -83,7 +84,7 @@ export default function DeltaNode(props: IUnifiedDiffProps) {
           if (!detailsAnchorEl) setDetailsAnchorEl(nodeRef.current);
         }}
         onMouseLeave={() => setHoverActive(false)}>
-        <Handle type="target" id="topHandle" position={Position.Top} style={{ opacity: 0 }} />
+        { !isPrerender ? <Handle type="target" id="topHandle" position={Position.Top} style={{ opacity: 0 }} /> : <></> }
         <Box padding={1}>
           <Stack width="100%" direction="row" alignItems="center" justifyContent="space-between">
             {metaPlanData.render()}
@@ -100,14 +101,14 @@ export default function DeltaNode(props: IUnifiedDiffProps) {
           </Stack>
         </Box>
 
-        <Handle
+        { !isPrerender ?<Handle
           type="source"
           id="bottomHandle"
           position={Position.Bottom}
           style={{
             opacity: 0
           }}
-        />
+        /> : <></> }
       </Box>
     </Paper>
   );

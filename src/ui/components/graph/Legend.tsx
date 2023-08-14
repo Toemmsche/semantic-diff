@@ -28,6 +28,7 @@ export default function Legend(props: {}) {
         <Box key={system} width="max-content">
           <DeltaNode
             data={{
+              isPrerender: true,
               planNode,
               expandedNodes: [planNode],
               setExpandedNodes: (nodes) => {}

@@ -13,6 +13,7 @@ function renderDummyPlanNode(planNode: PlanNode) {
   return (
     <DeltaNode
       data={{
+        isPrerender: true,
         // dummy input for collapse / expand
         expandedNodes: [planNode],
         setExpandedNodes: (nodes) => {},

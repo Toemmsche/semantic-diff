@@ -27,6 +27,7 @@ export default function renderGraph(
       filter: (planNode: PlanNode) => expandedNodes.includes(planNode),
       computeData: (planNode: PlanNode) => {
         return {
+          isPrerender: false,
           expandedNodes: expandedNodes,
           setExpandedNodes: setExpandedNodes,
           planNode: planNode
