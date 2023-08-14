@@ -40,7 +40,7 @@ export default function DeltaNode(props: IUnifiedDiffProps) {
     };
 
     const expand = () => {
-      console.log('expanding', setExpandedNodes, expandedNodes);
+      console.log('expanding', planNode, expandedNodes);
       setExpandedNodes([
         // must eliminate duplicates here for rendering to work
         ...new Set([...expandedNodes, ...planNode.children])

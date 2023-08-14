@@ -6,7 +6,6 @@ import DeltaNode from '../elements/DeltaNode';
 import {useCollapsible, useLayouter, useNodeDimensions} from '../../../state/ParameterStore';
 import DocumentingRenderer from './DocumentingRenderer';
 import renderGraph from '../RenderGraph';
-import {NodeDimensionsType} from "../../../state/Parameters";
 
 export type Dimensions = [number, number];
 
@@ -68,27 +67,19 @@ export default function RenderDimensions(props: IRenderDimensionsProps) {
 
   useEffect(() => {
       setDimensions(new Map());
-
-      if (nodeDimensionsParam.kind == NodeDimensionsType.STATIC) {
-          expandedNodes.forEach(n => tellDimensions(n, nodeDimensionsParam.staticDimensions))
-      }
   }, [nodeDimensionsParam, unifiedTree, expandedNodes, collapsible, layouter]);
 
+  const comps = expandedNodes.map((item, i) => (
+      <DocumentingRenderer
+          key={i}
+          item={item}
+          dimensions={dimensions}
+          callback={tellDimensions}
+          renderFunc={renderDummyPlanNode}
+          nodeDimensionsParam={nodeDimensionsParam}
+      />
+  ));
 
-  if (nodeDimensionsParam.kind == NodeDimensionsType.DYNAMIC) {
-      const comps = expandedNodes.map((item, i) => (
-          <DocumentingRenderer
-              key={i}
-              item={item}
-              dimensions={dimensions}
-              callback={tellDimensions}
-              renderFunc={renderDummyPlanNode}
-          />
-      ));
-
-      // test component for rendering
-      return createPortal(comps, document.body);
-  } else {
-      return <></>;
-  }
+  // test component for rendering
+  return createPortal(comps, document.body);
 }

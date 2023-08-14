@@ -1,12 +1,14 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import { Dimensions } from './RenderDimensions';
+import {Box} from '@mui/material';
+import {Dimensions} from './RenderDimensions';
+import {NodeDimensions, NodeDimensionsType} from "../../../state/Parameters";
 
 export interface IDocumentingRendererProps<T> {
-  item: T;
+  item: T,
   dimensions: Map<T, Dimensions>;
   callback: (item: T, dim: Dimensions) => void;
   renderFunc: (item: T) => any;
+  nodeDimensionsParam: NodeDimensions
 }
 
 export default class DocumentingRenderer<T> extends React.Component<
@@ -36,15 +38,27 @@ export default class DocumentingRenderer<T> extends React.Component<
   }
 
   componentDidUpdate() {
-    this.props.callback(
-      this.props.item,
-      [this.childRef.current!.clientWidth, this.childRef.current!.clientHeight],
-    );
+    // short-cut if using static dimensions
+    if (this.props.nodeDimensionsParam.kind == NodeDimensionsType.STATIC) {
+      this.props.callback(
+          this.props.item,
+          this.props.nodeDimensionsParam.staticDimensions,
+      );
+    } else {
+      this.props.callback(
+          this.props.item,
+          [this.childRef.current!.clientWidth, this.childRef.current!.clientHeight],
+      );
+    }
   }
 
   render() {
-    const { item, callback, renderFunc } = this.props;
+    const { item, callback, renderFunc, nodeDimensionsParam } = this.props;
 
+    // avoid rendering the actual node if using static dimensions
+    if (nodeDimensionsParam.kind === NodeDimensionsType.STATIC) {
+      return <></>;
+    }
     return (
       // shed all excess height and width
       <Box ref={this.childRef} height="max-content" width="max-content">
