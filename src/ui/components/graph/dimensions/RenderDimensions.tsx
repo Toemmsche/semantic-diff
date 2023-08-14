@@ -1,11 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {createPortal} from 'react-dom';
 import {PlanNode} from '../../../model/operator/Operator';
 import {Edge, Node, ReactFlowInstance} from 'reactflow';
 import DeltaNode from '../elements/DeltaNode';
 import {useCollapsible, useLayouter, useNodeDimensions} from '../../../state/ParameterStore';
-import DocumentingRenderer from './DocumentingRenderer';
 import renderGraph from '../RenderGraph';
+import {NodeDimensionsType} from "../../../state/Parameters";
 
 export type Dimensions = [number, number];
 
@@ -28,58 +27,34 @@ export interface IRenderDimensionsProps {
     reactFlowInstance: ReactFlowInstance;
 }
 
-
 export default function RenderDimensions(props: IRenderDimensionsProps) {
   const { unifiedTree, setNodes, setEdges, reactFlowInstance } = props;
   const [expandedNodes, setExpandedNodes] = useState([] as PlanNode[]);
   const [collapsible] = useCollapsible();
-  const [nodeDimensionsParam] = useNodeDimensions();
+  const [nodeDimensions] = useNodeDimensions();
   const [layouter] = useLayouter();
-  const [dimensions, setDimensions] = useState(new Map<PlanNode, Dimensions>());
-  const dimensionsComplete = dimensions.size === expandedNodes.length;
 
   useEffect(() => {
     setExpandedNodes(unifiedTree.toPreOrderUnique());
   }, [collapsible, unifiedTree]);
 
-  const tellDimensions = useMemo(
-    () => (item: PlanNode, dim: Dimensions) => {
-      if (dimensionsComplete) {
-        return;
-      }
-      dimensions.set(item, dim);
-      if (dimensions.size === expandedNodes.length) {
+  useMemo(() => {
+        if (nodeDimensions.kind !== NodeDimensionsType.STATIC) {
+            throw new Error("Currently only supporting static dimensions");
+        }
+        const dimensions : Map<PlanNode, Dimensions> = new Map(expandedNodes.map(n => [n , nodeDimensions.staticDimensions]));
         renderGraph(
-          unifiedTree,
-          expandedNodes,
-          setExpandedNodes,
-          dimensions,
-          collapsible,
-          layouter,
-          setNodes,
-          setEdges,
-          reactFlowInstance
+            unifiedTree,
+            expandedNodes,
+            setExpandedNodes,
+            dimensions,
+            collapsible,
+            layouter,
+            setNodes,
+            setEdges,
+            reactFlowInstance
         );
-      }
-    },
-    [dimensions, dimensionsComplete]
-  );
+    }, [expandedNodes, nodeDimensions, layouter, collapsible]);
 
-  useEffect(() => {
-      setDimensions(new Map());
-  }, [nodeDimensionsParam, unifiedTree, expandedNodes, collapsible, layouter]);
-
-  const comps = expandedNodes.map((item, i) => (
-      <DocumentingRenderer
-          key={i}
-          item={item}
-          dimensions={dimensions}
-          callback={tellDimensions}
-          renderFunc={renderDummyPlanNode}
-          nodeDimensionsParam={nodeDimensionsParam}
-      />
-  ));
-
-  // test component for rendering
-  return createPortal(comps, document.body);
+  return <></>;
 }
